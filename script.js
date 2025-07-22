@@ -56,9 +56,11 @@ class WorkoutTimer {
         this.isRunning = false;
         this.isPaused = false;
         this.intervalId = null;
+        this.audioContext = null;
         
         this.initializeElements();
         this.bindEvents();
+        this.initializeAudio();
     }
     
     initializeElements() {
@@ -83,6 +85,41 @@ class WorkoutTimer {
         this.pauseBtn.addEventListener('click', () => this.pauseWorkout());
         this.skipBtn.addEventListener('click', () => this.skipExercise());
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
+    }
+    
+    initializeAudio() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (error) {
+            console.warn('Web Audio API not supported');
+        }
+    }
+    
+    playSound(frequency = 800, duration = 500, type = 'sine') {
+        if (!this.audioContext) return;
+        
+        try {
+            if (this.audioContext.state === 'suspended') {
+                this.audioContext.resume();
+            }
+            
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(this.audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+            oscillator.type = type;
+            
+            gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration / 1000);
+            
+            oscillator.start(this.audioContext.currentTime);
+            oscillator.stop(this.audioContext.currentTime + duration / 1000);
+        } catch (error) {
+            console.warn('Error playing sound:', error);
+        }
     }
     
     async loadWorkoutFile(event) {
@@ -214,6 +251,7 @@ class WorkoutTimer {
     }
     
     nextExercise() {
+        this.playSound(600, 300);
         this.currentExerciseIndex++;
         
         if (this.currentExerciseIndex >= this.workout.exercises.length) {
@@ -236,9 +274,17 @@ class WorkoutTimer {
         this.updateControls();
         this.updateWorkoutList();
         
+        this.playCompletionSound();
+        
         setTimeout(() => {
             alert('Workout completed! Great job! 💪');
         }, 500);
+    }
+    
+    playCompletionSound() {
+        setTimeout(() => this.playSound(523, 200), 0);
+        setTimeout(() => this.playSound(659, 200), 200); 
+        setTimeout(() => this.playSound(784, 400), 400);
     }
     
     updateDisplay() {
