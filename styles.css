@@ -89,6 +89,8 @@ header h1 {
     gap: 20px;
     align-items: center;
     justify-items: center;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .current-exercise h3 {
@@ -101,7 +103,7 @@ header h1 {
 .exercise-description-main {
     grid-area: exercise-description;
     width: 100%;
-    max-width: 600px;
+    justify-self: stretch;
 }
 
 .timer-display {
@@ -356,8 +358,12 @@ header h1 {
         font-size: 1.5rem;
     }
     
-    .exercise-description-main {
+    .current-exercise {
         max-width: 100%;
+    }
+    
+    .exercise-description-main {
+        width: 100%;
     }
     
     .workout-controls {
