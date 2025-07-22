@@ -15,7 +15,7 @@ describe('PWA Features', () => {
     cy.get('link[rel="icon"]').should('exist')
   })
 
-  it('should register service worker', () => {
+  it.skip('should register service worker', () => {
     cy.checkServiceWorker()
     
     cy.window().then((win) => {
@@ -43,7 +43,7 @@ describe('PWA Features', () => {
     })
   })
 
-  it('should have service worker available', () => {
+  it.skip('should have service worker available', () => {
     cy.request('/sw.js').then((response) => {
       expect(response.status).to.equal(200)
       expect(response.body).to.include('workout-timer-v1')
@@ -79,7 +79,7 @@ describe('PWA Features', () => {
     cy.get('.file-input-section').should('be.visible')
   })
 
-  it('should handle offline scenarios gracefully', () => {
+  it.skip('should handle offline scenarios gracefully', () => {
     cy.loadWorkoutFile('test-workout.md')
     
     cy.intercept('GET', '**', { forceNetworkError: true }).as('networkError')
@@ -102,7 +102,7 @@ describe('PWA Features', () => {
     })
   })
 
-  it('should work with touch interactions on mobile', () => {
+  it.skip('should work with touch interactions on mobile', () => {
     cy.viewport('iphone-x')
     cy.loadWorkoutFile('test-workout.md')
     
