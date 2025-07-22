@@ -8,6 +8,7 @@ A Progressive Web App for running markdown-based workouts with timers, designed 
 - 🔥 **Offline Mode**: Works without internet connection
 - ⏱️ **Timer System**: Countdown timers for exercises and rest periods
 - 📝 **Markdown Parser**: Load workouts from .md files
+- 🏋️ **Sets Support**: Define multiple sets with automatic rest periods
 - 🎮 **Full Controls**: Play, pause, skip, and reset functionality
 - 📊 **Progress Tracking**: Visual progress bars and exercise lists
 - 📱 **Mobile Optimized**: Responsive design for phones
@@ -42,9 +43,19 @@ Rest - 0:15
 
 ## Another Exercise - 0:45
 Rest - 0:30
+
+## Exercise with Sets - 3 sets x 0:45 / 0:15
+Exercise description here (optional)
 ```
 
-Time format: `MM:SS` (e.g., `1:30` = 1 minute 30 seconds)
+**Time format**: `MM:SS` (e.g., `1:30` = 1 minute 30 seconds)
+
+**Sets format**: `N sets x MM:SS / MM:SS` where:
+- `N sets` = number of repetitions
+- First time = duration of each exercise 
+- Second time = rest time between sets
+
+**Example**: `3 sets x 0:45 / 0:15` creates 3 rounds of 45-second exercises with 15-second rest between each set.
 
 ## Usage
 
