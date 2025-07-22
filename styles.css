@@ -220,10 +220,6 @@ header h1 {
     color: #666;
 }
 
-.exercise-name {
-    font-weight: 500;
-}
-
 .exercise-duration {
     font-size: 0.9rem;
     opacity: 0.8;
@@ -231,17 +227,24 @@ header h1 {
 
 /* Exercise Description Styles */
 .exercise-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: block;
     width: 100%;
     cursor: pointer;
+    position: relative;
+}
+
+.exercise-name {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
 }
 
 .exercise-meta {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
 .expand-icon {
