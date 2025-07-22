@@ -171,6 +171,7 @@ class WorkoutTimer {
         this.intervalId = null;
         this.audioContext = null;
         this.library = new WorkoutLibrary();
+        this.isAdvancing = false; // Flag to prevent double advancement
         
         this.initializeElements();
         this.bindEvents();
@@ -523,6 +524,9 @@ class WorkoutTimer {
     }
     
     nextExercise() {
+        if (this.isAdvancing) return; // Prevent rapid succession calls
+        this.isAdvancing = true;
+        
         this.playSound(600, 300);
         this.currentExerciseIndex++;
         
@@ -537,6 +541,11 @@ class WorkoutTimer {
                 }
             }
         }
+        
+        // Reset the flag after a short delay
+        setTimeout(() => {
+            this.isAdvancing = false;
+        }, 100);
     }
     
     completeWorkout() {
