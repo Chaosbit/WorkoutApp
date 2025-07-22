@@ -1,0 +1,34 @@
+{
+  "name": "workout-timer-pwa",
+  "version": "1.0.0",
+  "description": "A Progressive Web App for running markdown-based workouts with timers",
+  "main": "index.html",
+  "scripts": {
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "test:headless": "cypress run --headless",
+    "serve": "python -m http.server 8000",
+    "start": "python -m http.server 8000"
+  },
+  "keywords": [
+    "pwa",
+    "workout",
+    "timer",
+    "markdown",
+    "fitness",
+    "offline"
+  ],
+  "author": "Claude Code",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^13.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-username/workout-timer-pwa.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/workout-timer-pwa/issues"
+  },
+  "homepage": "https://github.com/your-username/workout-timer-pwa#readme"
+}
