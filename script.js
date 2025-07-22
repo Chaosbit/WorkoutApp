@@ -1,47 +1,74 @@
 class WorkoutParser {
     static parseMarkdown(content) {
-        const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+        const lines = content.split('\n').map(line => line.trim());
         const workout = {
             title: '',
             exercises: []
         };
         
-        let currentSection = null;
+        let currentExercise = null;
+        let descriptionLines = [];
         
-        for (const line of lines) {
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            
+            if (!line) continue;
+            
             if (line.startsWith('# ')) {
                 workout.title = line.substring(2).trim();
             } else if (line.startsWith('## ') || line.startsWith('### ')) {
+                if (currentExercise && descriptionLines.length > 0) {
+                    currentExercise.description = descriptionLines.join('\n').trim();
+                    descriptionLines = [];
+                }
+                
                 const exerciseLine = line.replace(/^#{2,3}\s+/, '');
                 const match = exerciseLine.match(/^(.+?)\s*-\s*(\d+):(\d+)$/);
                 
                 if (match) {
                     const [, name, minutes, seconds] = match;
                     const duration = parseInt(minutes) * 60 + parseInt(seconds);
-                    workout.exercises.push({
+                    currentExercise = {
                         name: name.trim(),
                         duration: duration,
-                        type: 'exercise'
-                    });
+                        type: 'exercise',
+                        description: ''
+                    };
+                    workout.exercises.push(currentExercise);
                 } else {
-                    workout.exercises.push({
+                    currentExercise = {
                         name: exerciseLine,
                         duration: 60,
-                        type: 'exercise'
-                    });
+                        type: 'exercise',
+                        description: ''
+                    };
+                    workout.exercises.push(currentExercise);
                 }
-            } else if (line.toLowerCase().includes('rest') && line.includes('-')) {
+            } else if (line.toLowerCase().startsWith('rest') && line.includes('-')) {
+                if (currentExercise && descriptionLines.length > 0) {
+                    currentExercise.description = descriptionLines.join('\n').trim();
+                    descriptionLines = [];
+                }
+                
                 const match = line.match(/rest\s*-\s*(\d+):(\d+)/i);
                 if (match) {
                     const [, minutes, seconds] = match;
                     const duration = parseInt(minutes) * 60 + parseInt(seconds);
-                    workout.exercises.push({
+                    currentExercise = {
                         name: 'Rest',
                         duration: duration,
-                        type: 'rest'
-                    });
+                        type: 'rest',
+                        description: 'Take a break and prepare for the next exercise'
+                    };
+                    workout.exercises.push(currentExercise);
                 }
+            } else if (currentExercise && line && !line.startsWith('#')) {
+                descriptionLines.push(line);
             }
+        }
+        
+        if (currentExercise && descriptionLines.length > 0) {
+            currentExercise.description = descriptionLines.join('\n').trim();
         }
         
         return workout;
@@ -68,6 +95,8 @@ class WorkoutTimer {
         this.workoutDisplay = document.getElementById('workoutDisplay');
         this.workoutTitle = document.getElementById('workoutTitle');
         this.currentExercise = document.getElementById('currentExercise');
+        this.currentDescription = document.getElementById('currentDescription');
+        this.descriptionContent = document.getElementById('descriptionContent');
         this.timerDisplay = document.getElementById('timerDisplay');
         this.progressFill = document.getElementById('progressFill');
         this.progressText = document.getElementById('progressText');
@@ -151,10 +180,24 @@ class WorkoutTimer {
         this.workout.exercises.forEach((exercise, index) => {
             const item = document.createElement('div');
             item.className = 'exercise-item pending';
+            
+            const hasDescription = exercise.description && exercise.description.trim().length > 0;
+            
             item.innerHTML = `
-                <span class="exercise-name">${exercise.name}</span>
-                <span class="exercise-duration">${this.formatTime(exercise.duration)}</span>
+                <div class="exercise-header" ${hasDescription ? `onclick="this.parentElement.classList.toggle('expanded')"` : ''}>
+                    <span class="exercise-name">${exercise.name}</span>
+                    <div class="exercise-meta">
+                        <span class="exercise-duration">${this.formatTime(exercise.duration)}</span>
+                        ${hasDescription ? '<span class="expand-icon">▼</span>' : ''}
+                    </div>
+                </div>
+                ${hasDescription ? `
+                    <div class="exercise-description">
+                        ${exercise.description.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                ` : ''}
             `;
+            
             this.workoutList.appendChild(item);
         });
     }
@@ -225,6 +268,15 @@ class WorkoutTimer {
         const exercise = this.workout.exercises[this.currentExerciseIndex];
         this.timeRemaining = exercise.duration;
         this.currentExercise.textContent = exercise.name;
+        
+        if (exercise.description && exercise.description.trim().length > 0) {
+            this.descriptionContent.innerHTML = exercise.description.split('\n').map(line => `<p>${line}</p>`).join('');
+            this.currentDescription.style.display = 'block';
+            this.currentDescription.classList.remove('expanded');
+        } else {
+            this.currentDescription.style.display = 'none';
+        }
+        
         this.updateDisplay();
         this.updateProgress();
         this.updateWorkoutList();

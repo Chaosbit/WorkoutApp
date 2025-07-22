@@ -205,6 +205,121 @@ header h1 {
     opacity: 0.8;
 }
 
+/* Exercise Description Styles */
+.exercise-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    cursor: pointer;
+}
+
+.exercise-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.expand-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    color: #666;
+}
+
+.exercise-item.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+.exercise-description {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background: rgba(0,0,0,0.05);
+    border-radius: 5px;
+    margin-top: 0;
+}
+
+.exercise-item.expanded .exercise-description {
+    max-height: 200px;
+    padding: 10px;
+    margin-top: 8px;
+}
+
+.exercise-description p {
+    margin: 5px 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #555;
+}
+
+.exercise-description p:first-child {
+    margin-top: 0;
+}
+
+.exercise-description p:last-child {
+    margin-bottom: 0;
+}
+
+/* Main Exercise Description */
+.exercise-description-main {
+    margin: 15px 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.description-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(255,255,255,0.1);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #555;
+    transition: background 0.3s ease;
+}
+
+.description-toggle:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.description-toggle .expand-icon {
+    transition: transform 0.3s ease;
+}
+
+.exercise-description-main.expanded .description-toggle .expand-icon {
+    transform: rotate(180deg);
+}
+
+.description-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background: rgba(255,255,255,0.05);
+}
+
+.exercise-description-main.expanded .description-content {
+    max-height: 300px;
+    padding: 15px;
+}
+
+.description-content p {
+    margin: 8px 0;
+    line-height: 1.5;
+    color: #444;
+}
+
+.description-content p:first-child {
+    margin-top: 0;
+}
+
+.description-content p:last-child {
+    margin-bottom: 0;
+}
+
 @media (max-width: 600px) {
     .container {
         padding: 10px;

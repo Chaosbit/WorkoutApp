@@ -36,19 +36,21 @@
                     <pre># Push Day Workout
 
 ## Warm-up - 5:00
+Light cardio and dynamic stretching to prepare your body.
+Start with arm circles, shoulder rolls, and light jumping jacks.
 
-## Main Workout
+## Push-ups - 0:45
+Classic bodyweight exercise targeting chest, shoulders, and triceps.
+Keep your body in a straight line from head to heels.
+Lower your chest to just above the ground, then push back up.
 
-### Push-ups - 0:45
 Rest - 0:15
 
-### Bench Press - 1:00
-Rest - 0:30
+## Bench Press - 1:00
+Compound movement for chest, shoulders, and triceps development.
+Lie flat on the bench with feet firmly planted on the ground.
 
-### Shoulder Press - 0:45
-Rest - 0:15
-
-## Cool Down - 3:00</pre>
+Rest - 0:30</pre>
                 </div>
             </section>
 
@@ -57,6 +59,13 @@ Rest - 0:15
                 <div class="timer-container">
                     <div class="current-exercise">
                         <h3 id="currentExercise">Exercise</h3>
+                        <div class="exercise-description-main" id="currentDescription" style="display: none;">
+                            <div class="description-toggle" onclick="this.parentElement.classList.toggle('expanded')">
+                                <span>Show Instructions</span>
+                                <span class="expand-icon">▼</span>
+                            </div>
+                            <div class="description-content" id="descriptionContent"></div>
+                        </div>
                         <div class="timer-display" id="timerDisplay">00:00</div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressFill"></div>
