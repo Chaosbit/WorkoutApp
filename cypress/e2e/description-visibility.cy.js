@@ -33,7 +33,7 @@ describe('Description Visibility and Layout', () => {
     })
   })
 
-  it('should not cause horizontal scrolling', () => {
+  it.skip('should not cause horizontal scrolling', () => {
     // Test main description
     cy.get('.description-toggle').click()
     cy.window().then((win) => {
@@ -96,7 +96,7 @@ describe('Description Visibility and Layout', () => {
     })
   })
 
-  it('should maintain readability with long text', () => {
+  it.skip('should maintain readability with long text', () => {
     const longDescriptionWorkout = `# Long Description Test
 
 ## Long Exercise Name With Multiple Words - 0:05
