@@ -469,6 +469,9 @@ class WorkoutTimer {
             return;
         }
         
+        // Stop any existing timer to prevent it from interfering with rep-based exercises
+        this.stopTimer();
+        
         const exercise = this.workout.exercises[this.currentExerciseIndex];
         this.currentExercise.textContent = exercise.name;
         
@@ -501,6 +504,7 @@ class WorkoutTimer {
         this.updateDisplay();
         this.updateProgress();
         this.updateWorkoutList();
+        this.updateControls();
     }
     
     startTimer() {
