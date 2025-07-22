@@ -75,19 +75,92 @@ class WorkoutParser {
     }
 }
 
+class WorkoutLibrary {
+    constructor() {
+        this.workouts = this.loadWorkouts();
+    }
+
+    loadWorkouts() {
+        try {
+            const stored = localStorage.getItem('workoutLibrary');
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.warn('Error loading workout library:', error);
+            return [];
+        }
+    }
+
+    saveWorkouts() {
+        try {
+            localStorage.setItem('workoutLibrary', JSON.stringify(this.workouts));
+        } catch (error) {
+            console.warn('Error saving workout library:', error);
+        }
+    }
+
+    addWorkout(filename, content, workoutData) {
+        const id = Date.now().toString();
+        const workout = {
+            id,
+            name: filename.replace('.md', ''),
+            filename,
+            content,
+            data: workoutData,
+            dateAdded: new Date().toISOString()
+        };
+        
+        // Check if workout with same name already exists
+        const existingIndex = this.workouts.findIndex(w => w.name === workout.name);
+        if (existingIndex !== -1) {
+            // Update existing workout
+            this.workouts[existingIndex] = { ...this.workouts[existingIndex], ...workout, id: this.workouts[existingIndex].id };
+        } else {
+            // Add new workout
+            this.workouts.push(workout);
+        }
+        
+        this.saveWorkouts();
+        return workout;
+    }
+
+    getWorkout(id) {
+        return this.workouts.find(w => w.id === id);
+    }
+
+    getAllWorkouts() {
+        return [...this.workouts];
+    }
+
+    deleteWorkout(id) {
+        this.workouts = this.workouts.filter(w => w.id !== id);
+        this.saveWorkouts();
+    }
+
+    renameWorkout(id, newName) {
+        const workout = this.getWorkout(id);
+        if (workout) {
+            workout.name = newName;
+            this.saveWorkouts();
+        }
+    }
+}
+
 class WorkoutTimer {
     constructor() {
         this.workout = null;
+        this.currentWorkoutId = null;
         this.currentExerciseIndex = 0;
         this.timeRemaining = 0;
         this.isRunning = false;
         this.isPaused = false;
         this.intervalId = null;
         this.audioContext = null;
+        this.library = new WorkoutLibrary();
         
         this.initializeElements();
         this.bindEvents();
         this.initializeAudio();
+        this.loadWorkoutSelector();
     }
     
     initializeElements() {
@@ -102,6 +175,11 @@ class WorkoutTimer {
         this.progressText = document.getElementById('progressText');
         this.workoutList = document.getElementById('workoutList');
         
+        // Workout library elements
+        this.workoutLibrarySection = document.getElementById('workoutLibrary');
+        this.workoutSelect = document.getElementById('workoutSelect');
+        this.deleteWorkoutBtn = document.getElementById('deleteWorkoutBtn');
+        
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
         this.skipBtn = document.getElementById('skipBtn');
@@ -110,6 +188,8 @@ class WorkoutTimer {
     
     bindEvents() {
         this.fileInput.addEventListener('change', (e) => this.loadWorkoutFile(e));
+        this.workoutSelect.addEventListener('change', (e) => this.selectWorkout(e));
+        this.deleteWorkoutBtn.addEventListener('click', () => this.deleteSelectedWorkout());
         this.startBtn.addEventListener('click', () => this.startWorkout());
         this.pauseBtn.addEventListener('click', () => this.pauseWorkout());
         this.skipBtn.addEventListener('click', () => this.skipExercise());
@@ -157,11 +237,95 @@ class WorkoutTimer {
         
         try {
             const content = await file.text();
-            this.workout = WorkoutParser.parseMarkdown(content);
+            const workoutData = WorkoutParser.parseMarkdown(content);
+            
+            // Add to library
+            const savedWorkout = this.library.addWorkout(file.name, content, workoutData);
+            this.currentWorkoutId = savedWorkout.id;
+            
+            // Set as current workout
+            this.workout = workoutData;
             this.displayWorkout();
+            this.loadWorkoutSelector();
+            
+            // Clear file input
+            event.target.value = '';
         } catch (error) {
             alert('Error reading workout file: ' + error.message);
         }
+    }
+
+    loadWorkoutSelector() {
+        const workouts = this.library.getAllWorkouts();
+        
+        // Clear existing options (except placeholder)
+        this.workoutSelect.innerHTML = '<option value="">Choose a saved workout...</option>';
+        
+        // Add workout options
+        workouts.forEach(workout => {
+            const option = document.createElement('option');
+            option.value = workout.id;
+            option.textContent = workout.name;
+            if (workout.id === this.currentWorkoutId) {
+                option.selected = true;
+            }
+            this.workoutSelect.appendChild(option);
+        });
+        
+        // Show/hide library section
+        if (workouts.length > 0) {
+            this.workoutLibrarySection.style.display = 'block';
+        } else {
+            this.workoutLibrarySection.style.display = 'none';
+        }
+        
+        // Update delete button state
+        this.updateDeleteButtonState();
+    }
+
+    selectWorkout(event) {
+        const workoutId = event.target.value;
+        
+        if (!workoutId) {
+            this.deleteWorkoutBtn.disabled = true;
+            return;
+        }
+        
+        const savedWorkout = this.library.getWorkout(workoutId);
+        if (savedWorkout) {
+            this.currentWorkoutId = workoutId;
+            this.workout = savedWorkout.data;
+            this.displayWorkout();
+            this.updateDeleteButtonState();
+        }
+    }
+
+    deleteSelectedWorkout() {
+        if (!this.currentWorkoutId) return;
+        
+        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        if (!savedWorkout) return;
+        
+        if (confirm(`Are you sure you want to delete "${savedWorkout.name}"?`)) {
+            this.library.deleteWorkout(this.currentWorkoutId);
+            
+            // Clear current workout if it was deleted
+            this.currentWorkoutId = null;
+            this.workout = null;
+            this.workoutDisplay.style.display = 'none';
+            
+            // Show sample format again
+            const sampleFormat = document.querySelector('.sample-format');
+            if (sampleFormat) {
+                sampleFormat.style.display = 'block';
+            }
+            
+            this.loadWorkoutSelector();
+        }
+    }
+
+    updateDeleteButtonState() {
+        this.deleteWorkoutBtn.disabled = !this.currentWorkoutId;
     }
     
     displayWorkout() {

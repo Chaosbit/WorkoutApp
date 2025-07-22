@@ -75,6 +75,64 @@ header h1 {
     line-height: 1.4;
 }
 
+/* Workout Library Styles */
+.workout-library {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.workout-library h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.workout-selector {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#workoutSelect {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    background: white;
+    font-size: 0.95rem;
+}
+
+#workoutSelect:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.workout-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.file-input-area {
+    margin-bottom: 20px;
+}
+
+.input-help {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+}
+
 .timer-container {
     width: 100%;
     max-width: 800px;

@@ -30,7 +30,23 @@
         <main>
             <section class="file-input-section">
                 <h2>Load Workout</h2>
-                <input type="file" id="workoutFile" accept=".md" />
+                
+                <div class="workout-library" id="workoutLibrary" style="display: none;">
+                    <h3>Saved Workouts</h3>
+                    <div class="workout-selector">
+                        <select id="workoutSelect">
+                            <option value="">Choose a saved workout...</option>
+                        </select>
+                        <div class="workout-actions">
+                            <button id="deleteWorkoutBtn" class="btn btn-danger btn-small" disabled>Delete</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="file-input-area">
+                    <input type="file" id="workoutFile" accept=".md" />
+                    <p class="input-help">Load a new workout file (.md)</p>
+                </div>
                 <div class="sample-format">
                     <h3>Sample Workout Format:</h3>
                     <pre># Push Day Workout
