@@ -198,9 +198,8 @@ header h1 {
     padding: 10px;
     margin-bottom: 8px;
     border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: block;
+    width: 100%;
 }
 
 .exercise-item.current {
@@ -268,6 +267,8 @@ header h1 {
     background: rgba(0,0,0,0.05);
     border-radius: 5px;
     margin-top: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .exercise-item.expanded .exercise-description {
