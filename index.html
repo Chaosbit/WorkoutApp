@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏋️ Workout Timer</h1>
+        </header>
+        
+        <main>
+            <section class="file-input-section">
+                <h2>Load Workout</h2>
+                <input type="file" id="workoutFile" accept=".md" />
+                <div class="sample-format">
+                    <h3>Sample Workout Format:</h3>
+                    <pre># Push Day Workout
+
+## Warm-up - 5:00
+
+## Main Workout
+
+### Push-ups - 0:45
+Rest - 0:15
+
+### Bench Press - 1:00
+Rest - 0:30
+
+### Shoulder Press - 0:45
+Rest - 0:15
+
+## Cool Down - 3:00</pre>
+                </div>
+            </section>
+
+            <section class="workout-display" id="workoutDisplay" style="display: none;">
+                <h2 id="workoutTitle">Workout</h2>
+                <div class="timer-container">
+                    <div class="current-exercise">
+                        <h3 id="currentExercise">Exercise</h3>
+                        <div class="timer-display" id="timerDisplay">00:00</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="workout-controls">
+                        <button id="startBtn" class="btn btn-primary">▶️ Start</button>
+                        <button id="pauseBtn" class="btn btn-secondary" disabled>⏸️ Pause</button>
+                        <button id="skipBtn" class="btn btn-secondary" disabled>⏭️ Skip</button>
+                        <button id="resetBtn" class="btn btn-danger">🔄 Reset</button>
+                    </div>
+                    
+                    <div class="workout-progress">
+                        <p id="progressText">Exercise 1 of 1</p>
+                    </div>
+                </div>
+                
+                <div class="workout-list" id="workoutList">
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="script.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
