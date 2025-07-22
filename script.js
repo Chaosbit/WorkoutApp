@@ -170,6 +170,12 @@ class WorkoutTimer {
         this.workoutTitle.textContent = this.workout.title || 'Workout';
         this.workoutDisplay.style.display = 'block';
         
+        // Hide the sample format when a workout is loaded
+        const sampleFormat = document.querySelector('.sample-format');
+        if (sampleFormat) {
+            sampleFormat.style.display = 'none';
+        }
+        
         this.renderWorkoutList();
         this.resetWorkout();
     }
