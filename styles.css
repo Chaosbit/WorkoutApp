@@ -223,6 +223,7 @@ header h1 {
 .exercise-duration {
     font-size: 0.9rem;
     opacity: 0.8;
+    flex-shrink: 0;
 }
 
 /* Exercise Description Styles */
@@ -231,12 +232,14 @@ header h1 {
     width: 100%;
     cursor: pointer;
     position: relative;
+    flex-shrink: 0;
 }
 
 .exercise-name {
     display: block;
     font-weight: 500;
     margin-bottom: 4px;
+    flex-shrink: 0;
 }
 
 .exercise-meta {
@@ -245,6 +248,7 @@ header h1 {
     align-items: center;
     font-size: 0.9rem;
     opacity: 0.8;
+    flex-shrink: 0;
 }
 
 .expand-icon {
