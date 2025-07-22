@@ -376,14 +376,50 @@ class WorkoutTimer {
             // Update the workout in storage
             const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
             if (savedWorkout) {
+                // Remember current exercise position before updating
+                const wasRunning = this.isRunning;
+                const wasPaused = this.isPaused;
+                const currentIndex = this.currentExerciseIndex;
+                const currentTime = this.timeRemaining;
+                
                 savedWorkout.name = newName;
                 savedWorkout.content = newContent;
                 savedWorkout.data = newWorkoutData;
                 this.library.saveWorkouts();
                 
-                // Update current workout and display
+                // Update current workout
                 this.workout = newWorkoutData;
-                this.resetWorkout();
+                
+                // Preserve exercise position if still valid
+                if (currentIndex < newWorkoutData.exercises.length) {
+                    this.currentExerciseIndex = currentIndex;
+                    // If we were in the middle of an exercise, reload it with the new data
+                    this.loadCurrentExercise();
+                    // If the exercise duration changed and we had more time remaining than the new duration,
+                    // adjust the remaining time
+                    if (this.timeRemaining < currentTime) {
+                        this.timeRemaining = Math.min(currentTime, this.workout.exercises[currentIndex].duration);
+                    } else {
+                        this.timeRemaining = currentTime;
+                    }
+                    this.updateDisplay();
+                    this.updateProgressBar();
+                } else {
+                    // If current exercise index is out of bounds, reset to beginning
+                    this.resetWorkout();
+                }
+                
+                // Restore running state if it was active
+                if (wasRunning) {
+                    this.isRunning = true;
+                    this.isPaused = false;
+                    this.startTimer();
+                } else if (wasPaused) {
+                    this.isPaused = true;
+                    this.isRunning = false;
+                }
+                
+                this.updateControls();
                 this.displayWorkout();
                 
                 // Hide editor and refresh workout selector
