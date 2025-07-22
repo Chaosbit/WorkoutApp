@@ -38,8 +38,21 @@
                             <option value="">Choose a saved workout...</option>
                         </select>
                         <div class="workout-actions">
+                            <button id="editWorkoutBtn" class="btn btn-secondary btn-small" disabled>Edit</button>
                             <button id="deleteWorkoutBtn" class="btn btn-danger btn-small" disabled>Delete</button>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="workout-editor" id="workoutEditor" style="display: none;">
+                    <h3>Edit Workout</h3>
+                    <div class="editor-controls">
+                        <input type="text" id="workoutNameInput" placeholder="Workout name" class="workout-name-input">
+                    </div>
+                    <textarea id="workoutMarkdownEditor" placeholder="Enter workout markdown here..." rows="15"></textarea>
+                    <div class="editor-actions">
+                        <button id="saveWorkoutBtn" class="btn btn-primary">Save Changes</button>
+                        <button id="cancelEditBtn" class="btn btn-secondary">Cancel</button>
                     </div>
                 </div>
                 

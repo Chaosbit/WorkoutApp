@@ -178,7 +178,15 @@ class WorkoutTimer {
         // Workout library elements
         this.workoutLibrarySection = document.getElementById('workoutLibrary');
         this.workoutSelect = document.getElementById('workoutSelect');
+        this.editWorkoutBtn = document.getElementById('editWorkoutBtn');
         this.deleteWorkoutBtn = document.getElementById('deleteWorkoutBtn');
+        
+        // Workout editor elements
+        this.workoutEditor = document.getElementById('workoutEditor');
+        this.workoutNameInput = document.getElementById('workoutNameInput');
+        this.workoutMarkdownEditor = document.getElementById('workoutMarkdownEditor');
+        this.saveWorkoutBtn = document.getElementById('saveWorkoutBtn');
+        this.cancelEditBtn = document.getElementById('cancelEditBtn');
         
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
@@ -189,7 +197,10 @@ class WorkoutTimer {
     bindEvents() {
         this.fileInput.addEventListener('change', (e) => this.loadWorkoutFile(e));
         this.workoutSelect.addEventListener('change', (e) => this.selectWorkout(e));
+        this.editWorkoutBtn.addEventListener('click', () => this.editSelectedWorkout());
         this.deleteWorkoutBtn.addEventListener('click', () => this.deleteSelectedWorkout());
+        this.saveWorkoutBtn.addEventListener('click', () => this.saveWorkoutChanges());
+        this.cancelEditBtn.addEventListener('click', () => this.cancelWorkoutEdit());
         this.startBtn.addEventListener('click', () => this.startWorkout());
         this.pauseBtn.addEventListener('click', () => this.pauseWorkout());
         this.skipBtn.addEventListener('click', () => this.skipExercise());
@@ -326,6 +337,75 @@ class WorkoutTimer {
 
     updateDeleteButtonState() {
         this.deleteWorkoutBtn.disabled = !this.currentWorkoutId;
+        this.editWorkoutBtn.disabled = !this.currentWorkoutId;
+    }
+    
+    editSelectedWorkout() {
+        if (!this.currentWorkoutId) return;
+        
+        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        if (!savedWorkout) return;
+        
+        // Populate the editor with current workout data
+        this.workoutNameInput.value = savedWorkout.name;
+        this.workoutMarkdownEditor.value = savedWorkout.content;
+        
+        // Show the editor and hide the workout display
+        this.workoutEditor.style.display = 'block';
+        this.workoutDisplay.style.display = 'none';
+    }
+    
+    saveWorkoutChanges() {
+        const newName = this.workoutNameInput.value.trim();
+        const newContent = this.workoutMarkdownEditor.value.trim();
+        
+        if (!newName || !newContent) {
+            alert('Please provide both a workout name and content.');
+            return;
+        }
+        
+        try {
+            // Parse the new content to validate it
+            const newWorkoutData = WorkoutParser.parseMarkdown(newContent);
+            
+            if (!newWorkoutData.exercises || newWorkoutData.exercises.length === 0) {
+                alert('Please provide valid workout content with at least one exercise.');
+                return;
+            }
+            
+            // Update the workout in storage
+            const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+            if (savedWorkout) {
+                savedWorkout.name = newName;
+                savedWorkout.content = newContent;
+                savedWorkout.data = newWorkoutData;
+                this.library.saveWorkouts();
+                
+                // Update current workout and display
+                this.workout = newWorkoutData;
+                this.resetWorkout();
+                this.displayWorkout();
+                
+                // Hide editor and refresh workout selector
+                this.cancelWorkoutEdit();
+                this.loadWorkoutSelector();
+                
+                // Reselect the updated workout in the dropdown
+                this.workoutSelect.value = this.currentWorkoutId;
+                
+                alert('Workout updated successfully!');
+            }
+        } catch (error) {
+            console.error('Error parsing workout:', error);
+            alert('Error parsing workout content. Please check your markdown format.');
+        }
+    }
+    
+    cancelWorkoutEdit() {
+        this.workoutEditor.style.display = 'none';
+        if (this.workout) {
+            this.workoutDisplay.style.display = 'block';
+        }
     }
     
     displayWorkout() {

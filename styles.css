@@ -438,3 +438,69 @@ header h1 {
         width: 100%;
     }
 }
+
+/* Workout Editor Styles */
+.workout-editor {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.workout-editor h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.editor-controls {
+    margin-bottom: 15px;
+}
+
+.workout-name-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+.workout-name-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#workoutMarkdownEditor {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-family: 'Courier New', Monaco, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 300px;
+}
+
+#workoutMarkdownEditor:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+    .editor-actions {
+        flex-direction: column;
+    }
+    
+    .editor-actions .btn {
+        width: 100%;
+    }
+}
