@@ -541,6 +541,8 @@ class WorkoutTimer {
     }
 }
 
+window.WorkoutTimer = WorkoutTimer;
+
 document.addEventListener('DOMContentLoaded', () => {
     new WorkoutTimer();
 });

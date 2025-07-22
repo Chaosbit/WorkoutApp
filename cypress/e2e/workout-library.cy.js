@@ -194,7 +194,7 @@ describe('Workout Library', () => {
     
     // Switch to a different workout (if we had one)
     // For now, just verify that library operations don't break timer state
-    cy.get('#workoutSelect').should('have.value').and('not.be.empty')
+    cy.get('#workoutSelect').invoke('val').should('not.be.empty')
     cy.get('#deleteWorkoutBtn').should('not.be.disabled')
     
     // Timer should still be running

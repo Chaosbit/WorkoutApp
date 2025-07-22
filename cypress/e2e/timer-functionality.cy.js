@@ -63,7 +63,7 @@ describe('Timer Functionality', () => {
     cy.get('#pauseBtn').should('be.disabled')
     cy.get('#skipBtn').should('be.disabled')
     
-    cy.get('.exercise-item').first().should('have.class', 'pending')
+    cy.get('.exercise-item').first().should('have.class', 'current')
   })
 
   it('should automatically advance through exercises', () => {
