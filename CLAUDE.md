@@ -37,6 +37,13 @@ Time format: `MM:SS` (minutes:seconds)
 # Local development server
 python -m http.server 8000
 
+# Run tests
+npm test              # Run Cypress tests headless
+npm run test:open     # Open Cypress test runner
+
+# Deploy to GitHub Pages
+./deploy-github-pages.sh
+
 # Deploy to Azure (requires Azure CLI + Terraform)
 ./deploy.sh
 
@@ -48,6 +55,21 @@ terraform apply
 # Clean up Azure resources
 terraform destroy
 ```
+
+## Deployment
+
+### GitHub Pages (Automatic)
+- Push to main/master branch triggers automatic deployment
+- GitHub Actions runs tests then deploys if they pass
+- Available at: https://USERNAME.github.io/REPO_NAME
+
+### GitHub Pages (Manual)
+- Run `./deploy-github-pages.sh` to deploy manually
+- Creates/updates gh-pages branch with built files
+
+### Azure Storage
+- Run `./deploy.sh` for full Azure deployment with Terraform
+- Creates storage account with static website hosting
 
 ## Testing
 - Test PWA installation on Android Chrome

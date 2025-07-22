@@ -62,16 +62,38 @@ Time format: `MM:SS` (e.g., `1:30` = 1 minute 30 seconds)
 - Workout files can be loaded from device storage
 - Timer functionality works completely offline
 
-## Azure Deployment
+## Deployment Options
+
+### GitHub Pages (Recommended)
+
+The app automatically deploys to GitHub Pages on every push to main/master branch.
+
+**Automatic Deployment:**
+1. Push changes to main/master branch
+2. GitHub Actions runs tests and deploys automatically
+3. App available at: `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME`
+
+**Manual Deployment:**
+```bash
+./deploy-github-pages.sh
+```
+
+**Setup GitHub Pages:**
+1. Go to repository Settings → Pages
+2. Source: "Deploy from a branch" 
+3. Branch: "gh-pages" 
+4. Folder: "/ (root)"
+
+### Azure Deployment
 
 Deploy to Azure Storage for private hosting:
 
-### Prerequisites
+**Prerequisites:**
 - Azure CLI installed and logged in
 - Terraform installed
 - Azure subscription
 
-### Deploy
+**Deploy:**
 ```bash
 ./deploy.sh
 ```
@@ -81,7 +103,7 @@ This will:
 2. Upload all PWA files
 3. Provide the website URL for installation
 
-### Manual Steps
+**Manual Steps:**
 1. **Infrastructure**: 
    ```bash
    cd terraform
@@ -99,7 +121,7 @@ This will:
    # ... repeat for other files
    ```
 
-### Clean Up
+**Clean Up:**
 ```bash
 cd terraform
 terraform destroy

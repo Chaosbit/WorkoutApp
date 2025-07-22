@@ -1,11 +1,13 @@
-const CACHE_NAME = 'workout-timer-v1';
+const CACHE_NAME = 'workout-timer-v2';
 const urlsToCache = [
   './',
   './index.html',
   './styles.css',
   './script.js',
   './manifest.json',
-  './sample-workout.md'
+  './sample-workout.md',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
