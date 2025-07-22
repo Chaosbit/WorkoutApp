@@ -76,21 +76,23 @@ header h1 {
 }
 
 .timer-container {
-    text-align: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 .current-exercise {
     display: grid;
+    grid-template-columns: 1fr;
     grid-template-areas: 
         "exercise-name"
         "exercise-description"
         "timer-display"
         "progress-bar";
     gap: 20px;
-    align-items: center;
-    justify-items: center;
-    max-width: 800px;
-    margin: 0 auto;
+    text-align: center;
+    width: 100%;
 }
 
 .current-exercise h3 {
@@ -103,7 +105,7 @@ header h1 {
 .exercise-description-main {
     grid-area: exercise-description;
     width: 100%;
-    justify-self: stretch;
+    text-align: left;
 }
 
 .timer-display {
@@ -346,6 +348,10 @@ header h1 {
         padding: 10px;
     }
     
+    .timer-container {
+        padding: 0 10px;
+    }
+    
     .current-exercise {
         gap: 15px;
     }
@@ -356,14 +362,6 @@ header h1 {
     
     .current-exercise h3 {
         font-size: 1.5rem;
-    }
-    
-    .current-exercise {
-        max-width: 100%;
-    }
-    
-    .exercise-description-main {
-        width: 100%;
     }
     
     .workout-controls {
