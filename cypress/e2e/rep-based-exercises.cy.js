@@ -292,13 +292,22 @@ Another single rep.`
       cy.loadWorkoutFile('rep-based-workout.md')
       cy.get('#startBtn').click()
       
-      // Rapidly click completion button multiple times
+      // Get initial exercise state
+      cy.get('#currentExercise').should('contain', 'Push-ups')
+      cy.get('#progressText').should('contain', 'Exercise 1 of 4')
+      
+      // Click completion button multiple times rapidly
       cy.get('#completeRepBtn').click()
       cy.get('#completeRepBtn').click()
       cy.get('#completeRepBtn').click()
       
-      // Should only advance once
-      cy.get('#currentExercise').should('contain', 'Squats')
+      // Should advance to second exercise (Squats)
+      // The key is that we should not advance beyond the second exercise
+      cy.get('#currentExercise').should('be.visible')
+      cy.get('#currentExercise').invoke('text').then((text) => {
+        // We should be on Squats (exercise 2) and not further
+        expect(text).to.contain('Squats')
+      })
       cy.get('#progressText').should('contain', 'Exercise 2 of 4')
     })
 
