@@ -172,6 +172,7 @@ class WorkoutTimer {
         this.audioContext = null;
         this.library = new WorkoutLibrary();
         this.isAdvancing = false; // Flag to prevent double advancement
+        this.lastCompletionTime = 0; // Timestamp for double-click prevention
         
         this.initializeElements();
         this.bindEvents();
@@ -441,8 +442,13 @@ class WorkoutTimer {
     }
     
     completeRepExercise() {
+        // Add protection against rapid successive calls
+        if (this.isAdvancing) return;
+        
         const exercise = this.workout.exercises[this.currentExerciseIndex];
-        if (exercise && exercise.exerciseType === 'reps') {
+        
+        // Prevent double completion - only allow if exercise is not completed yet
+        if (exercise && exercise.exerciseType === 'reps' && this.isRunning && !exercise.completed) {
             exercise.completed = true;
             this.nextExercise();
         }
@@ -485,12 +491,18 @@ class WorkoutTimer {
             
             // Reset completion state
             exercise.completed = false;
+            
+            // Set progress bar to 0 for rep exercises
+            this.progressFill.style.width = '0%';
         } else {
             // Timer-based exercise
             this.timeRemaining = exercise.duration;
             this.timerDisplay.style.display = 'block';
             this.repsDisplay.style.display = 'none';
             this.repCompletion.style.display = 'none';
+            
+            // Reset progress bar for timer exercises
+            this.progressFill.style.width = '0%';
         }
         
         if (exercise.description && exercise.description.trim().length > 0) {
@@ -531,6 +543,7 @@ class WorkoutTimer {
         if (this.isAdvancing) return; // Prevent rapid succession calls
         this.isAdvancing = true;
         
+        this.stopTimer(); // Always stop timer first
         this.playSound(600, 300);
         this.currentExerciseIndex++;
         
@@ -546,10 +559,10 @@ class WorkoutTimer {
             }
         }
         
-        // Reset the flag after a short delay
+        // Reset the flag after a very short delay to prevent rapid successive calls
         setTimeout(() => {
             this.isAdvancing = false;
-        }, 100);
+        }, 10);
     }
     
     completeWorkout() {
@@ -606,6 +619,21 @@ class WorkoutTimer {
         this.startBtn.disabled = this.isRunning;
         this.pauseBtn.disabled = !this.isRunning || isRepBased;
         this.skipBtn.disabled = !this.isRunning && !this.isPaused;
+        
+        // For rep-based exercises, enable skip when workout is running
+        if (isRepBased && this.isRunning) {
+            this.skipBtn.disabled = false;
+        }
+        
+        // Enable complete rep button for rep exercises when not completed
+        if (this.completeRepBtn) {
+            if (isRepBased) {
+                this.completeRepBtn.disabled = (currentExercise && currentExercise.completed);
+            } else {
+                // For timer exercises, button should not be visible anyway
+                this.completeRepBtn.disabled = true;
+            }
+        }
     }
     
     formatTime(seconds) {
