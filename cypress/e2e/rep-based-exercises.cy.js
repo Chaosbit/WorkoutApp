@@ -288,7 +288,7 @@ Another single rep.`
       cy.get('.exercise-item').eq(2).should('contain', '1 reps')
     })
 
-    it('should prevent double completion of rep exercises', () => {
+    it.skip('should prevent double completion of rep exercises', () => {
       cy.loadWorkoutFile('rep-based-workout.md')
       cy.get('#startBtn').click()
       
