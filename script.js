@@ -36,13 +36,9 @@ class WorkoutParser {
                     };
                     workout.exercises.push(currentExercise);
                 } else {
-                    currentExercise = {
-                        name: exerciseLine,
-                        duration: 60,
-                        type: 'exercise',
-                        description: ''
-                    };
-                    workout.exercises.push(currentExercise);
+                    // For validation purposes, exercises should have explicit time formats
+                    // If no time format is found, this could be an error
+                    throw new Error(`Exercise "${exerciseLine}" is missing time format (e.g., "- 1:30")`);
                 }
             } else if (line.toLowerCase().startsWith('rest') && line.includes('-')) {
                 if (currentExercise && descriptionLines.length > 0) {
@@ -298,7 +294,9 @@ class WorkoutTimer {
         const workoutId = event.target.value;
         
         if (!workoutId) {
-            this.deleteWorkoutBtn.disabled = true;
+            this.currentWorkoutId = null;
+            this.workout = null;
+            this.updateDeleteButtonState();
             return;
         }
         
@@ -348,7 +346,7 @@ class WorkoutTimer {
         
         // Populate the editor with current workout data
         this.workoutNameInput.value = savedWorkout.name;
-        this.workoutMarkdownEditor.value = savedWorkout.content;
+        this.workoutMarkdownEditor.value = savedWorkout.content || '';
         
         // Show the editor and hide the workout display
         this.workoutEditor.style.display = 'block';

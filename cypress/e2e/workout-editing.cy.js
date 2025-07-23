@@ -51,8 +51,7 @@ describe('Workout Editing', () => {
       cy.get('#workoutNameInput').should('have.value', 'test-workout')
       
       // Check that markdown editor has content
-      cy.get('#workoutMarkdownEditor').should('not.be.empty')
-      cy.get('#workoutMarkdownEditor').should('contain.value', '# Test Workout')
+      cy.get('#workoutMarkdownEditor').invoke('val').should('include', '# Test Workout')
     })
 
     it('should hide editor and show workout display when cancel is clicked', () => {
@@ -367,9 +366,9 @@ Another new exercise`
       
       cy.get('#saveWorkoutBtn').click()
       
-      // The renamed workout should be selected in dropdown
-      cy.get('#workoutSelect').should('have.value', 'renamed-workout')
+      // The renamed workout should be selected in dropdown (value should be the ID, text should be the name)
       cy.get('#workoutSelect option:selected').should('contain', newName)
+      cy.get('#workoutSelect').should('not.have.value', '') // Should have some ID value
       
       // Edit and delete buttons should still be enabled
       cy.get('#editWorkoutBtn').should('not.be.disabled')
