@@ -36,13 +36,9 @@ class WorkoutParser {
                     };
                     workout.exercises.push(currentExercise);
                 } else {
-                    currentExercise = {
-                        name: exerciseLine,
-                        duration: 60,
-                        type: 'exercise',
-                        description: ''
-                    };
-                    workout.exercises.push(currentExercise);
+                    // For validation purposes, exercises should have explicit time formats
+                    // If no time format is found, this could be an error
+                    throw new Error(`Exercise "${exerciseLine}" is missing time format (e.g., "- 1:30")`);
                 }
             } else if (line.toLowerCase().startsWith('rest') && line.includes('-')) {
                 if (currentExercise && descriptionLines.length > 0) {
@@ -178,7 +174,15 @@ class WorkoutTimer {
         // Workout library elements
         this.workoutLibrarySection = document.getElementById('workoutLibrary');
         this.workoutSelect = document.getElementById('workoutSelect');
+        this.editWorkoutBtn = document.getElementById('editWorkoutBtn');
         this.deleteWorkoutBtn = document.getElementById('deleteWorkoutBtn');
+        
+        // Workout editor elements
+        this.workoutEditor = document.getElementById('workoutEditor');
+        this.workoutNameInput = document.getElementById('workoutNameInput');
+        this.workoutMarkdownEditor = document.getElementById('workoutMarkdownEditor');
+        this.saveWorkoutBtn = document.getElementById('saveWorkoutBtn');
+        this.cancelEditBtn = document.getElementById('cancelEditBtn');
         
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
@@ -189,7 +193,10 @@ class WorkoutTimer {
     bindEvents() {
         this.fileInput.addEventListener('change', (e) => this.loadWorkoutFile(e));
         this.workoutSelect.addEventListener('change', (e) => this.selectWorkout(e));
+        this.editWorkoutBtn.addEventListener('click', () => this.editSelectedWorkout());
         this.deleteWorkoutBtn.addEventListener('click', () => this.deleteSelectedWorkout());
+        this.saveWorkoutBtn.addEventListener('click', () => this.saveWorkoutChanges());
+        this.cancelEditBtn.addEventListener('click', () => this.cancelWorkoutEdit());
         this.startBtn.addEventListener('click', () => this.startWorkout());
         this.pauseBtn.addEventListener('click', () => this.pauseWorkout());
         this.skipBtn.addEventListener('click', () => this.skipExercise());
@@ -287,7 +294,9 @@ class WorkoutTimer {
         const workoutId = event.target.value;
         
         if (!workoutId) {
-            this.deleteWorkoutBtn.disabled = true;
+            this.currentWorkoutId = null;
+            this.workout = null;
+            this.updateDeleteButtonState();
             return;
         }
         
@@ -326,6 +335,111 @@ class WorkoutTimer {
 
     updateDeleteButtonState() {
         this.deleteWorkoutBtn.disabled = !this.currentWorkoutId;
+        this.editWorkoutBtn.disabled = !this.currentWorkoutId;
+    }
+    
+    editSelectedWorkout() {
+        if (!this.currentWorkoutId) return;
+        
+        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        if (!savedWorkout) return;
+        
+        // Populate the editor with current workout data
+        this.workoutNameInput.value = savedWorkout.name;
+        this.workoutMarkdownEditor.value = savedWorkout.content || '';
+        
+        // Show the editor and hide the workout display
+        this.workoutEditor.style.display = 'block';
+        this.workoutDisplay.style.display = 'none';
+    }
+    
+    saveWorkoutChanges() {
+        const newName = this.workoutNameInput.value.trim();
+        const newContent = this.workoutMarkdownEditor.value.trim();
+        
+        if (!newName || !newContent) {
+            alert('Please provide both a workout name and content.');
+            return;
+        }
+        
+        try {
+            // Parse the new content to validate it
+            const newWorkoutData = WorkoutParser.parseMarkdown(newContent);
+            
+            if (!newWorkoutData.exercises || newWorkoutData.exercises.length === 0) {
+                alert('Please provide valid workout content with at least one exercise.');
+                return;
+            }
+            
+            // Update the workout in storage
+            const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+            if (savedWorkout) {
+                // Remember current exercise position before updating
+                const wasRunning = this.isRunning;
+                const wasPaused = this.isPaused;
+                const currentIndex = this.currentExerciseIndex;
+                const currentTime = this.timeRemaining;
+                
+                savedWorkout.name = newName;
+                savedWorkout.content = newContent;
+                savedWorkout.data = newWorkoutData;
+                this.library.saveWorkouts();
+                
+                // Update current workout
+                this.workout = newWorkoutData;
+                
+                // Preserve exercise position if still valid
+                if (currentIndex < newWorkoutData.exercises.length) {
+                    this.currentExerciseIndex = currentIndex;
+                    // If we were in the middle of an exercise, reload it with the new data
+                    this.loadCurrentExercise();
+                    // If the exercise duration changed and we had more time remaining than the new duration,
+                    // adjust the remaining time
+                    if (this.timeRemaining < currentTime) {
+                        this.timeRemaining = Math.min(currentTime, this.workout.exercises[currentIndex].duration);
+                    } else {
+                        this.timeRemaining = currentTime;
+                    }
+                    this.updateDisplay();
+                    this.updateProgressBar();
+                } else {
+                    // If current exercise index is out of bounds, reset to beginning
+                    this.resetWorkout();
+                }
+                
+                // Restore running state if it was active
+                if (wasRunning) {
+                    this.isRunning = true;
+                    this.isPaused = false;
+                    this.startTimer();
+                } else if (wasPaused) {
+                    this.isPaused = true;
+                    this.isRunning = false;
+                }
+                
+                this.updateControls();
+                this.displayWorkout();
+                
+                // Hide editor and refresh workout selector
+                this.cancelWorkoutEdit();
+                this.loadWorkoutSelector();
+                
+                // Reselect the updated workout in the dropdown
+                this.workoutSelect.value = this.currentWorkoutId;
+                
+                alert('Workout updated successfully!');
+            }
+        } catch (error) {
+            console.error('Error parsing workout:', error);
+            alert('Error parsing workout content. Please check your markdown format.');
+        }
+    }
+    
+    cancelWorkoutEdit() {
+        this.workoutEditor.style.display = 'none';
+        if (this.workout) {
+            this.workoutDisplay.style.display = 'block';
+        }
     }
     
     displayWorkout() {
