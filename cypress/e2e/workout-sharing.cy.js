@@ -114,4 +114,39 @@ Symbols: @#$%^&*()_+-=[]{}|;:,.<>?`;
     // Check for success message (will appear briefly)
     cy.get('body').should('contain', 'copied to clipboard');
   });
+
+  it('should show save button for shared workouts and allow saving to library', () => {
+    const workoutContent = `# Shared Test Workout
+
+## Squats - 0:45
+Lower body exercise
+
+Rest - 0:15
+
+## Push-ups - 0:30
+Upper body exercise`;
+
+    const encoded = btoa(encodeURIComponent(workoutContent));
+    cy.visit(`/?workout=${encoded}`);
+
+    // Check that workout is loaded as shared
+    cy.get('#workoutTitle').should('contain', 'Shared Test Workout');
+    cy.get('#currentExercise').should('contain', 'Squats');
+    
+    // Verify save button is visible for shared workout
+    cy.get('#saveSharedWorkoutBtn').should('be.visible');
+    cy.get('#saveSharedWorkoutBtn').should('contain', '💾 Save Workout');
+    
+    // Click save button
+    cy.get('#saveSharedWorkoutBtn').click();
+    
+    // Check that workout is now saved to library
+    cy.get('#workoutSelect').should('not.have.value', '');
+    cy.get('#workoutSelect option:selected').should('contain', 'Shared Test Workout');
+    
+    // Verify save button is now hidden and edit/delete buttons are enabled
+    cy.get('#saveSharedWorkoutBtn').should('not.be.visible');
+    cy.get('#editWorkoutBtn').should('not.be.disabled');
+    cy.get('#deleteWorkoutBtn').should('not.be.disabled');
+  });
 });
