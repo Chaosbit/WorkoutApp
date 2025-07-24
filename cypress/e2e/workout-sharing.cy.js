@@ -44,7 +44,7 @@ Upper body strength.`;
     cy.get('#currentExercise').should('contain', 'Jumping Jacks');
     
     // Check that shared workout message appears
-    cy.get('body').should('contain', 'Workout loaded from shared link!');
+    cy.get('body').should('contain', 'Workout loaded and saved from shared link!');
     
     // Verify share button is available for re-sharing
     cy.get('#shareWorkoutBtn').should('be.visible');
@@ -115,7 +115,7 @@ Symbols: @#$%^&*()_+-=[]{}|;:,.<>?`;
     cy.get('body').should('contain', 'copied to clipboard');
   });
 
-  it('should show save button for shared workouts and allow saving to library', () => {
+  it('should automatically save shared workouts to library', () => {
     const workoutContent = `# Shared Test Workout
 
 ## Squats - 0:45
@@ -129,23 +129,15 @@ Upper body exercise`;
     const encoded = btoa(encodeURIComponent(workoutContent));
     cy.visit(`/?workout=${encoded}`);
 
-    // Check that workout is loaded as shared
+    // Check that workout is loaded
     cy.get('#workoutTitle').should('contain', 'Shared Test Workout');
     cy.get('#currentExercise').should('contain', 'Squats');
     
-    // Verify save button is visible for shared workout
-    cy.get('#saveSharedWorkoutBtn').should('be.visible');
-    cy.get('#saveSharedWorkoutBtn').should('contain', '💾 Save Workout');
-    
-    // Click save button
-    cy.get('#saveSharedWorkoutBtn').click();
-    
-    // Check that workout is now saved to library
+    // Check that workout appears in the library dropdown (automatically saved)  
     cy.get('#workoutSelect').should('not.have.value', '');
     cy.get('#workoutSelect option:selected').should('contain', 'Shared Test Workout');
     
-    // Verify save button is now hidden and edit/delete buttons are enabled
-    cy.get('#saveSharedWorkoutBtn').should('not.be.visible');
+    // Verify edit/delete buttons are enabled (indicating it's a saved workout)
     cy.get('#editWorkoutBtn').should('not.be.disabled');
     cy.get('#deleteWorkoutBtn').should('not.be.disabled');
   });

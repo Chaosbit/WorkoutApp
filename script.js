@@ -210,7 +210,6 @@ class WorkoutTimer {
         this.skipBtn = document.getElementById('skipBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.shareWorkoutBtn = document.getElementById('shareWorkoutBtn');
-        this.saveSharedWorkoutBtn = document.getElementById('saveSharedWorkoutBtn');
     }
     
     bindEvents() {
@@ -226,7 +225,6 @@ class WorkoutTimer {
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
         this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
         this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
-        this.saveSharedWorkoutBtn.addEventListener('click', () => this.saveSharedWorkout());
     }
     
     initializeAudio() {
@@ -362,13 +360,6 @@ class WorkoutTimer {
     updateDeleteButtonState() {
         this.deleteWorkoutBtn.disabled = !this.currentWorkoutId;
         this.editWorkoutBtn.disabled = !this.currentWorkoutId;
-        
-        // Show save button for shared workouts (when currentWorkoutId is null but workout is loaded)
-        if (!this.currentWorkoutId && this.workout) {
-            this.saveSharedWorkoutBtn.style.display = 'inline-block';
-        } else {
-            this.saveSharedWorkoutBtn.style.display = 'none';
-        }
     }
     
     editSelectedWorkout() {
@@ -472,44 +463,6 @@ class WorkoutTimer {
         this.workoutEditor.style.display = 'none';
         if (this.workout) {
             this.workoutDisplay.style.display = 'block';
-        }
-    }
-    
-    saveSharedWorkout() {
-        if (!this.workout) {
-            alert('No workout to save.');
-            return;
-        }
-        
-        // Get the workout content (either from saved workout or reconstruct from data)
-        let workoutContent = this.reconstructMarkdownFromWorkout(this.workout);
-        
-        // Generate a unique name for the workout
-        let workoutName = this.workout.title || 'Shared Workout';
-        const existingNames = this.library.getAllWorkouts().map(w => w.name);
-        let counter = 1;
-        let finalName = workoutName;
-        
-        // Ensure unique name
-        while (existingNames.includes(finalName)) {
-            finalName = `${workoutName} (${counter})`;
-            counter++;
-        }
-        
-        try {
-            // Save to library
-            const savedWorkout = this.library.addWorkout(`${finalName}.md`, workoutContent, this.workout);
-            this.currentWorkoutId = savedWorkout.id;
-            
-            // Update UI to reflect it's now a saved workout
-            this.loadWorkoutSelector();
-            this.workoutSelect.value = this.currentWorkoutId;
-            this.updateDeleteButtonState();
-            
-            alert(`Workout saved as "${finalName}"!`);
-        } catch (error) {
-            console.error('Error saving workout:', error);
-            alert('Error saving workout. Please try again.');
         }
     }
     
@@ -815,15 +768,32 @@ class WorkoutTimer {
                 const workoutContent = this.decodeWorkout(sharedWorkout);
                 const workoutData = WorkoutParser.parseMarkdown(workoutContent);
                 
-                // Set as current workout without saving to library
+                // Automatically save the shared workout to the library
+                let workoutName = workoutData.title || 'Shared Workout';
+                const existingNames = this.library.getAllWorkouts().map(w => w.name);
+                let counter = 1;
+                let finalName = workoutName;
+                
+                // Ensure unique name
+                while (existingNames.includes(finalName)) {
+                    finalName = `${workoutName} (${counter})`;
+                    counter++;
+                }
+                
+                // Save to library
+                const savedWorkout = this.library.addWorkout(`${finalName}.md`, workoutContent, workoutData);
+                this.currentWorkoutId = savedWorkout.id;
                 this.workout = workoutData;
-                this.currentWorkoutId = null; // Indicate this is a shared workout
+                
+                // Update UI to reflect it's now a saved workout
+                this.loadWorkoutSelector();
+                this.workoutSelect.value = this.currentWorkoutId;
                 this.displayWorkout();
                 
-                // Show a message that this is a shared workout
+                // Show a message that the workout was automatically saved
                 this.showSharedWorkoutMessage();
                 
-                // Update button states for shared workout
+                // Update button states
                 this.updateDeleteButtonState();
                 
                 // Clear the URL parameter for cleaner sharing
@@ -901,7 +871,7 @@ class WorkoutTimer {
         message.className = 'shared-workout-message';
         message.innerHTML = `
             <div class="message-content">
-                <span>📤 Workout loaded from shared link!</span>
+                <span>💾 Workout loaded and saved from shared link!</span>
                 <button onclick="this.parentElement.parentElement.remove()" class="close-btn">&times;</button>
             </div>
         `;
