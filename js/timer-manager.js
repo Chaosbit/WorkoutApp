@@ -1,0 +1,151 @@
+/**
+ * TimerManager - Handles countdown timer functionality for exercises
+ */
+export class TimerManager {
+    constructor() {
+        this.timeRemaining = 0;
+        this.isRunning = false;
+        this.intervalId = null;
+        this.currentExercise = null;
+        this.onTick = null;
+        this.onComplete = null;
+    }
+
+    /**
+     * Set the current exercise for timing
+     * @param {Object} exercise - Exercise object with duration
+     */
+    setExercise(exercise) {
+        this.currentExercise = exercise;
+        this.timeRemaining = exercise.duration || 0;
+    }
+
+    /**
+     * Set callback for timer tick events
+     * @param {Function} callback - Called every second with timeRemaining
+     */
+    setOnTick(callback) {
+        this.onTick = callback;
+    }
+
+    /**
+     * Set callback for timer completion
+     * @param {Function} callback - Called when timer reaches zero
+     */
+    setOnComplete(callback) {
+        this.onComplete = callback;
+    }
+
+    /**
+     * Start the countdown timer
+     */
+    start() {
+        this.stop(); // Clear any existing timer
+        this.isRunning = true;
+        
+        this.intervalId = setInterval(() => {
+            this.timeRemaining--;
+            
+            // Call tick callback if provided
+            if (this.onTick) {
+                this.onTick(this.timeRemaining);
+            }
+            
+            // Check if timer completed
+            if (this.timeRemaining <= 0) {
+                this.complete();
+            }
+        }, 1000);
+    }
+
+    /**
+     * Stop the timer
+     */
+    stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+        this.isRunning = false;
+    }
+
+    /**
+     * Pause the timer (maintains running state for resume)
+     */
+    pause() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+        // Keep isRunning true for resume functionality
+    }
+
+    /**
+     * Resume the timer if it was running
+     */
+    resume() {
+        if (this.isRunning && !this.intervalId) {
+            this.start();
+        }
+    }
+
+    /**
+     * Reset timer to initial state
+     */
+    reset() {
+        this.stop();
+        if (this.currentExercise) {
+            this.timeRemaining = this.currentExercise.duration || 0;
+        }
+    }
+
+    /**
+     * Handle timer completion
+     * @private
+     */
+    complete() {
+        this.stop();
+        if (this.onComplete) {
+            this.onComplete();
+        }
+    }
+
+    /**
+     * Format time in MM:SS format
+     * @param {number} seconds - Time in seconds
+     * @returns {string} Formatted time string
+     */
+    formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    }
+
+    /**
+     * Get current time remaining
+     * @returns {number} Seconds remaining
+     */
+    getTimeRemaining() {
+        return this.timeRemaining;
+    }
+
+    /**
+     * Get formatted time remaining
+     * @returns {string} Formatted time string
+     */
+    getFormattedTime() {
+        return this.formatTime(this.timeRemaining);
+    }
+
+    /**
+     * Calculate progress percentage
+     * @returns {number} Progress as percentage (0-100)
+     */
+    getProgress() {
+        if (!this.currentExercise || !this.currentExercise.duration) {
+            return 0;
+        }
+        const elapsed = this.currentExercise.duration - this.timeRemaining;
+        return Math.max(0, Math.min(100, (elapsed / this.currentExercise.duration) * 100));
+    }
+}
