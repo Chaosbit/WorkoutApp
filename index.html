@@ -38,8 +38,21 @@
                             <option value="">Choose a saved workout...</option>
                         </select>
                         <div class="workout-actions">
+                            <button id="editWorkoutBtn" class="btn btn-secondary btn-small" disabled>Edit</button>
                             <button id="deleteWorkoutBtn" class="btn btn-danger btn-small" disabled>Delete</button>
                         </div>
+                    </div>
+                </div>
+                
+                <div class="workout-editor" id="workoutEditor" style="display: none;">
+                    <h3>Edit Workout</h3>
+                    <div class="editor-controls">
+                        <input type="text" id="workoutNameInput" placeholder="Workout name" class="workout-name-input">
+                    </div>
+                    <textarea id="workoutMarkdownEditor" placeholder="Enter workout markdown here..." rows="15"></textarea>
+                    <div class="editor-actions">
+                        <button id="saveWorkoutBtn" class="btn btn-primary">Save Changes</button>
+                        <button id="cancelEditBtn" class="btn btn-secondary">Cancel</button>
                     </div>
                 </div>
                 
@@ -83,9 +96,16 @@ Rest - 0:30</pre>
                             <div class="description-content" id="descriptionContent"></div>
                         </div>
                         <div class="timer-display" id="timerDisplay">00:00</div>
+                        <div class="reps-display" id="repsDisplay" style="display: none;">
+                            <span id="repsCount">0</span> reps
+                        </div>
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressFill"></div>
                         </div>
+                    </div>
+                    
+                    <div class="rep-completion" id="repCompletion" style="display: none;">
+                        <button id="completeRepBtn" class="btn btn-primary btn-large">✓ Complete Exercise</button>
                     </div>
                     
                     <div class="workout-controls">

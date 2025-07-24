@@ -37,6 +37,7 @@ class WorkoutParser {
                         currentExercise = {
                             name: `${name.trim()} (Set ${setNum}/${numSets})`,
                             duration: exerciseDuration,
+                            exerciseType: 'timer',
                             type: 'exercise',
                             description: '',
                             setInfo: {
@@ -53,6 +54,7 @@ class WorkoutParser {
                             const restExercise = {
                                 name: 'Rest between sets',
                                 duration: restDuration,
+                                exerciseType: 'timer',
                                 type: 'rest',
                                 description: 'Rest before the next set',
                                 setInfo: {
@@ -70,24 +72,34 @@ class WorkoutParser {
                 
                 // Check for regular time syntax: "Exercise Name - 1:30"
                 const timeMatch = exerciseLine.match(/^(.+?)\s*-\s*(\d+):(\d+)$/);
+                // Check for rep syntax: "Exercise Name - 10 reps"
+                const repMatch = exerciseLine.match(/^(.+?)\s*-\s*(\d+)\s+reps?$/i);
                 if (timeMatch) {
                     const [, name, minutes, seconds] = timeMatch;
                     const duration = parseInt(minutes) * 60 + parseInt(seconds);
                     currentExercise = {
                         name: name.trim(),
                         duration: duration,
+                        exerciseType: 'timer',
                         type: 'exercise',
+                        description: ''
+                    };
+                    workout.exercises.push(currentExercise);
+                } else if (repMatch) {
+                    const [, name, reps] = repMatch;
+                    currentExercise = {
+                        name: name.trim(),
+                        reps: parseInt(reps),
+                        exerciseType: 'reps',
+                        type: 'exercise',
+                        completed: false,
                         description: ''
                     };
                     workout.exercises.push(currentExercise);
                 } else {
-                    currentExercise = {
-                        name: exerciseLine,
-                        duration: 60,
-                        type: 'exercise',
-                        description: ''
-                    };
-                    workout.exercises.push(currentExercise);
+                    // For validation purposes, exercises should have explicit time formats
+                    // If no time format is found, this could be an error
+                    throw new Error(`Exercise "${exerciseLine}" is missing time format (e.g., "- 1:30")`);
                 }
             } else if (line.toLowerCase().startsWith('rest') && line.includes('-')) {
                 if (currentExercise && descriptionLines.length > 0) {
@@ -102,6 +114,7 @@ class WorkoutParser {
                     currentExercise = {
                         name: 'Rest',
                         duration: duration,
+                        exerciseType: 'timer',
                         type: 'rest',
                         description: 'Take a break and prepare for the next exercise'
                     };
@@ -201,6 +214,8 @@ class WorkoutTimer {
         this.intervalId = null;
         this.audioContext = null;
         this.library = new WorkoutLibrary();
+        this.isAdvancing = false; // Flag to prevent double advancement
+        this.lastCompletionTime = 0; // Timestamp for double-click prevention
         
         this.initializeElements();
         this.bindEvents();
@@ -216,6 +231,10 @@ class WorkoutTimer {
         this.currentDescription = document.getElementById('currentDescription');
         this.descriptionContent = document.getElementById('descriptionContent');
         this.timerDisplay = document.getElementById('timerDisplay');
+        this.repsDisplay = document.getElementById('repsDisplay');
+        this.repsCount = document.getElementById('repsCount');
+        this.repCompletion = document.getElementById('repCompletion');
+        this.completeRepBtn = document.getElementById('completeRepBtn');
         this.progressFill = document.getElementById('progressFill');
         this.progressText = document.getElementById('progressText');
         this.workoutList = document.getElementById('workoutList');
@@ -223,7 +242,15 @@ class WorkoutTimer {
         // Workout library elements
         this.workoutLibrarySection = document.getElementById('workoutLibrary');
         this.workoutSelect = document.getElementById('workoutSelect');
+        this.editWorkoutBtn = document.getElementById('editWorkoutBtn');
         this.deleteWorkoutBtn = document.getElementById('deleteWorkoutBtn');
+        
+        // Workout editor elements
+        this.workoutEditor = document.getElementById('workoutEditor');
+        this.workoutNameInput = document.getElementById('workoutNameInput');
+        this.workoutMarkdownEditor = document.getElementById('workoutMarkdownEditor');
+        this.saveWorkoutBtn = document.getElementById('saveWorkoutBtn');
+        this.cancelEditBtn = document.getElementById('cancelEditBtn');
         
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
@@ -234,11 +261,15 @@ class WorkoutTimer {
     bindEvents() {
         this.fileInput.addEventListener('change', (e) => this.loadWorkoutFile(e));
         this.workoutSelect.addEventListener('change', (e) => this.selectWorkout(e));
+        this.editWorkoutBtn.addEventListener('click', () => this.editSelectedWorkout());
         this.deleteWorkoutBtn.addEventListener('click', () => this.deleteSelectedWorkout());
+        this.saveWorkoutBtn.addEventListener('click', () => this.saveWorkoutChanges());
+        this.cancelEditBtn.addEventListener('click', () => this.cancelWorkoutEdit());
         this.startBtn.addEventListener('click', () => this.startWorkout());
         this.pauseBtn.addEventListener('click', () => this.pauseWorkout());
         this.skipBtn.addEventListener('click', () => this.skipExercise());
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
+        this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
     }
     
     initializeAudio() {
@@ -332,7 +363,9 @@ class WorkoutTimer {
         const workoutId = event.target.value;
         
         if (!workoutId) {
-            this.deleteWorkoutBtn.disabled = true;
+            this.currentWorkoutId = null;
+            this.workout = null;
+            this.updateDeleteButtonState();
             return;
         }
         
@@ -371,6 +404,111 @@ class WorkoutTimer {
 
     updateDeleteButtonState() {
         this.deleteWorkoutBtn.disabled = !this.currentWorkoutId;
+        this.editWorkoutBtn.disabled = !this.currentWorkoutId;
+    }
+    
+    editSelectedWorkout() {
+        if (!this.currentWorkoutId) return;
+        
+        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        if (!savedWorkout) return;
+        
+        // Populate the editor with current workout data
+        this.workoutNameInput.value = savedWorkout.name;
+        this.workoutMarkdownEditor.value = savedWorkout.content || '';
+        
+        // Show the editor and hide the workout display
+        this.workoutEditor.style.display = 'block';
+        this.workoutDisplay.style.display = 'none';
+    }
+    
+    saveWorkoutChanges() {
+        const newName = this.workoutNameInput.value.trim();
+        const newContent = this.workoutMarkdownEditor.value.trim();
+        
+        if (!newName || !newContent) {
+            alert('Please provide both a workout name and content.');
+            return;
+        }
+        
+        try {
+            // Parse the new content to validate it
+            const newWorkoutData = WorkoutParser.parseMarkdown(newContent);
+            
+            if (!newWorkoutData.exercises || newWorkoutData.exercises.length === 0) {
+                alert('Please provide valid workout content with at least one exercise.');
+                return;
+            }
+            
+            // Update the workout in storage
+            const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+            if (savedWorkout) {
+                // Remember current exercise position before updating
+                const wasRunning = this.isRunning;
+                const wasPaused = this.isPaused;
+                const currentIndex = this.currentExerciseIndex;
+                const currentTime = this.timeRemaining;
+                
+                savedWorkout.name = newName;
+                savedWorkout.content = newContent;
+                savedWorkout.data = newWorkoutData;
+                this.library.saveWorkouts();
+                
+                // Update current workout
+                this.workout = newWorkoutData;
+                
+                // Preserve exercise position if still valid
+                if (currentIndex < newWorkoutData.exercises.length) {
+                    this.currentExerciseIndex = currentIndex;
+                    // If we were in the middle of an exercise, reload it with the new data
+                    this.loadCurrentExercise();
+                    // If the exercise duration changed and we had more time remaining than the new duration,
+                    // adjust the remaining time
+                    if (this.timeRemaining < currentTime) {
+                        this.timeRemaining = Math.min(currentTime, this.workout.exercises[currentIndex].duration);
+                    } else {
+                        this.timeRemaining = currentTime;
+                    }
+                    this.updateDisplay();
+                    this.updateProgressBar();
+                } else {
+                    // If current exercise index is out of bounds, reset to beginning
+                    this.resetWorkout();
+                }
+                
+                // Restore running state if it was active
+                if (wasRunning) {
+                    this.isRunning = true;
+                    this.isPaused = false;
+                    this.startTimer();
+                } else if (wasPaused) {
+                    this.isPaused = true;
+                    this.isRunning = false;
+                }
+                
+                this.updateControls();
+                this.displayWorkout();
+                
+                // Hide editor and refresh workout selector
+                this.cancelWorkoutEdit();
+                this.loadWorkoutSelector();
+                
+                // Reselect the updated workout in the dropdown
+                this.workoutSelect.value = this.currentWorkoutId;
+                
+                alert('Workout updated successfully!');
+            }
+        } catch (error) {
+            console.error('Error parsing workout:', error);
+            alert('Error parsing workout content. Please check your markdown format.');
+        }
+    }
+    
+    cancelWorkoutEdit() {
+        this.workoutEditor.style.display = 'none';
+        if (this.workout) {
+            this.workoutDisplay.style.display = 'block';
+        }
     }
     
     displayWorkout() {
@@ -397,12 +535,14 @@ class WorkoutTimer {
             item.className = 'exercise-item pending';
             
             const hasDescription = exercise.description && exercise.description.trim().length > 0;
+            const isRepBased = exercise.exerciseType === 'reps';
+            const displayDuration = isRepBased ? `${exercise.reps} reps` : this.formatTime(exercise.duration);
             
             item.innerHTML = `
                 <div class="exercise-header" ${hasDescription ? `onclick="this.parentElement.classList.toggle('expanded')"` : ''}>
                     <span class="exercise-name">${exercise.name}</span>
                     <div class="exercise-meta">
-                        <span class="exercise-duration">${this.formatTime(exercise.duration)}</span>
+                        <span class="exercise-duration ${isRepBased ? 'reps-based' : ''}">${displayDuration}</span>
                         ${hasDescription ? '<span class="expand-icon">▼</span>' : ''}
                     </div>
                 </div>
@@ -441,11 +581,14 @@ class WorkoutTimer {
         this.isPaused = false;
         this.updateControls();
         
-        if (this.timeRemaining === 0) {
+        if (this.timeRemaining === 0 && this.currentExerciseIndex < this.workout.exercises.length) {
             this.loadCurrentExercise();
         }
         
-        this.startTimer();
+        const currentExercise = this.workout.exercises[this.currentExerciseIndex];
+        if (currentExercise && currentExercise.exerciseType === 'timer') {
+            this.startTimer();
+        }
     }
     
     pauseWorkout() {
@@ -457,6 +600,19 @@ class WorkoutTimer {
     
     skipExercise() {
         this.nextExercise();
+    }
+    
+    completeRepExercise() {
+        // Add protection against rapid successive calls
+        if (this.isAdvancing) return;
+        
+        const exercise = this.workout.exercises[this.currentExerciseIndex];
+        
+        // Prevent double completion - only allow if exercise is not completed yet
+        if (exercise && exercise.exerciseType === 'reps' && this.isRunning && !exercise.completed) {
+            exercise.completed = true;
+            this.nextExercise();
+        }
     }
     
     resetWorkout() {
@@ -480,9 +636,35 @@ class WorkoutTimer {
             return;
         }
         
+        // Stop any existing timer to prevent it from interfering with rep-based exercises
+        this.stopTimer();
+        
         const exercise = this.workout.exercises[this.currentExerciseIndex];
-        this.timeRemaining = exercise.duration;
         this.currentExercise.textContent = exercise.name;
+        
+        if (exercise.exerciseType === 'reps') {
+            // Rep-based exercise
+            this.timeRemaining = 0;
+            this.timerDisplay.style.display = 'none';
+            this.repsDisplay.style.display = 'block';
+            this.repCompletion.style.display = 'block';
+            this.repsCount.textContent = exercise.reps;
+            
+            // Reset completion state
+            exercise.completed = false;
+            
+            // Set progress bar to 0 for rep exercises
+            this.progressFill.style.width = '0%';
+        } else {
+            // Timer-based exercise
+            this.timeRemaining = exercise.duration;
+            this.timerDisplay.style.display = 'block';
+            this.repsDisplay.style.display = 'none';
+            this.repCompletion.style.display = 'none';
+            
+            // Reset progress bar for timer exercises
+            this.progressFill.style.width = '0%';
+        }
         
         if (exercise.description && exercise.description.trim().length > 0) {
             this.descriptionContent.innerHTML = exercise.description.split('\n').map(line => `<p>${line}</p>`).join('');
@@ -495,6 +677,7 @@ class WorkoutTimer {
         this.updateDisplay();
         this.updateProgress();
         this.updateWorkoutList();
+        this.updateControls();
     }
     
     startTimer() {
@@ -518,6 +701,10 @@ class WorkoutTimer {
     }
     
     nextExercise() {
+        if (this.isAdvancing) return; // Prevent rapid succession calls
+        this.isAdvancing = true;
+        
+        this.stopTimer(); // Always stop timer first
         this.playSound(600, 300);
         this.currentExerciseIndex++;
         
@@ -526,9 +713,17 @@ class WorkoutTimer {
         } else {
             this.loadCurrentExercise();
             if (this.isRunning) {
-                this.startTimer();
+                const currentExercise = this.workout.exercises[this.currentExerciseIndex];
+                if (currentExercise && currentExercise.exerciseType === 'timer') {
+                    this.startTimer();
+                }
             }
         }
+        
+        // Reset the flag after a very short delay to prevent rapid successive calls
+        setTimeout(() => {
+            this.isAdvancing = false;
+        }, 10);
     }
     
     completeWorkout() {
@@ -537,6 +732,9 @@ class WorkoutTimer {
         this.isPaused = false;
         this.currentExercise.textContent = 'Workout Complete! 🎉';
         this.timerDisplay.textContent = '00:00';
+        this.timerDisplay.style.display = 'block';
+        this.repsDisplay.style.display = 'none';
+        this.repCompletion.style.display = 'none';
         this.progressFill.style.width = '100%';
         this.updateControls();
         this.updateWorkoutList();
@@ -574,9 +772,29 @@ class WorkoutTimer {
     }
     
     updateControls() {
+        const currentExercise = this.workout && this.currentExerciseIndex < this.workout.exercises.length 
+            ? this.workout.exercises[this.currentExerciseIndex] 
+            : null;
+        const isRepBased = currentExercise && currentExercise.exerciseType === 'reps';
+        
         this.startBtn.disabled = this.isRunning;
-        this.pauseBtn.disabled = !this.isRunning;
+        this.pauseBtn.disabled = !this.isRunning || isRepBased;
         this.skipBtn.disabled = !this.isRunning && !this.isPaused;
+        
+        // For rep-based exercises, enable skip when workout is running
+        if (isRepBased && this.isRunning) {
+            this.skipBtn.disabled = false;
+        }
+        
+        // Enable complete rep button for rep exercises when not completed
+        if (this.completeRepBtn) {
+            if (isRepBased) {
+                this.completeRepBtn.disabled = (currentExercise && currentExercise.completed);
+            } else {
+                // For timer exercises, button should not be visible anyway
+                this.completeRepBtn.disabled = true;
+            }
+        }
     }
     
     formatTime(seconds) {
