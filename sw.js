@@ -1,9 +1,15 @@
-const CACHE_NAME = 'workout-timer-v4';
+const CACHE_NAME = 'workout-timer-v5';
 const urlsToCache = [
   './',
   './index.html',
   './styles.css',
-  './script.js',
+  './js/app.js',
+  './js/audio-manager.js',
+  './js/sw-registration.js',
+  './js/timer-manager.js',
+  './js/workout-app.js',
+  './js/workout-library.js',
+  './js/workout-parser.js',
   './manifest.json',
   './sample-workout.md',
   './icon-192.png',
