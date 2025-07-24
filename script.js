@@ -204,6 +204,9 @@ class WorkoutTimer {
         this.saveWorkoutBtn = document.getElementById('saveWorkoutBtn');
         this.cancelEditBtn = document.getElementById('cancelEditBtn');
         
+        // New workout button
+        this.newWorkoutBtn = document.getElementById('newWorkoutBtn');
+        
         this.startBtn = document.getElementById('startBtn');
         this.pauseBtn = document.getElementById('pauseBtn');
         this.skipBtn = document.getElementById('skipBtn');
@@ -215,6 +218,7 @@ class WorkoutTimer {
         this.workoutSelect.addEventListener('change', (e) => this.selectWorkout(e));
         this.editWorkoutBtn.addEventListener('click', () => this.editSelectedWorkout());
         this.deleteWorkoutBtn.addEventListener('click', () => this.deleteSelectedWorkout());
+        this.newWorkoutBtn.addEventListener('click', () => this.createNewWorkout());
         this.saveWorkoutBtn.addEventListener('click', () => this.saveWorkoutChanges());
         this.cancelEditBtn.addEventListener('click', () => this.cancelWorkoutEdit());
         this.startBtn.addEventListener('click', () => this.startWorkout());
@@ -374,6 +378,43 @@ class WorkoutTimer {
         this.workoutDisplay.style.display = 'none';
     }
     
+    createNewWorkout() {
+        // Remember current workout selection so we can restore it if cancelled
+        this.previousWorkoutId = this.currentWorkoutId;
+        
+        // Create a new workout template
+        const defaultTemplate = `# New Workout
+
+## Warm-up - 5:00
+Light cardio and dynamic stretching to prepare your body.
+
+## Exercise 1 - 0:45
+Description of your first exercise.
+
+Rest - 0:15
+
+## Exercise 2 - 1:00
+Description of your second exercise.
+
+Rest - 0:30`;
+
+        // Clear current workout selection
+        this.currentWorkoutId = null;
+        this.workoutSelect.value = '';
+        this.updateDeleteButtonState();
+        
+        // Populate the editor with template
+        this.workoutNameInput.value = '';
+        this.workoutMarkdownEditor.value = defaultTemplate;
+        
+        // Show the editor and hide the workout display
+        this.workoutEditor.style.display = 'block';
+        this.workoutDisplay.style.display = 'none';
+        
+        // Focus on the name input for better UX
+        this.workoutNameInput.focus();
+    }
+    
     saveWorkoutChanges() {
         const newName = this.workoutNameInput.value.trim();
         const newContent = this.workoutMarkdownEditor.value.trim();
@@ -392,63 +433,87 @@ class WorkoutTimer {
                 return;
             }
             
-            // Update the workout in storage
-            const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
-            if (savedWorkout) {
-                // Remember current exercise position before updating
-                const wasRunning = this.isRunning;
-                const wasPaused = this.isPaused;
-                const currentIndex = this.currentExerciseIndex;
-                const currentTime = this.timeRemaining;
-                
-                savedWorkout.name = newName;
-                savedWorkout.content = newContent;
-                savedWorkout.data = newWorkoutData;
-                this.library.saveWorkouts();
-                
-                // Update current workout
-                this.workout = newWorkoutData;
-                
-                // Preserve exercise position if still valid
-                if (currentIndex < newWorkoutData.exercises.length) {
-                    this.currentExerciseIndex = currentIndex;
-                    // If we were in the middle of an exercise, reload it with the new data
-                    this.loadCurrentExercise();
-                    // If the exercise duration changed and we had more time remaining than the new duration,
-                    // adjust the remaining time
-                    if (this.timeRemaining < currentTime) {
-                        this.timeRemaining = Math.min(currentTime, this.workout.exercises[currentIndex].duration);
+            // Check if this is editing an existing workout or creating a new one
+            if (this.currentWorkoutId) {
+                // Editing existing workout
+                const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+                if (savedWorkout) {
+                    // Remember current exercise position before updating
+                    const wasRunning = this.isRunning;
+                    const wasPaused = this.isPaused;
+                    const currentIndex = this.currentExerciseIndex;
+                    const currentTime = this.timeRemaining;
+                    
+                    savedWorkout.name = newName;
+                    savedWorkout.content = newContent;
+                    savedWorkout.data = newWorkoutData;
+                    this.library.saveWorkouts();
+                    
+                    // Update current workout
+                    this.workout = newWorkoutData;
+                    
+                    // Preserve exercise position if still valid
+                    if (currentIndex < newWorkoutData.exercises.length) {
+                        this.currentExerciseIndex = currentIndex;
+                        // If we were in the middle of an exercise, reload it with the new data
+                        this.loadCurrentExercise();
+                        // If the exercise duration changed and we had more time remaining than the new duration,
+                        // adjust the remaining time
+                        if (this.timeRemaining < currentTime) {
+                            this.timeRemaining = Math.min(currentTime, this.workout.exercises[currentIndex].duration);
+                        } else {
+                            this.timeRemaining = currentTime;
+                        }
+                        this.updateDisplay();
+                        this.updateProgressBar();
                     } else {
-                        this.timeRemaining = currentTime;
+                        // If current exercise index is out of bounds, reset to beginning
+                        this.resetWorkout();
                     }
-                    this.updateDisplay();
-                    this.updateProgressBar();
-                } else {
-                    // If current exercise index is out of bounds, reset to beginning
-                    this.resetWorkout();
+                    
+                    // Restore running state if it was active
+                    if (wasRunning) {
+                        this.isRunning = true;
+                        this.isPaused = false;
+                        this.startTimer();
+                    } else if (wasPaused) {
+                        this.isPaused = true;
+                        this.isRunning = false;
+                    }
+                    
+                    this.updateControls();
+                    this.displayWorkout();
+                    
+                    // Hide editor and refresh workout selector
+                    this.cancelWorkoutEdit();
+                    this.loadWorkoutSelector();
+                    
+                    // Reselect the updated workout in the dropdown
+                    this.workoutSelect.value = this.currentWorkoutId;
+                    
+                    alert('Workout updated successfully!');
                 }
+            } else {
+                // Creating new workout
+                const filename = newName.endsWith('.md') ? newName : newName + '.md';
+                const savedWorkout = this.library.addWorkout(filename, newContent, newWorkoutData);
+                this.currentWorkoutId = savedWorkout.id;
                 
-                // Restore running state if it was active
-                if (wasRunning) {
-                    this.isRunning = true;
-                    this.isPaused = false;
-                    this.startTimer();
-                } else if (wasPaused) {
-                    this.isPaused = true;
-                    this.isRunning = false;
-                }
-                
-                this.updateControls();
+                // Set as current workout
+                this.workout = newWorkoutData;
                 this.displayWorkout();
                 
                 // Hide editor and refresh workout selector
                 this.cancelWorkoutEdit();
                 this.loadWorkoutSelector();
                 
-                // Reselect the updated workout in the dropdown
+                // Select the new workout in the dropdown
                 this.workoutSelect.value = this.currentWorkoutId;
                 
-                alert('Workout updated successfully!');
+                // Clear previous workout memory since we successfully created a new one
+                this.previousWorkoutId = null;
+                
+                alert('New workout created successfully!');
             }
         } catch (error) {
             console.error('Error parsing workout:', error);
@@ -458,7 +523,21 @@ class WorkoutTimer {
     
     cancelWorkoutEdit() {
         this.workoutEditor.style.display = 'none';
-        if (this.workout) {
+        
+        // If we were creating a new workout (no currentWorkoutId) and had a previous selection, restore it
+        if (!this.currentWorkoutId && this.previousWorkoutId) {
+            this.currentWorkoutId = this.previousWorkoutId;
+            this.workoutSelect.value = this.previousWorkoutId;
+            
+            const savedWorkout = this.library.getWorkout(this.previousWorkoutId);
+            if (savedWorkout) {
+                this.workout = savedWorkout.data;
+                this.displayWorkout();
+            }
+            
+            this.updateDeleteButtonState();
+            this.previousWorkoutId = null;
+        } else if (this.workout) {
             this.workoutDisplay.style.display = 'block';
         }
     }

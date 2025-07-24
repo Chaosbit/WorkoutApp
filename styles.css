@@ -126,6 +126,11 @@ header h1 {
     margin-bottom: 20px;
 }
 
+.new-workout-section {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 .input-help {
     margin-top: 5px;
     font-size: 0.85rem;
