@@ -38,6 +38,7 @@ export class WorkoutApp {
         this.initializeElements();
         this.bindEvents();
         this.loadWorkoutSelector();
+        this.checkForSharedWorkout(); // Check URL for shared workout
 
         // Register service worker
         registerServiceWorker();
@@ -84,6 +85,7 @@ export class WorkoutApp {
         this.pauseBtn = document.getElementById('pauseBtn');
         this.skipBtn = document.getElementById('skipBtn');
         this.resetBtn = document.getElementById('resetBtn');
+        this.shareWorkoutBtn = document.getElementById('shareWorkoutBtn');
     }
 
     /**
@@ -102,6 +104,7 @@ export class WorkoutApp {
         this.skipBtn.addEventListener('click', () => this.skipExercise());
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
         this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
+        this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
     }
 
     /**
@@ -739,5 +742,331 @@ Rest - 0:30`;
      */
     set timeRemaining(value) {
         this.timerManager.timeRemaining = value;
+    }
+
+    // Workout sharing functionality
+    checkForSharedWorkout() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedWorkout = urlParams.get('workout');
+        
+        if (sharedWorkout) {
+            try {
+                const workoutContent = this.decodeWorkout(sharedWorkout);
+                const workoutData = WorkoutParser.parseMarkdown(workoutContent);
+                
+                // Automatically save the shared workout to the library
+                let workoutName = workoutData.title || 'Shared Workout';
+                const existingNames = this.library.getAllWorkouts().map(w => w.name);
+                let counter = 1;
+                let finalName = workoutName;
+                
+                // Ensure unique name
+                while (existingNames.includes(finalName)) {
+                    finalName = `${workoutName} (${counter})`;
+                    counter++;
+                }
+                
+                // Save to library
+                const savedWorkout = this.library.addWorkout(`${finalName}.md`, workoutContent, workoutData);
+                this.currentWorkoutId = savedWorkout.id;
+                this.workout = workoutData;
+                
+                // Update UI to reflect it's now a saved workout
+                this.loadWorkoutSelector();
+                this.workoutSelect.value = this.currentWorkoutId;
+                this.displayWorkout();
+                
+                // Show a message that the workout was automatically saved
+                this.showSharedWorkoutMessage();
+                
+                // Update button states
+                this.updateDeleteButtonState();
+                
+                // Clear the URL parameter for cleaner sharing
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+                
+            } catch (error) {
+                console.error('Error loading shared workout:', error);
+                alert('Error loading shared workout. The link may be invalid or corrupted.');
+            }
+        }
+    }
+    
+    encodeWorkout(workoutContent) {
+        // Compress and encode the workout content for URL sharing
+        return btoa(encodeURIComponent(workoutContent));
+    }
+    
+    decodeWorkout(encodedWorkout) {
+        // Decode and decompress the workout content from URL
+        return decodeURIComponent(atob(encodedWorkout));
+    }
+    
+    generateShareLink() {
+        if (!this.workout) return null;
+        
+        // Get the current workout content
+        let workoutContent = '';
+        
+        if (this.currentWorkoutId) {
+            // If it's a saved workout, get the original content
+            const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+            if (savedWorkout && savedWorkout.content) {
+                workoutContent = savedWorkout.content;
+            }
+        }
+        
+        // If we don't have content, reconstruct it from the workout data
+        if (!workoutContent) {
+            workoutContent = this.reconstructMarkdownFromWorkout(this.workout);
+        }
+        
+        const encodedWorkout = this.encodeWorkout(workoutContent);
+        const baseUrl = window.location.origin + window.location.pathname;
+        return `${baseUrl}?workout=${encodedWorkout}`;
+    }
+    
+    reconstructMarkdownFromWorkout(workout) {
+        // Reconstruct markdown content from workout data
+        let content = `# ${workout.title || 'Shared Workout'}\n\n`;
+        
+        workout.exercises.forEach(exercise => {
+            if (exercise.exerciseType === 'reps') {
+                content += `## ${exercise.name} - ${exercise.reps} reps\n`;
+            } else {
+                const minutes = Math.floor(exercise.duration / 60);
+                const seconds = exercise.duration % 60;
+                const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                content += `## ${exercise.name} - ${timeStr}\n`;
+            }
+            
+            if (exercise.description) {
+                content += `${exercise.description}\n\n`;
+            } else {
+                content += '\n';
+            }
+        });
+        
+        return content.trim();
+    }
+    
+    showSharedWorkoutMessage() {
+        // Create a temporary message to show the workout was loaded from a shared link
+        const message = document.createElement('div');
+        message.className = 'shared-workout-message';
+        message.innerHTML = `
+            <div class="message-content">
+                <span>💾 Workout loaded and saved from shared link!</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="close-btn">&times;</button>
+            </div>
+        `;
+        message.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-size: 14px;
+            max-width: 300px;
+        `;
+        
+        const messageContent = message.querySelector('.message-content');
+        messageContent.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        `;
+        
+        const closeBtn = message.querySelector('.close-btn');
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        `;
+        
+        document.body.appendChild(message);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (message.parentElement) {
+                message.remove();
+            }
+        }, 5000);
+    }
+    
+    shareWorkout() {
+        const shareLink = this.generateShareLink();
+        if (!shareLink) {
+            alert('No workout loaded to share.');
+            return;
+        }
+        
+        // Try to use the modern Web Share API if available
+        if (navigator.share) {
+            navigator.share({
+                title: this.workout.title || 'Shared Workout',
+                text: 'Check out this workout!',
+                url: shareLink
+            }).catch(err => {
+                console.log('Error sharing:', err);
+                this.copyToClipboard(shareLink);
+            });
+        } else {
+            // Fallback to copying to clipboard
+            this.copyToClipboard(shareLink);
+        }
+    }
+    
+    copyToClipboard(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                this.showShareSuccessMessage();
+            }).catch(() => {
+                this.fallbackCopyToClipboard(text);
+            });
+        } else {
+            this.fallbackCopyToClipboard(text);
+        }
+    }
+    
+    fallbackCopyToClipboard(text) {
+        // Create a temporary textarea element
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            this.showShareSuccessMessage();
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            this.showShareErrorMessage(text);
+        }
+        
+        document.body.removeChild(textArea);
+    }
+    
+    showShareSuccessMessage() {
+        // Create success message
+        const message = document.createElement('div');
+        message.className = 'share-success-message';
+        message.innerHTML = `
+            <div class="message-content">
+                <span>✅ Workout link copied to clipboard!</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="close-btn">&times;</button>
+            </div>
+        `;
+        message.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-size: 14px;
+            max-width: 300px;
+        `;
+        
+        const messageContent = message.querySelector('.message-content');
+        messageContent.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        `;
+        
+        const closeBtn = message.querySelector('.close-btn');
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        `;
+        
+        document.body.appendChild(message);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            if (message.parentElement) {
+                message.remove();
+            }
+        }, 3000);
+    }
+    
+    showShareErrorMessage(shareLink) {
+        // Create error message with manual copy option
+        const message = document.createElement('div');
+        message.className = 'share-error-message';
+        message.innerHTML = `
+            <div class="message-content">
+                <div>
+                    <p style="margin: 0 0 8px 0;">❌ Could not copy automatically. Please copy this link manually:</p>
+                    <input type="text" value="${shareLink}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;" readonly onclick="this.select()">
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="close-btn" style="align-self: flex-start;">&times;</button>
+            </div>
+        `;
+        message.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #f44336;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-size: 14px;
+            max-width: 400px;
+        `;
+        
+        const messageContent = message.querySelector('.message-content');
+        messageContent.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        `;
+        
+        const closeBtn = message.querySelector('.close-btn');
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        `;
+        
+        document.body.appendChild(message);
+        
+        // Auto-remove after 10 seconds (longer for manual copy)
+        setTimeout(() => {
+            if (message.parentElement) {
+                message.remove();
+            }
+        }, 10000);
     }
 }
