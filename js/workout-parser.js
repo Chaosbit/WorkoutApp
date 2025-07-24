@@ -17,6 +17,9 @@ export class WorkoutParser {
         
         let currentExercise = null;
         let descriptionLines = [];
+        let circleInfo = null; // Track current circle/circuit
+        let circleExercises = []; // Store exercises in current circle
+        let insideCircle = false;
         
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -32,6 +35,40 @@ export class WorkoutParser {
                 }
                 
                 const exerciseLine = line.replace(/^#{2,3}\s+/, '');
+                
+                // Check for circle/circuit syntax: "Circle: 3 rounds" or "Circuit: 3 rounds"
+                const circleMatch = exerciseLine.match(/^(Circle|Circuit):\s*(\d+)\s+rounds?$/i);
+                if (circleMatch) {
+                    // If we have a previous circle, process it first
+                    if (circleInfo && circleExercises.length > 0) {
+                        this.expandCircleExercises(circleInfo, circleExercises, workout);
+                        circleExercises = [];
+                    }
+                    
+                    const [, type, rounds] = circleMatch;
+                    circleInfo = {
+                        type: type.toLowerCase(),
+                        rounds: parseInt(rounds)
+                    };
+                    insideCircle = true;
+                    currentExercise = null;
+                    continue;
+                }
+                
+                // If we encounter a ## header while in a circle, check if we should end the circle
+                // We end the circle only if the previous exercise was a Rest 
+                // (suggesting this is the end of the circuit)
+                if (line.startsWith('## ') && insideCircle && circleInfo && circleExercises.length > 0) {
+                    // Check if the last exercise added to the circle was a Rest
+                    const lastExercise = circleExercises[circleExercises.length - 1];
+                    if (lastExercise && lastExercise.type === 'rest') {
+                        // This ## header comes after rest, likely ends the circle
+                        this.expandCircleExercises(circleInfo, circleExercises, workout);
+                        circleExercises = [];
+                        circleInfo = null;
+                        insideCircle = false;
+                    }
+                }
                 
                 // Check for sets syntax: "Exercise Name - 3 sets x 0:30 / 0:15"
                 const setsMatch = exerciseLine.match(/^(.+?)\s*-\s*(\d+)\s+sets?\s*x\s*(\d+):(\d+)\s*\/\s*(\d+):(\d+)$/);
@@ -93,7 +130,13 @@ export class WorkoutParser {
                         type: 'exercise',
                         description: ''
                     };
-                    workout.exercises.push(currentExercise);
+                    
+                    // If we're in a circle, add to circle exercises; otherwise add to workout
+                    if (insideCircle && circleInfo) {
+                        circleExercises.push(currentExercise);
+                    } else {
+                        workout.exercises.push(currentExercise);
+                    }
                 } else if (repMatch) {
                     const [, name, reps] = repMatch;
                     currentExercise = {
@@ -104,7 +147,13 @@ export class WorkoutParser {
                         completed: false,
                         description: ''
                     };
-                    workout.exercises.push(currentExercise);
+                    
+                    // If we're in a circle, add to circle exercises; otherwise add to workout
+                    if (insideCircle && circleInfo) {
+                        circleExercises.push(currentExercise);
+                    } else {
+                        workout.exercises.push(currentExercise);
+                    }
                 } else {
                     // For validation purposes, exercises should have explicit time formats
                     // If no time format is found, this could be an error
@@ -127,11 +176,22 @@ export class WorkoutParser {
                         type: 'rest',
                         description: 'Take a break and prepare for the next exercise'
                     };
-                    workout.exercises.push(currentExercise);
+                    
+                    // If we're in a circle, add to circle exercises; otherwise add to workout
+                    if (insideCircle && circleInfo) {
+                        circleExercises.push(currentExercise);
+                    } else {
+                        workout.exercises.push(currentExercise);
+                    }
                 }
             } else if (currentExercise && line && !line.startsWith('#')) {
                 descriptionLines.push(line);
             }
+        }
+        
+        // Process any remaining circle at the end
+        if (circleInfo && circleExercises.length > 0) {
+            this.expandCircleExercises(circleInfo, circleExercises, workout);
         }
         
         if (currentExercise && descriptionLines.length > 0) {
@@ -139,5 +199,24 @@ export class WorkoutParser {
         }
         
         return workout;
+    }
+    
+    static expandCircleExercises(circleInfo, circleExercises, workout) {
+        for (let round = 1; round <= circleInfo.rounds; round++) {
+            circleExercises.forEach(exercise => {
+                const roundExercise = {
+                    ...exercise,
+                    name: `Round ${round}/${circleInfo.rounds}: ${exercise.name}`,
+                    circleInfo: {
+                        originalName: exercise.name,
+                        round: round,
+                        totalRounds: circleInfo.rounds,
+                        isCircle: true,
+                        circleType: circleInfo.type
+                    }
+                };
+                workout.exercises.push(roundExercise);
+            });
+        }
     }
 }
