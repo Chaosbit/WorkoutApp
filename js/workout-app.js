@@ -127,6 +127,9 @@ export class WorkoutApp {
             // Select the new workout in the dropdown
             this.workoutSelect.value = this.currentWorkoutId;
             
+            // Update button states
+            this.updateDeleteButtonState();
+            
             // Don't show alert in test environment
             if (!window.Cypress) {
                 alert('Workout loaded and saved successfully!');
@@ -469,30 +472,216 @@ export class WorkoutApp {
         });
     }
 
-    // Placeholder methods for workout editing functionality
+    // Workout editing functionality
     editSelectedWorkout() {
-        // TODO: Implement workout editing
-        console.log('Edit workout functionality to be implemented');
+        if (!this.currentWorkoutId) return;
+        
+        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        if (!savedWorkout) return;
+        
+        // Populate the editor with current workout data
+        this.workoutNameInput.value = savedWorkout.name;
+        this.workoutMarkdownEditor.value = savedWorkout.content || '';
+        
+        // Show the editor and hide the workout display
+        this.workoutEditor.style.display = 'block';
+        this.workoutDisplay.style.display = 'none';
     }
 
     deleteSelectedWorkout() {
-        // TODO: Implement workout deletion
-        console.log('Delete workout functionality to be implemented');
+        if (!this.currentWorkoutId) return;
+        
+        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        if (!savedWorkout) return;
+        
+        const shouldDelete = window.Cypress ? true : confirm(`Are you sure you want to delete "${savedWorkout.name}"?`);
+        if (shouldDelete) {
+            this.library.deleteWorkout(this.currentWorkoutId);
+            
+            // Clear current workout if it was deleted
+            this.currentWorkoutId = null;
+            this.workout = null;
+            this.workoutDisplay.style.display = 'none';
+            
+            // Show sample format again
+            const sampleFormat = document.querySelector('.sample-format');
+            if (sampleFormat) {
+                sampleFormat.style.display = 'block';
+            }
+            
+            this.loadWorkoutSelector();
+        }
     }
 
     createNewWorkout() {
-        // TODO: Implement new workout creation
-        console.log('Create new workout functionality to be implemented');
+        // Remember current workout selection so we can restore it if cancelled
+        this.previousWorkoutId = this.currentWorkoutId;
+        
+        // Create a new workout template
+        const defaultTemplate = `# New Workout
+
+## Warm-up - 5:00
+Light cardio and dynamic stretching to prepare your body.
+
+## Exercise 1 - 0:45
+Description of your first exercise.
+
+Rest - 0:15
+
+## Exercise 2 - 1:00
+Description of your second exercise.
+
+Rest - 0:30`;
+
+        // Clear current workout selection
+        this.currentWorkoutId = null;
+        this.workoutSelect.value = '';
+        this.updateDeleteButtonState();
+        
+        // Populate the editor with template
+        this.workoutNameInput.value = '';
+        this.workoutMarkdownEditor.value = defaultTemplate;
+        
+        // Show the editor and hide the workout display
+        this.workoutEditor.style.display = 'block';
+        this.workoutDisplay.style.display = 'none';
+        
+        // Focus on the name input for better UX
+        this.workoutNameInput.focus();
     }
 
     saveWorkoutChanges() {
-        // TODO: Implement save workout changes
-        console.log('Save workout changes functionality to be implemented');
+        const newName = this.workoutNameInput.value.trim();
+        const newContent = this.workoutMarkdownEditor.value.trim();
+        
+        if (!newName || !newContent) {
+            alert('Please provide both a workout name and content.');
+            return;
+        }
+        
+        try {
+            // Parse the new content to validate it
+            const newWorkoutData = WorkoutParser.parseMarkdown(newContent);
+            
+            if (!newWorkoutData.exercises || newWorkoutData.exercises.length === 0) {
+                alert('Please provide valid workout content with at least one exercise.');
+                return;
+            }
+            
+            // Check if this is editing an existing workout or creating a new one
+            if (this.currentWorkoutId) {
+                // Editing existing workout
+                const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+                if (savedWorkout) {
+                    // Remember current exercise position before updating
+                    const wasRunning = this.isRunning;
+                    const wasPaused = this.isPaused;
+                    const currentIndex = this.currentExerciseIndex;
+                    const currentTime = this.timerManager.getTimeRemaining();
+                    
+                    savedWorkout.name = newName;
+                    savedWorkout.content = newContent;
+                    savedWorkout.data = newWorkoutData;
+                    this.library.saveWorkouts();
+                    
+                    // Update current workout
+                    this.workout = newWorkoutData;
+                    
+                    // Preserve exercise position if still valid
+                    if (currentIndex < newWorkoutData.exercises.length) {
+                        this.currentExerciseIndex = currentIndex;
+                        // If we were in the middle of an exercise, reload it with the new data
+                        this.loadCurrentExercise();
+                        // If the exercise duration changed and we had more time remaining than the new duration,
+                        // adjust the remaining time
+                        const newDuration = this.workout.exercises[currentIndex].duration;
+                        if (newDuration && currentTime > newDuration) {
+                            this.timerManager.timeRemaining = newDuration;
+                        } else {
+                            this.timerManager.timeRemaining = currentTime;
+                        }
+                        this.updateTimerDisplay();
+                        this.updateProgressBar();
+                    } else {
+                        // If current exercise index is out of bounds, reset to beginning
+                        this.resetWorkout();
+                    }
+                    
+                    // Restore running state if it was active
+                    if (wasRunning) {
+                        this.isRunning = true;
+                        this.isPaused = false;
+                        this.timerManager.start();
+                    } else if (wasPaused) {
+                        this.isPaused = true;
+                        this.isRunning = false;
+                    }
+                    
+                    this.updateControls();
+                    this.displayWorkout();
+                    
+                    // Hide editor and refresh workout selector
+                    this.cancelWorkoutEdit();
+                    this.loadWorkoutSelector();
+                    
+                    // Reselect the updated workout in the dropdown
+                    this.workoutSelect.value = this.currentWorkoutId;
+                    
+                    // Update button states
+                    this.updateDeleteButtonState();
+                    
+                    alert('Workout updated successfully!');
+                }
+            } else {
+                // Creating new workout
+                const filename = newName.endsWith('.md') ? newName : newName + '.md';
+                const savedWorkout = this.library.addWorkout(filename, newContent, newWorkoutData);
+                this.currentWorkoutId = savedWorkout.id;
+                
+                // Set as current workout
+                this.workout = newWorkoutData;
+                this.displayWorkout();
+                
+                // Hide editor and refresh workout selector
+                this.cancelWorkoutEdit();
+                this.loadWorkoutSelector();
+                
+                // Select the new workout in the dropdown
+                this.workoutSelect.value = this.currentWorkoutId;
+                
+                // Update button states
+                this.updateDeleteButtonState();
+                
+                // Clear previous workout memory since we successfully created a new one
+                this.previousWorkoutId = null;
+                
+                alert('New workout created successfully!');
+            }
+        } catch (error) {
+            console.error('Error parsing workout:', error);
+            alert('Error parsing workout content. Please check your markdown format.');
+        }
     }
 
     cancelWorkoutEdit() {
-        // TODO: Implement cancel workout edit
-        console.log('Cancel workout edit functionality to be implemented');
+        this.workoutEditor.style.display = 'none';
+        
+        // If we were creating a new workout (no currentWorkoutId) and had a previous selection, restore it
+        if (!this.currentWorkoutId && this.previousWorkoutId) {
+            this.currentWorkoutId = this.previousWorkoutId;
+            this.workoutSelect.value = this.previousWorkoutId;
+            
+            const savedWorkout = this.library.getWorkout(this.previousWorkoutId);
+            if (savedWorkout) {
+                this.workout = savedWorkout.data;
+                this.displayWorkout();
+            }
+            
+            this.updateDeleteButtonState();
+            this.previousWorkoutId = null;
+        } else if (this.workout) {
+            this.workoutDisplay.style.display = 'block';
+        }
     }
 
     // Backward compatibility methods for tests
