@@ -1,8 +1,5 @@
 /* Material Design 3 Enhanced System - Material Web Components Style */
 
-/* Import local Material Icons fallback */
-@import url('assets/icons/material-icons.css');
-
 /* Import Roboto font with comprehensive fallback system */
 @font-face {
     font-family: 'Roboto';
