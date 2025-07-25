@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Material Web Components Styles -->
+    <link rel="stylesheet" href="material-web.css">
+    
+    <!-- Material Web Components from CDN -->
+    <script type="module">
+        // Import only the components we need for better performance
+        // Using unpkg.com CDN for Material Web Components
+        try {
+            await import('https://unpkg.com/@material/web@2.3.0/button/filled-button.js');
+            await import('https://unpkg.com/@material/web@2.3.0/button/outlined-button.js');
+            await import('https://unpkg.com/@material/web@2.3.0/textfield/outlined-text-field.js');
+            await import('https://unpkg.com/@material/web@2.3.0/progress/linear-progress.js');
+            await import('https://unpkg.com/@material/web@2.3.0/select/outlined-select.js');
+            await import('https://unpkg.com/@material/web@2.3.0/select/select-option.js');
+            await import('https://unpkg.com/@material/web@2.3.0/icon/icon.js');
+            console.log('Material Web Components loaded successfully');
+        } catch (error) {
+            console.warn('Could not load Material Web Components from CDN:', error);
+            // Fallback: Use the existing CSS-based implementation
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header class="material-top-bar">
+            <md-icon class="material-top-bar__icon">fitness_center</md-icon>
+            <span class="material-top-bar__title">Workout Timer</span>
+        </header>
+        
+        <main>
+            <section class="file-input-section material-card">
+                <div class="material-card__content">
+                    <h2 class="material-headline">Load Workout</h2>
+                    
+                    <div class="workout-library material-card material-card--outlined" id="workoutLibrary" style="display: none;">
+                        <div class="material-card__content">
+                            <h3 class="material-title">Saved Workouts</h3>
+                            <div class="workout-selector">
+                                <md-outlined-select id="workoutSelect" label="Choose a saved workout">
+                                    <md-select-option value="">
+                                        <div slot="headline">Choose a saved workout...</div>
+                                    </md-select-option>
+                                </md-outlined-select>
+                                <div class="workout-actions">
+                                    <md-outlined-button id="editWorkoutBtn" disabled>
+                                        <md-icon slot="icon">edit</md-icon>
+                                        Edit
+                                    </md-outlined-button>
+                                    <md-outlined-button id="deleteWorkoutBtn" disabled>
+                                        <md-icon slot="icon">delete</md-icon>
+                                        Delete
+                                    </md-outlined-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="workout-editor material-card material-card--outlined" id="workoutEditor" style="display: none;">
+                        <div class="material-card__content">
+                            <h3 class="material-title">Edit Workout</h3>
+                            <div class="editor-controls">
+                                <md-outlined-text-field 
+                                    id="workoutNameInput" 
+                                    label="Workout name"
+                                    style="width: 100%; margin-bottom: 16px;">
+                                </md-outlined-text-field>
+                            </div>
+                            <md-outlined-text-field 
+                                id="workoutMarkdownEditor" 
+                                type="textarea"
+                                rows="15"
+                                label="Workout markdown"
+                                style="width: 100%; margin-bottom: 16px;">
+                            </md-outlined-text-field>
+                            <div class="editor-actions">
+                                <md-filled-button id="saveWorkoutBtn">
+                                    <md-icon slot="icon">save</md-icon>
+                                    Save Changes
+                                </md-filled-button>
+                                <md-outlined-button id="cancelEditBtn">
+                                    Cancel
+                                </md-outlined-button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="file-input-area">
+                        <div class="material-file-input">
+                            <input type="file" id="workoutFile" accept=".md" class="material-file-input__field" />
+                            <div class="material-file-input__surface">
+                                <md-icon class="material-file-input__icon">folder_open</md-icon>
+                                <p class="material-file-input__text">Load a new workout file (.md)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="new-workout-section">
+                        <md-filled-button id="newWorkoutBtn" class="large-button">
+                            <md-icon slot="icon">add</md-icon>
+                            Create New Workout
+                        </md-filled-button>
+                        <p class="material-body">Start creating a workout from scratch</p>
+                    </div>
+                </div>
+                <div class="sample-format material-card material-card--outlined">
+                    <div class="material-card__content">
+                        <h3 class="material-title">Sample Workout Format:</h3>
+                        <pre class="sample-code"># Push Day Workout
+
+## Warm-up - 5:00
+Light cardio and dynamic stretching to prepare your body.
+Start with arm circles, shoulder rolls, and light jumping jacks.
+
+## Push-ups - 0:45
+Classic bodyweight exercise targeting chest, shoulders, and triceps.
+Keep your body in a straight line from head to heels.
+Lower your chest to just above the ground, then push back up.
+
+Rest - 0:15
+
+## Bench Press - 1:00
+Compound movement for chest, shoulders, and triceps development.
+Lie flat on the bench with feet firmly planted on the ground.
+
+Rest - 0:30</pre>
+                    </div>
+                </div>
+            </section>
+
+            <section class="workout-display material-card" id="workoutDisplay" style="display: none;">
+                <div class="material-card__content">
+                    <div class="workout-header">
+                        <h2 id="workoutTitle" class="material-headline">Workout</h2>
+                        <div class="workout-actions">
+                            <md-outlined-button id="shareWorkoutBtn">
+                                <md-icon slot="icon">share</md-icon>
+                                Share Workout
+                            </md-outlined-button>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-container">
+                        <div class="current-exercise material-card material-card--elevated">
+                            <div class="material-card__content">
+                                <h3 id="currentExercise" class="material-headline">Exercise</h3>
+                                <div class="exercise-description" id="currentDescription" style="display: none;">
+                                    <div class="description-toggle" onclick="this.parentElement.classList.toggle('expanded')">
+                                        <span class="material-body">Show Instructions</span>
+                                        <md-icon class="expand-icon">expand_more</md-icon>
+                                    </div>
+                                    <div class="description-content" id="descriptionContent"></div>
+                                </div>
+                                
+                                <div class="timer-display" id="timerDisplay">00:00</div>
+                                <div class="reps-display" id="repsDisplay" style="display: none;">
+                                    <md-icon>fitness_center</md-icon>
+                                    <span id="repsCount">0</span> reps
+                                </div>
+                                
+                                <md-linear-progress 
+                                    id="progressBar" 
+                                    value="0" 
+                                    max="1"
+                                    aria-label="Exercise Progress">
+                                </md-linear-progress>
+                            </div>
+                        </div>
+                        
+                        <div class="rep-completion" id="repCompletion" style="display: none;">
+                            <md-filled-button id="completeRepBtn" class="large-button">
+                                <md-icon slot="icon">check</md-icon>
+                                Complete Exercise
+                            </md-filled-button>
+                        </div>
+                        
+                        <div class="workout-controls">
+                            <md-filled-button id="startBtn">
+                                <md-icon slot="icon">play_arrow</md-icon>
+                                Start
+                            </md-filled-button>
+                            <md-outlined-button id="pauseBtn" disabled>
+                                <md-icon slot="icon">pause</md-icon>
+                                Pause
+                            </md-outlined-button>
+                            <md-outlined-button id="skipBtn" disabled>
+                                <md-icon slot="icon">skip_next</md-icon>
+                                Skip
+                            </md-outlined-button>
+                            <md-outlined-button id="resetBtn">
+                                <md-icon slot="icon">refresh</md-icon>
+                                Reset
+                            </md-outlined-button>
+                        </div>
+                        
+                        <div class="workout-progress">
+                            <p id="progressText" class="material-body">Exercise 1 of 1</p>
+                        </div>
+                    </div>
+                    
+                    <div class="workout-list material-card material-card--outlined" id="workoutList">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -19,14 +19,15 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     
-    <!-- Material Design 3 System -->
-    <link rel="stylesheet" href="material-design.css">
+    <!-- Material Design 3 Enhanced System with Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="material-design-enhanced.css">
 </head>
 <body>
     <div class="container">
         <header class="md-top-app-bar">
             <div class="md-top-app-bar__content">
-                <span class="material-icons md-top-app-bar__leading-icon">🏋️</span>
+                <span class="material-icons md-top-app-bar__leading-icon">fitness_center</span>
                 <span class="md-top-app-bar__title">Workout Timer</span>
             </div>
         </header>
@@ -48,11 +49,11 @@
                                 </div>
                                 <div class="workout-actions">
                                     <button id="editWorkoutBtn" class="md-button md-button--outlined" disabled>
-                                        <span class="material-icons md-button__icon">✏️</span>
+                                        <span class="material-icons md-button__icon">edit</span>
                                         <span class="md-button__label">Edit</span>
                                     </button>
                                     <button id="deleteWorkoutBtn" class="md-button md-button--outlined" disabled>
-                                        <span class="material-icons md-button__icon">🗑️</span>
+                                        <span class="material-icons md-button__icon">delete</span>
                                         <span class="md-button__label">Delete</span>
                                     </button>
                                 </div>
@@ -73,7 +74,7 @@
                             </div>
                             <div class="editor-actions">
                                 <button id="saveWorkoutBtn" class="md-button md-button--filled">
-                                    <span class="material-icons md-button__icon" 💾</span>
+                                    <span class="material-icons md-button__icon">save</span>
                                     <span class="md-button__label">Save Changes</span>
                                 </button>
                                 <button id="cancelEditBtn" class="md-button md-button--outlined">
@@ -87,7 +88,7 @@
                         <div class="md-file-input">
                             <input type="file" id="workoutFile" accept=".md" class="md-file-input__field" />
                             <div class="md-file-input__surface">
-                                <span class="material-icons md-file-input__icon" 📁</span>
+                                <span class="material-icons md-file-input__icon">folder_open</span>
                                 <p class="md-file-input__text">Load a new workout file (.md)</p>
                             </div>
                         </div>
@@ -95,7 +96,7 @@
                     
                     <div class="new-workout-section">
                         <button id="newWorkoutBtn" class="md-button md-button--filled md-button--large">
-                            <span class="material-icons md-button__icon" +</span>
+                            <span class="material-icons md-button__icon">add</span>
                             <span class="md-button__label">Create New Workout</span>
                         </button>
                         <p class="md-typescale-body-large input-help">Start creating a workout from scratch</p>
@@ -132,7 +133,7 @@ Rest - 0:30</pre>
                         <h2 id="workoutTitle" class="md-typescale-headline-large">Workout</h2>
                         <div class="workout-actions">
                             <button id="shareWorkoutBtn" class="md-button md-button--outlined">
-                                <span class="material-icons md-button__icon" 📤</span>
+                                <span class="material-icons md-button__icon">share</span>
                                 <span class="md-button__label">Share Workout</span>
                             </button>
                         </div>
@@ -145,14 +146,14 @@ Rest - 0:30</pre>
                                 <div class="exercise-description" id="currentDescription" style="display: none;">
                                     <div class="description-toggle" onclick="this.parentElement.classList.toggle('expanded')">
                                         <span class="md-typescale-body-large">Show Instructions</span>
-                                        <span class="material-icons expand-icon" ▼</span>
+                                        <span class="material-icons expand-icon">expand_more</span>
                                     </div>
                                     <div class="description-content" id="descriptionContent"></div>
                                 </div>
                                 
                                 <div class="timer-display" id="timerDisplay">00:00</div>
                                 <div class="reps-display" id="repsDisplay" style="display: none;">
-                                    <span class="material-icons" 🏋️</span>
+                                    <span class="material-icons">fitness_center</span>
                                     <span id="repsCount">0</span> reps
                                 </div>
                                 
@@ -164,26 +165,26 @@ Rest - 0:30</pre>
                         
                         <div class="rep-completion" id="repCompletion" style="display: none;">
                             <button id="completeRepBtn" class="md-button md-button--filled md-button--large">
-                                <span class="material-icons md-button__icon" ✅</span>
+                                <span class="material-icons md-button__icon">check</span>
                                 <span class="md-button__label">Complete Exercise</span>
                             </button>
                         </div>
                         
                         <div class="workout-controls">
                             <button id="startBtn" class="md-button md-button--filled">
-                                <span class="material-icons md-button__icon" ▶️</span>
+                                <span class="material-icons md-button__icon">play_arrow</span>
                                 <span class="md-button__label">Start</span>
                             </button>
                             <button id="pauseBtn" class="md-button md-button--outlined" disabled>
-                                <span class="material-icons md-button__icon" ⏸️</span>
+                                <span class="material-icons md-button__icon">pause</span>
                                 <span class="md-button__label">Pause</span>
                             </button>
                             <button id="skipBtn" class="md-button md-button--outlined" disabled>
-                                <span class="material-icons md-button__icon" ⏭️</span>
+                                <span class="material-icons md-button__icon">skip_next</span>
                                 <span class="md-button__label">Skip</span>
                             </button>
                             <button id="resetBtn" class="md-button md-button--outlined">
-                                <span class="material-icons md-button__icon" 🔄</span>
+                                <span class="material-icons md-button__icon">refresh</span>
                                 <span class="md-button__label">Reset</span>
                             </button>
                         </div>
