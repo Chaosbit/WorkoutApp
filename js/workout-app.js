@@ -77,33 +77,12 @@ export class WorkoutApp {
         this.editWorkoutBtn = document.getElementById('editWorkoutBtn');
         this.deleteWorkoutBtn = document.getElementById('deleteWorkoutBtn');
         
-        // New library management elements
-        this.libraryControls = document.getElementById('libraryControls');
-        this.tagFilterInput = document.getElementById('tagFilterInput');
-        this.selectedTags = document.getElementById('selectedTags');
-        this.tagSuggestions = document.getElementById('tagSuggestions');
-        this.durationFilter = document.getElementById('durationFilter');
-        this.sortBySelect = document.getElementById('sortBySelect');
-        this.sortOrderBtn = document.getElementById('sortOrderBtn');
-        this.sortOrderIcon = document.getElementById('sortOrderIcon');
-        this.clearFiltersBtn = document.getElementById('clearFiltersBtn');
-        this.workoutInfo = document.getElementById('workoutInfo');
-        this.workoutDuration = document.getElementById('workoutDuration');
-        this.workoutExercises = document.getElementById('workoutExercises');
-        this.workoutCompletion = document.getElementById('workoutCompletion');
-        this.workoutTags = document.getElementById('workoutTags');
-        
         // Workout editor elements
         this.workoutEditor = document.getElementById('workoutEditor');
         this.workoutNameInput = document.getElementById('workoutNameInput');
         this.workoutMarkdownEditor = document.getElementById('workoutMarkdownEditor');
         this.saveWorkoutBtn = document.getElementById('saveWorkoutBtn');
         this.cancelEditBtn = document.getElementById('cancelEditBtn');
-        
-        // New tag editor elements
-        this.workoutTagsEditor = document.getElementById('workoutTagsEditor');
-        this.newTagInput = document.getElementById('newTagInput');
-        this.tagSuggestionsEditor = document.getElementById('tagSuggestionsEditor');
         
         // Control elements
         this.newWorkoutBtn = document.getElementById('newWorkoutBtn');
@@ -112,14 +91,6 @@ export class WorkoutApp {
         this.skipBtn = document.getElementById('skipBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.shareWorkoutBtn = document.getElementById('shareWorkoutBtn');
-        
-        // Initialize filter state
-        this.currentFilters = {
-            tags: [],
-            duration: null,
-            sortBy: 'name',
-            sortOrder: 'asc'
-        };
     }
 
     /**
@@ -139,28 +110,6 @@ export class WorkoutApp {
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
         this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
         this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
-        
-        // New library management event bindings
-        this.tagFilterInput.addEventListener('input', (e) => this.handleTagFilterInput(e));
-        this.tagFilterInput.addEventListener('keydown', (e) => this.handleTagFilterKeydown(e));
-        this.durationFilter.addEventListener('change', () => this.applyFilters());
-        this.sortBySelect.addEventListener('change', () => this.applyFilters());
-        this.sortOrderBtn.addEventListener('click', () => this.toggleSortOrder());
-        this.clearFiltersBtn.addEventListener('click', () => this.clearAllFilters());
-        
-        // Tag editor event bindings
-        this.newTagInput.addEventListener('input', (e) => this.handleTagEditorInput(e));
-        this.newTagInput.addEventListener('keydown', (e) => this.handleTagEditorKeydown(e));
-        
-        // Close suggestion dropdowns when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!this.tagFilterInput.contains(e.target) && !this.tagSuggestions.contains(e.target)) {
-                this.tagSuggestions.style.display = 'none';
-            }
-            if (!this.newTagInput.contains(e.target) && !this.tagSuggestionsEditor.contains(e.target)) {
-                this.tagSuggestionsEditor.style.display = 'none';
-            }
-        });
         
         // Cleanup statistics elements when page becomes visible (e.g., after navigation)
         document.addEventListener('visibilitychange', () => {
@@ -219,7 +168,6 @@ export class WorkoutApp {
         if (!workoutId) {
             this.workout = null;
             this.currentWorkoutId = null;
-            this.workoutInfo.style.display = 'none';
             // Don't hide workout display - keep showing last workout for better UX
             this.updateDeleteButtonState();
             return;
@@ -229,13 +177,8 @@ export class WorkoutApp {
         if (savedWorkout) {
             this.currentWorkoutId = workoutId;
             this.workout = savedWorkout.data;
-            
-            // Update workout usage stats
-            this.library.updateWorkoutStats(workoutId, false);
-            
             this.displayWorkout();
             this.updateDeleteButtonState();
-            this.updateWorkoutInfo(savedWorkout);
         }
     }
 
@@ -350,11 +293,6 @@ export class WorkoutApp {
         
         // Complete the workout session
         this.statisticsManager.completeSession();
-        
-        // Update workout completion stats
-        if (this.currentWorkoutId) {
-            this.library.updateWorkoutStats(this.currentWorkoutId, true);
-        }
         
         // Release screen wake lock when workout completes
         this.screenWakeManager.releaseWakeLock();
@@ -536,17 +474,19 @@ export class WorkoutApp {
      * Load workout selector dropdown
      */
     loadWorkoutSelector() {
-        const allWorkouts = this.library.getAllWorkouts();
+        const workouts = this.library.getAllWorkouts();
+        this.workoutSelect.innerHTML = '<option value="">Choose a saved workout...</option>';
         
-        if (allWorkouts.length > 0) {
+        if (workouts.length > 0) {
             this.workoutLibrarySection.style.display = 'block';
-            this.workoutLibrarySection.classList.add('has-workouts');
-            this.libraryControls.style.display = 'flex';
-            this.applyFilters(); // This will populate the dropdown with filtered results
+            workouts.forEach(workout => {
+                const option = document.createElement('option');
+                option.value = workout.id;
+                option.textContent = workout.name;
+                this.workoutSelect.appendChild(option);
+            });
         } else {
             this.workoutLibrarySection.style.display = 'none';
-            this.workoutLibrarySection.classList.remove('has-workouts');
-            this.libraryControls.style.display = 'none';
         }
         
         this.updateDeleteButtonState();
@@ -630,293 +570,6 @@ export class WorkoutApp {
         this.updateWorkoutList();
     }
 
-    // Workout Library Management Methods
-    
-    /**
-     * Apply current filters to workout selector
-     */
-    applyFilters() {
-        const filters = {
-            tags: this.currentFilters.tags,
-            sortBy: this.sortBySelect.value,
-            sortOrder: this.currentFilters.sortOrder
-        };
-
-        // Parse duration filter
-        const durationValue = this.durationFilter.value;
-        if (durationValue) {
-            if (durationValue.includes('-')) {
-                const [min, max] = durationValue.split('-').map(Number);
-                filters.minDuration = min;
-                if (max) filters.maxDuration = max;
-            } else if (durationValue.endsWith('+')) {
-                filters.minDuration = parseInt(durationValue);
-            }
-        }
-
-        const filteredWorkouts = this.library.getFilteredWorkouts(filters);
-        this.populateWorkoutSelector(filteredWorkouts);
-    }
-
-    /**
-     * Populate the workout selector with given workouts
-     */
-    populateWorkoutSelector(workouts) {
-        const currentSelection = this.workoutSelect.value;
-        this.workoutSelect.innerHTML = '<option value="">Choose a saved workout...</option>';
-        
-        workouts.forEach(workout => {
-            const option = document.createElement('option');
-            option.value = workout.id;
-            
-            // Add duration and completion info to option text
-            const duration = this.library.calculateWorkoutDuration(workout.data);
-            const durationText = this.formatDuration(duration);
-            const completionCount = workout.timesCompleted || 0;
-            const completionText = completionCount > 0 ? ` (${completionCount}x)` : '';
-            
-            option.textContent = `${workout.name} • ${durationText}${completionText}`;
-            this.workoutSelect.appendChild(option);
-        });
-
-        // Restore selection if the workout is still in the filtered list
-        if (currentSelection && workouts.some(w => w.id === currentSelection)) {
-            this.workoutSelect.value = currentSelection;
-        } else if (currentSelection) {
-            // Selected workout was filtered out, clear selection
-            this.workoutSelect.value = '';
-            this.workoutInfo.style.display = 'none';
-        }
-    }
-
-    /**
-     * Handle tag filter input
-     */
-    handleTagFilterInput(event) {
-        const input = event.target.value.toLowerCase();
-        const allTags = this.library.getAllTags();
-        const availableTags = allTags.filter(tag => 
-            tag.includes(input) && !this.currentFilters.tags.includes(tag)
-        );
-
-        this.showTagSuggestions(availableTags, this.tagSuggestions, (tag) => {
-            this.addFilterTag(tag);
-            this.tagFilterInput.value = '';
-        });
-    }
-
-    /**
-     * Handle tag filter keydown events
-     */
-    handleTagFilterKeydown(event) {
-        if (event.key === 'Enter' || event.key === ',') {
-            event.preventDefault();
-            const tag = event.target.value.trim();
-            if (tag) {
-                this.addFilterTag(tag);
-                event.target.value = '';
-            }
-        }
-    }
-
-    /**
-     * Add a tag to the filter
-     */
-    addFilterTag(tag) {
-        const normalizedTag = tag.toLowerCase();
-        if (!this.currentFilters.tags.includes(normalizedTag)) {
-            this.currentFilters.tags.push(normalizedTag);
-            this.updateSelectedTagsDisplay();
-            this.applyFilters();
-        }
-    }
-
-    /**
-     * Remove a tag from the filter
-     */
-    removeFilterTag(tag) {
-        this.currentFilters.tags = this.currentFilters.tags.filter(t => t !== tag);
-        this.updateSelectedTagsDisplay();
-        this.applyFilters();
-    }
-
-    /**
-     * Update the selected tags display
-     */
-    updateSelectedTagsDisplay() {
-        this.selectedTags.innerHTML = '';
-        this.currentFilters.tags.forEach(tag => {
-            const chip = document.createElement('div');
-            chip.className = 'tag-chip';
-            chip.innerHTML = `
-                ${tag}
-                <button class="remove-tag">&times;</button>
-            `;
-            // Add event listener instead of onclick attribute to avoid escaping issues
-            const removeBtn = chip.querySelector('.remove-tag');
-            removeBtn.addEventListener('click', () => this.removeFilterTag(tag));
-            this.selectedTags.appendChild(chip);
-        });
-    }
-
-    /**
-     * Toggle sort order
-     */
-    toggleSortOrder() {
-        this.currentFilters.sortOrder = this.currentFilters.sortOrder === 'asc' ? 'desc' : 'asc';
-        this.sortOrderIcon.textContent = this.currentFilters.sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward';
-        this.applyFilters();
-    }
-
-    /**
-     * Clear all filters
-     */
-    clearAllFilters() {
-        this.currentFilters.tags = [];
-        this.currentFilters.sortOrder = 'asc';
-        this.tagFilterInput.value = '';
-        this.durationFilter.value = '';
-        this.sortBySelect.value = 'name';
-        this.sortOrderIcon.textContent = 'arrow_upward';
-        this.updateSelectedTagsDisplay();
-        this.applyFilters();
-    }
-
-    /**
-     * Show tag suggestions dropdown
-     */
-    showTagSuggestions(tags, container, onSelect) {
-        container.innerHTML = '';
-        if (tags.length === 0) {
-            container.style.display = 'none';
-            return;
-        }
-
-        tags.forEach(tag => {
-            const suggestion = document.createElement('div');
-            suggestion.className = 'tag-suggestion';
-            suggestion.textContent = tag;
-            suggestion.onclick = () => {
-                onSelect(tag);
-                container.style.display = 'none';
-            };
-            container.appendChild(suggestion);
-        });
-
-        container.style.display = 'block';
-    }
-
-    /**
-     * Update workout info display
-     */
-    updateWorkoutInfo(workout) {
-        if (!workout) {
-            this.workoutInfo.style.display = 'none';
-            return;
-        }
-
-        const duration = this.library.calculateWorkoutDuration(workout.data);
-        const exerciseCount = workout.data.exercises ? workout.data.exercises.length : 0;
-        const completionCount = workout.timesCompleted || 0;
-
-        this.workoutDuration.textContent = this.formatDuration(duration);
-        this.workoutExercises.textContent = `${exerciseCount} exercises`;
-        this.workoutCompletion.textContent = completionCount > 0 ? `Completed ${completionCount} times` : 'Never completed';
-
-        // Update tags display
-        this.workoutTags.innerHTML = '';
-        if (workout.tags && workout.tags.length > 0) {
-            workout.tags.forEach(tag => {
-                const tagElement = document.createElement('span');
-                tagElement.className = 'workout-tag';
-                tagElement.textContent = tag;
-                this.workoutTags.appendChild(tagElement);
-            });
-        }
-
-        this.workoutInfo.style.display = 'block';
-    }
-
-    /**
-     * Handle tag editor input
-     */
-    handleTagEditorInput(event) {
-        const input = event.target.value.toLowerCase();
-        const allTags = this.library.getAllTags();
-        const currentTags = this.getCurrentWorkoutTags();
-        const availableTags = allTags.filter(tag => 
-            tag.includes(input) && !currentTags.includes(tag)
-        );
-
-        this.showTagSuggestions(availableTags, this.tagSuggestionsEditor, (tag) => {
-            this.addWorkoutTag(tag);
-            this.newTagInput.value = '';
-        });
-    }
-
-    /**
-     * Handle tag editor keydown events
-     */
-    handleTagEditorKeydown(event) {
-        if (event.key === 'Enter' || event.key === ',') {
-            event.preventDefault();
-            const tag = event.target.value.trim();
-            if (tag) {
-                this.addWorkoutTag(tag);
-                event.target.value = '';
-            }
-        }
-    }
-
-    /**
-     * Get current workout tags from editor
-     */
-    getCurrentWorkoutTags() {
-        const tags = [];
-        this.workoutTagsEditor.querySelectorAll('.editable-tag').forEach(chip => {
-            tags.push(chip.textContent.replace('×', '').trim());
-        });
-        return tags;
-    }
-
-    /**
-     * Add a tag to the current workout being edited
-     */
-    addWorkoutTag(tag) {
-        const normalizedTag = tag.toLowerCase();
-        const currentTags = this.getCurrentWorkoutTags();
-        
-        if (!currentTags.includes(normalizedTag)) {
-            const tagChip = document.createElement('div');
-            tagChip.className = 'editable-tag';
-            tagChip.innerHTML = `
-                ${normalizedTag}
-                <button class="remove-tag">&times;</button>
-            `;
-            // Add event listener instead of onclick attribute to avoid escaping issues
-            const removeBtn = tagChip.querySelector('.remove-tag');
-            removeBtn.addEventListener('click', () => tagChip.remove());
-            this.workoutTagsEditor.appendChild(tagChip);
-        }
-    }
-
-    /**
-     * Format duration in seconds to readable string
-     */
-    formatDuration(seconds) {
-        if (seconds < 60) {
-            return `${seconds}s`;
-        } else if (seconds < 3600) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
-        } else {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-        }
-    }
-
     // Workout editing functionality
     editSelectedWorkout() {
         if (!this.currentWorkoutId) return;
@@ -927,14 +580,6 @@ export class WorkoutApp {
         // Populate the editor with current workout data
         this.workoutNameInput.value = savedWorkout.name;
         this.workoutMarkdownEditor.value = savedWorkout.content || '';
-        
-        // Populate tags editor
-        this.workoutTagsEditor.innerHTML = '';
-        if (savedWorkout.tags && savedWorkout.tags.length > 0) {
-            savedWorkout.tags.forEach(tag => {
-                this.addWorkoutTag(tag);
-            });
-        }
         
         // Show the editor and hide the workout display
         this.workoutEditor.style.display = 'block';
@@ -995,9 +640,6 @@ Rest - 0:30`;
         this.workoutNameInput.value = '';
         this.workoutMarkdownEditor.value = defaultTemplate;
         
-        // Clear tags editor
-        this.workoutTagsEditor.innerHTML = '';
-        
         // Show the editor and hide the workout display
         this.workoutEditor.style.display = 'block';
         this.workoutDisplay.style.display = 'none';
@@ -1009,7 +651,6 @@ Rest - 0:30`;
     saveWorkoutChanges() {
         const newName = this.workoutNameInput.value.trim();
         const newContent = this.workoutMarkdownEditor.value.trim();
-        const newTags = this.getCurrentWorkoutTags();
         
         if (!newName || !newContent) {
             alert('Please provide both a workout name and content.');
@@ -1039,9 +680,7 @@ Rest - 0:30`;
                     savedWorkout.name = newName;
                     savedWorkout.content = newContent;
                     savedWorkout.data = newWorkoutData;
-                    
-                    // Update tags
-                    this.library.setTags(this.currentWorkoutId, newTags);
+                    this.library.saveWorkouts();
                     
                     // Update current workout
                     this.workout = newWorkoutData;
@@ -1086,10 +725,8 @@ Rest - 0:30`;
                     // Reselect the updated workout in the dropdown
                     this.workoutSelect.value = this.currentWorkoutId;
                     
-                    // Update button states and workout info
+                    // Update button states
                     this.updateDeleteButtonState();
-                    const updatedWorkout = this.library.getWorkout(this.currentWorkoutId);
-                    this.updateWorkoutInfo(updatedWorkout);
                     
                     alert('Workout updated successfully!');
                 }
@@ -1098,11 +735,6 @@ Rest - 0:30`;
                 const filename = newName.endsWith('.md') ? newName : newName + '.md';
                 const savedWorkout = this.library.addWorkout(filename, newContent, newWorkoutData);
                 this.currentWorkoutId = savedWorkout.id;
-                
-                // Set tags for new workout
-                if (newTags.length > 0) {
-                    this.library.setTags(savedWorkout.id, newTags);
-                }
                 
                 // Set as current workout
                 this.workout = newWorkoutData;
@@ -1115,21 +747,14 @@ Rest - 0:30`;
                 // Select the new workout in the dropdown
                 this.workoutSelect.value = this.currentWorkoutId;
                 
-                // Update button states and workout info
+                // Update button states
                 this.updateDeleteButtonState();
-                const updatedWorkout = this.library.getWorkout(this.currentWorkoutId);
-                this.updateWorkoutInfo(updatedWorkout);
                 
                 // Clear previous workout memory since we successfully created a new one
                 this.previousWorkoutId = null;
                 
                 alert('New workout created successfully!');
             }
-        } catch (error) {
-            console.error('Error parsing workout:', error);
-            alert('Error parsing workout content. Please check your markdown format.');
-        }
-    }
         } catch (error) {
             console.error('Error parsing workout:', error);
             alert('Error parsing workout content. Please check your markdown format.');
@@ -1402,7 +1027,7 @@ Rest - 0:30`;
         this.showShareSuccessMessage();
         
         // Try clipboard APIs but don't depend on them for UI feedback
-        if (navigator.clipboard && (typeof window === 'undefined' || !window.Cypress)) {
+        if (navigator.clipboard && typeof window === 'undefined' || !window.Cypress) {
             navigator.clipboard.writeText(text).catch(() => {
                 // Silent failure - success message already shown
                 console.log('Clipboard API failed, but success message already shown');
@@ -1511,7 +1136,7 @@ Rest - 0:30`;
             <div class="message-content">
                 <div>
                     <p style="margin: 0 0 8px 0;">❌ Could not copy automatically. Please copy this link manually:</p>
-                    <input type="text" value="${shareLink.replace(/"/g, '&quot;')}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;" readonly onclick="this.select()">
+                    <input type="text" value="${shareLink}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;" readonly onclick="this.select()">
                 </div>
                 <button onclick="this.parentElement.parentElement.remove()" class="close-btn" style="align-self: flex-start;">&times;</button>
             </div>
