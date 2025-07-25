@@ -95,48 +95,7 @@ The app automatically deploys to GitHub Pages on every push to main/master branc
 3. Branch: "gh-pages" 
 4. Folder: "/ (root)"
 
-### Azure Deployment
 
-Deploy to Azure Storage for private hosting:
-
-**Prerequisites:**
-- Azure CLI installed and logged in
-- Terraform installed
-- Azure subscription
-
-**Deploy:**
-```bash
-./deploy.sh
-```
-
-This will:
-1. Create Azure Storage Account with static website hosting
-2. Upload all PWA files
-3. Provide the website URL for installation
-
-**Manual Steps:**
-1. **Infrastructure**: 
-   ```bash
-   cd terraform
-   terraform init
-   terraform apply
-   ```
-
-2. **Upload Files**:
-   ```bash
-   # Get storage account name from Terraform output
-   STORAGE_ACCOUNT=$(terraform output -raw storage_account_name)
-   
-   # Upload files
-   az storage blob upload --account-name "$STORAGE_ACCOUNT" --container-name '$web' --name 'index.html' --file 'index.html' --content-type 'text/html'
-   # ... repeat for other files
-   ```
-
-**Clean Up:**
-```bash
-cd terraform
-terraform destroy
-```
 
 ## Files
 
@@ -146,5 +105,4 @@ terraform destroy
 - `sw.js` - Service worker for offline support
 - `manifest.json` - PWA configuration
 - `sample-workout.md` - Example workout file
-- `deploy.sh` - Azure deployment script
-- `terraform/` - Infrastructure as Code
+- `deploy-github-pages.sh` - GitHub Pages deployment script

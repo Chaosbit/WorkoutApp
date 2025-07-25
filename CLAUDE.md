@@ -6,8 +6,7 @@ A Progressive Web App (PWA) for running markdown-based workouts with timers, des
 ## Architecture
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
 - **PWA Features**: Service Worker, Web App Manifest, offline caching
-- **Hosting**: Azure Storage Static Website
-- **Infrastructure**: Terraform for Azure deployment
+- **Hosting**: GitHub Pages
 - **File Format**: Markdown (.md) for workout definitions
 
 ## Key Files
@@ -16,8 +15,7 @@ A Progressive Web App (PWA) for running markdown-based workouts with timers, des
 - `styles.css` - Responsive CSS with mobile-first design
 - `sw.js` - Service worker for offline caching
 - `manifest.json` - PWA manifest for Android installation
-- `deploy.sh` - Azure deployment automation script
-- `terraform/` - Infrastructure as Code for Azure hosting
+- `deploy-github-pages.sh` - GitHub Pages deployment automation script
 
 ## Workout File Format
 Workouts are defined in markdown with this structure:
@@ -43,17 +41,6 @@ npm run test:open     # Open Cypress test runner
 
 # Deploy to GitHub Pages
 ./deploy-github-pages.sh
-
-# Deploy to Azure (requires Azure CLI + Terraform)
-./deploy.sh
-
-# Manual Terraform deployment
-cd terraform
-terraform init
-terraform apply
-
-# Clean up Azure resources
-terraform destroy
 ```
 
 ## Deployment
@@ -67,10 +54,6 @@ terraform destroy
 - Run `./deploy-github-pages.sh` to deploy manually
 - Creates/updates gh-pages branch with built files
 
-### Azure Storage
-- Run `./deploy.sh` for full Azure deployment with Terraform
-- Creates storage account with static website hosting
-
 ## Testing
 - Test PWA installation on Android Chrome
 - Verify offline functionality after first visit
@@ -80,7 +63,6 @@ terraform destroy
 ## Dependencies
 - No npm dependencies - uses vanilla JavaScript
 - Runtime: Modern browsers with PWA support
-- Deployment: Azure CLI, Terraform
 
 ## Browser Support
 - Chrome/Chromium (primary target for PWA features)
@@ -93,11 +75,10 @@ terraform destroy
 - Offline functionality via Service Worker
 - Android PWA installation
 - Responsive mobile design
-- Azure cloud hosting with Terraform
+- GitHub Pages hosting
 
 ## Common Tasks
 - **Add new exercise types**: Modify parsing logic in `script.js:WorkoutParser.parseMarkdown()`
 - **Update UI styling**: Edit `styles.css` with mobile-first approach
 - **Modify timer behavior**: Update `script.js:WorkoutTimer` class methods
-- **Change deployment region**: Update `terraform/variables.tf` location variable
 - **Add new file types**: Update service worker cache list in `sw.js`
