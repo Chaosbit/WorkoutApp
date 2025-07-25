@@ -91,6 +91,7 @@ jobs:
           cp *.png ./dist/ 2>/dev/null || true
           cp *.svg ./dist/ 2>/dev/null || true
           cp sample-workout.md ./dist/
+          cp -r js/ ./dist/ 2>/dev/null || true
           
       - name: Create 404.html for SPA routing
         run: |
