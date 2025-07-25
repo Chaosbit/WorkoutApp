@@ -2,6 +2,7 @@ import { WorkoutParser } from './workout-parser.js';
 import { WorkoutLibrary } from './workout-library.js';
 import { AudioManager } from './audio-manager.js';
 import { TimerManager } from './timer-manager.js';
+import { StatisticsManager } from './statistics-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
 
 /**
@@ -23,6 +24,7 @@ export class WorkoutApp {
         this.library = new WorkoutLibrary();
         this.audioManager = new AudioManager();
         this.timerManager = new TimerManager();
+        this.statisticsManager = new StatisticsManager();
 
         // Setup timer callbacks
         this.timerManager.setOnTick((timeRemaining) => {
@@ -39,6 +41,7 @@ export class WorkoutApp {
         this.bindEvents();
         this.loadWorkoutSelector();
         this.checkForSharedWorkout(); // Check URL for shared workout
+        this.updateStatisticsDisplay(); // Initialize statistics display
 
         // Register service worker
         registerServiceWorker();
@@ -86,6 +89,14 @@ export class WorkoutApp {
         this.skipBtn = document.getElementById('skipBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.shareWorkoutBtn = document.getElementById('shareWorkoutBtn');
+        
+        // Statistics elements
+        this.statisticsSection = document.getElementById('statisticsSection');
+        this.totalWorkoutsEl = document.getElementById('totalWorkouts');
+        this.completedWorkoutsEl = document.getElementById('completedWorkouts');
+        this.totalTimeEl = document.getElementById('totalTime');
+        this.streakDaysEl = document.getElementById('streakDays');
+        this.journalList = document.getElementById('journalList');
     }
 
     /**
@@ -193,11 +204,21 @@ export class WorkoutApp {
         this.isRunning = true;
         this.isPaused = false;
         
+        // Start tracking workout session
+        this.statisticsManager.startSession(
+            this.currentWorkoutId || 'anonymous',
+            this.workout.title || 'Workout',
+            this.workout.exercises
+        );
+        
         const currentExercise = this.workout.exercises[this.currentExerciseIndex];
         if (currentExercise && currentExercise.exerciseType === 'timer') {
             this.timerManager.setExercise(currentExercise);
             this.timerManager.start();
         }
+        
+        // Track exercise start
+        this.statisticsManager.startExercise(this.currentExerciseIndex);
         
         this.updateControls();
     }
@@ -221,12 +242,20 @@ export class WorkoutApp {
         
         this.timerManager.stop();
         this.audioManager.playExerciseComplete();
+        
+        // Complete current exercise in statistics
+        this.statisticsManager.completeExercise(this.currentExerciseIndex);
+        
         this.currentExerciseIndex++;
         
         if (this.currentExerciseIndex >= this.workout.exercises.length) {
             this.completeWorkout();
         } else {
             this.loadCurrentExercise();
+            
+            // Track new exercise start
+            this.statisticsManager.startExercise(this.currentExerciseIndex);
+            
             if (this.isRunning) {
                 const currentExercise = this.workout.exercises[this.currentExerciseIndex];
                 if (currentExercise && currentExercise.exerciseType === 'timer') {
@@ -248,6 +277,11 @@ export class WorkoutApp {
         this.timerManager.stop();
         this.isRunning = false;
         this.isPaused = false;
+        
+        // Complete the workout session
+        this.statisticsManager.completeSession();
+        this.updateStatisticsDisplay();
+        
         this.currentExercise.textContent = 'Workout Complete! 🎉';
         this.timerDisplay.textContent = '00:00';
         this.timerDisplay.style.display = 'block';
@@ -351,6 +385,12 @@ export class WorkoutApp {
      */
     resetWorkout() {
         this.timerManager.stop();
+        
+        // If there was an active session, abandon it
+        if (this.isRunning || this.isPaused) {
+            this.statisticsManager.abandonSession();
+        }
+        
         this.isRunning = false;
         this.isPaused = false;
         this.currentExerciseIndex = 0;
@@ -1068,5 +1108,64 @@ Rest - 0:30`;
                 message.remove();
             }
         }, 10000);
+    }
+
+    /**
+     * Update the statistics display
+     */
+    updateStatisticsDisplay() {
+        const stats = this.statisticsManager.getStats();
+        const recentSessions = this.statisticsManager.getRecentSessions(10);
+        
+        // Update stats overview
+        this.totalWorkoutsEl.textContent = stats.totalWorkouts;
+        this.completedWorkoutsEl.textContent = stats.completedWorkouts;
+        this.totalTimeEl.textContent = this.statisticsManager.getFormattedTotalTime();
+        this.streakDaysEl.textContent = stats.streakDays;
+        
+        // Update journal list
+        this.updateJournalDisplay(recentSessions);
+    }
+
+    /**
+     * Update the workout journal display
+     * @param {Array} sessions - Array of recent workout sessions
+     */
+    updateJournalDisplay(sessions) {
+        if (sessions.length === 0) {
+            this.journalList.innerHTML = '<p class="no-data">No workout sessions yet. Start your first workout to see your progress!</p>';
+            return;
+        }
+
+        this.journalList.innerHTML = '';
+        
+        sessions.forEach(session => {
+            const journalItem = document.createElement('div');
+            journalItem.className = `journal-item ${session.status}`;
+            
+            const sessionDate = new Date(session.startTime);
+            const dateStr = sessionDate.toLocaleDateString();
+            const timeStr = sessionDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const completedExercises = session.exercises.filter(e => e.completed).length;
+            const totalExercises = session.exercises.length;
+            
+            journalItem.innerHTML = `
+                <div class="journal-main">
+                    <div class="journal-workout-name">${session.workoutName}</div>
+                    <div class="journal-details">
+                        <span>📅 ${dateStr}</span>
+                        <span>🕐 ${timeStr}</span>
+                        <span>⏱️ ${this.statisticsManager.getSessionDuration(session)}</span>
+                        <span>✅ ${completedExercises}/${totalExercises} exercises</span>
+                    </div>
+                </div>
+                <div class="journal-status ${session.status}">
+                    ${session.status === 'completed' ? '✓ Completed' : '✗ Abandoned'}
+                </div>
+            `;
+            
+            this.journalList.appendChild(journalItem);
+        });
     }
 }

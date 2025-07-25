@@ -544,3 +544,169 @@ header h1 {
         width: 100%;
     }
 }
+
+/* Statistics Section Styles */
+.statistics-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.statistics-section h2 {
+    margin-bottom: 25px;
+    color: #333;
+    text-align: center;
+}
+
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.workout-journal {
+    border-top: 1px solid #eee;
+    padding-top: 25px;
+}
+
+.workout-journal h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.journal-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.journal-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.journal-item:hover {
+    background: #f8f9fa;
+    transform: translateX(2px);
+}
+
+.journal-item.completed {
+    border-left: 4px solid #28a745;
+}
+
+.journal-item.abandoned {
+    border-left: 4px solid #dc3545;
+    opacity: 0.7;
+}
+
+.journal-main {
+    flex-grow: 1;
+}
+
+.journal-workout-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.journal-details {
+    font-size: 0.85rem;
+    color: #666;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.journal-status {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.journal-status.completed {
+    color: #28a745;
+}
+
+.journal-status.abandoned {
+    color: #dc3545;
+}
+
+.journal-status::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.journal-status.completed::before {
+    background: #28a745;
+}
+
+.journal-status.abandoned::before {
+    background: #dc3545;
+}
+
+.no-data {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 40px 20px;
+}
+
+@media (max-width: 600px) {
+    .stats-overview {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .journal-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .journal-details {
+        gap: 8px;
+    }
+}
