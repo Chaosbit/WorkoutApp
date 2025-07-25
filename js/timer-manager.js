@@ -9,6 +9,7 @@ export class TimerManager {
         this.currentExercise = null;
         this.onTick = null;
         this.onComplete = null;
+        this.lastSecondUpdate = 0; // Track when we last decremented a full second
     }
 
     /**
@@ -42,20 +43,30 @@ export class TimerManager {
     start() {
         this.stop(); // Clear any existing timer
         this.isRunning = true;
+        this.lastSecondUpdate = Date.now();
         
+        // Use 100ms intervals for smooth progress bar updates
         this.intervalId = setInterval(() => {
-            this.timeRemaining--;
+            const now = Date.now();
+            const timeSinceLastSecond = now - this.lastSecondUpdate;
             
-            // Call tick callback if provided
+            // Decrement a full second if 1000ms or more have passed
+            if (timeSinceLastSecond >= 1000) {
+                this.timeRemaining--;
+                this.lastSecondUpdate = now;
+                
+                // Check if timer completed
+                if (this.timeRemaining <= 0) {
+                    this.complete();
+                    return;
+                }
+            }
+            
+            // Call tick callback if provided (this will update UI including progress bar)
             if (this.onTick) {
                 this.onTick(this.timeRemaining);
             }
-            
-            // Check if timer completed
-            if (this.timeRemaining <= 0) {
-                this.complete();
-            }
-        }, 1000);
+        }, 100); // Update every 100ms for smooth progress bar
     }
 
     /**
@@ -97,6 +108,7 @@ export class TimerManager {
         if (this.currentExercise) {
             this.timeRemaining = this.currentExercise.duration || 0;
         }
+        this.lastSecondUpdate = 0;
     }
 
     /**
@@ -145,7 +157,13 @@ export class TimerManager {
         if (!this.currentExercise || !this.currentExercise.duration) {
             return 0;
         }
-        const elapsed = this.currentExercise.duration - this.timeRemaining;
+        
+        // Calculate sub-second progress for smoother animation
+        const now = Date.now();
+        const timeSinceLastSecond = this.isRunning ? (now - this.lastSecondUpdate) / 1000 : 0;
+        const preciseTimeRemaining = Math.max(0, this.timeRemaining - timeSinceLastSecond);
+        const elapsed = this.currentExercise.duration - preciseTimeRemaining;
+        
         return Math.max(0, Math.min(100, (elapsed / this.currentExercise.duration) * 100));
     }
 }
