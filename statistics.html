@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Material Design 3 Enhanced System with Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="material-design-enhanced.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Scrim -->
+        <div class="md-scrim" id="navigationScrim"></div>
+        
+        <!-- Navigation Drawer -->
+        <nav class="md-navigation-drawer" id="navigationDrawer">
+            <div class="md-navigation-drawer__header">
+                <h2 class="md-navigation-drawer__title">
+                    <span class="material-icons">fitness_center</span>
+                    Workout Timer
+                </h2>
+            </div>
+            <ul class="md-navigation-drawer__list">
+                <li>
+                    <button class="md-navigation-drawer__item" id="navHome">
+                        <span class="material-icons md-navigation-drawer__item-icon">home</span>
+                        <span class="md-navigation-drawer__item-text">Home</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item active" id="navStatistics">
+                        <span class="material-icons md-navigation-drawer__item-icon">analytics</span>
+                        <span class="md-navigation-drawer__item-text">Statistics</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <header class="md-top-app-bar">
+            <div class="md-top-app-bar__content">
+                <button class="md-icon-button--menu" id="menuButton">
+                    <span class="material-icons">menu</span>
+                </button>
+                <span class="material-icons md-top-app-bar__leading-icon">analytics</span>
+                <span class="md-top-app-bar__title">Statistics</span>
+            </div>
+        </header>
+        
+        <main>
+            <section class="statistics-overview md-card">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-large">📊 Workout Statistics</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="stat-icon">
+                                    <span class="material-icons">fitness_center</span>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="totalWorkouts">0</div>
+                                    <div class="stat-label">Total Workouts</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="stat-icon">
+                                    <span class="material-icons">check_circle</span>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="completedWorkouts">0</div>
+                                    <div class="stat-label">Completed</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="stat-icon">
+                                    <span class="material-icons">schedule</span>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="totalTime">0m</div>
+                                    <div class="stat-label">Total Time</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="stat-icon">
+                                    <span class="material-icons">local_fire_department</span>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value" id="streakDays">0</div>
+                                    <div class="stat-label">Day Streak</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="workout-journal-section md-card">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">📝 Workout Journal</h3>
+                    <p class="md-typescale-body-large">Track your workout progress and history</p>
+                    
+                    <div class="journal-container">
+                        <div class="journal-list" id="journalList">
+                            <p class="no-data">No workout sessions yet. Start your first workout to see your progress!</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="js/statistics-page.js"></script>
+</body>
+</html>

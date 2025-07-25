@@ -6,7 +6,8 @@
     <title>Workout Timer App</title>
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#6750A4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1C1B1F" media="(prefers-color-scheme: dark)">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Workout Timer">
@@ -25,8 +26,38 @@
 </head>
 <body>
     <div class="container">
+        <!-- Navigation Scrim -->
+        <div class="md-scrim" id="navigationScrim"></div>
+        
+        <!-- Navigation Drawer -->
+        <nav class="md-navigation-drawer" id="navigationDrawer">
+            <div class="md-navigation-drawer__header">
+                <h2 class="md-navigation-drawer__title">
+                    <span class="material-icons">fitness_center</span>
+                    Workout Timer
+                </h2>
+            </div>
+            <ul class="md-navigation-drawer__list">
+                <li>
+                    <button class="md-navigation-drawer__item active" id="navHome">
+                        <span class="material-icons md-navigation-drawer__item-icon">home</span>
+                        <span class="md-navigation-drawer__item-text">Home</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item" id="navStatistics">
+                        <span class="material-icons md-navigation-drawer__item-icon">analytics</span>
+                        <span class="md-navigation-drawer__item-text">Statistics</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
         <header class="md-top-app-bar">
             <div class="md-top-app-bar__content">
+                <button class="md-icon-button--menu" id="menuButton">
+                    <span class="material-icons">menu</span>
+                </button>
                 <span class="material-icons md-top-app-bar__leading-icon">fitness_center</span>
                 <span class="md-top-app-bar__title">Workout Timer</span>
             </div>
@@ -148,6 +179,10 @@ Rest - 0:30</pre>
                             <button id="shareWorkoutBtn" class="md-button md-button--outlined">
                                 <span class="material-icons md-button__icon">share</span>
                                 <span class="md-button__label">Share Workout</span>
+                            </button>
+                            <button id="printWorkoutBtn" class="md-button md-button--outlined">
+                                <span class="material-icons md-button__icon">print</span>
+                                <span class="md-button__label">Print Workout</span>
                             </button>
                         </div>
                     </div>
