@@ -405,9 +405,10 @@ export class WorkoutApp {
             exercise.completed = true;
             this.progressFill.style.width = '100%';
             
+            // Give a slightly longer delay to ensure UI updates properly
             setTimeout(() => {
                 this.nextExercise();
-            }, 1000);
+            }, 1200);
         }
     }
 
