@@ -88,21 +88,25 @@ describe('Rep-Based Exercises', () => {
       
       // Complete Push-ups
       cy.get('#completeRepBtn').click()
+      cy.wait(600) // Wait for completion processing
       cy.get('#currentExercise').should('contain', 'Squats')
       cy.get('#repsCount').should('contain', '20')
       
       // Complete Squats
       cy.get('#completeRepBtn').click()
+      cy.wait(600) // Wait for completion processing
       cy.get('#currentExercise').should('contain', 'Burpees')
       cy.get('#repsCount').should('contain', '10')
       
       // Complete Burpees
       cy.get('#completeRepBtn').click()
+      cy.wait(600) // Wait for completion processing  
       cy.get('#currentExercise').should('contain', 'Mountain Climbers')
       cy.get('#repsCount').should('contain', '25')
       
       // Complete final exercise
       cy.get('#completeRepBtn').click()
+      cy.wait(600) // Wait for completion processing
       cy.get('#currentExercise').should('contain', 'Workout Complete! 🎉')
     })
 
@@ -116,7 +120,7 @@ describe('Rep-Based Exercises', () => {
       // Complete all exercises
       for (let i = 0; i < 4; i++) {
         cy.get('#completeRepBtn').click()
-        cy.wait(100)
+        cy.wait(600) // Increased wait time to account for debounce + setTimeout
       }
       
       cy.get('#currentExercise').should('contain', 'Workout Complete! 🎉')

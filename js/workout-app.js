@@ -397,7 +397,7 @@ export class WorkoutApp {
      */
     completeRepExercise() {
         const now = Date.now();
-        if (now - this.lastCompletionTime < 1000) return;
+        if (now - this.lastCompletionTime < 300) return;
         this.lastCompletionTime = now;
         
         const exercise = this.workout.exercises[this.currentExerciseIndex];
@@ -405,10 +405,10 @@ export class WorkoutApp {
             exercise.completed = true;
             this.progressFill.style.width = '100%';
             
-            // Give a slightly longer delay to ensure UI updates properly
+            // Give enough delay to ensure UI updates properly but allow faster test execution
             setTimeout(() => {
                 this.nextExercise();
-            }, 1200);
+            }, 200);
         }
     }
 
