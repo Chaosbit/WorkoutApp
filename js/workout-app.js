@@ -750,8 +750,11 @@ export class WorkoutApp {
             chip.className = 'tag-chip';
             chip.innerHTML = `
                 ${tag}
-                <button class="remove-tag" onclick="app.removeFilterTag('${tag}')">&times;</button>
+                <button class="remove-tag">&times;</button>
             `;
+            // Add event listener instead of onclick attribute to avoid escaping issues
+            const removeBtn = chip.querySelector('.remove-tag');
+            removeBtn.addEventListener('click', () => this.removeFilterTag(tag));
             this.selectedTags.appendChild(chip);
         });
     }
@@ -888,8 +891,11 @@ export class WorkoutApp {
             tagChip.className = 'editable-tag';
             tagChip.innerHTML = `
                 ${normalizedTag}
-                <button class="remove-tag" onclick="this.parentElement.remove()">&times;</button>
+                <button class="remove-tag">&times;</button>
             `;
+            // Add event listener instead of onclick attribute to avoid escaping issues
+            const removeBtn = tagChip.querySelector('.remove-tag');
+            removeBtn.addEventListener('click', () => tagChip.remove());
             this.workoutTagsEditor.appendChild(tagChip);
         }
     }
@@ -1505,7 +1511,7 @@ Rest - 0:30`;
             <div class="message-content">
                 <div>
                     <p style="margin: 0 0 8px 0;">❌ Could not copy automatically. Please copy this link manually:</p>
-                    <input type="text" value="${shareLink}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;" readonly onclick="this.select()">
+                    <input type="text" value="${shareLink.replace(/"/g, '&quot;')}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px;" readonly onclick="this.select()">
                 </div>
                 <button onclick="this.parentElement.parentElement.remove()" class="close-btn" style="align-self: flex-start;">&times;</button>
             </div>
