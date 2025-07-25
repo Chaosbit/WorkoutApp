@@ -91,6 +91,7 @@ export class WorkoutApp {
         this.skipBtn = document.getElementById('skipBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.shareWorkoutBtn = document.getElementById('shareWorkoutBtn');
+        this.printWorkoutBtn = document.getElementById('printWorkoutBtn');
     }
 
     /**
@@ -110,6 +111,7 @@ export class WorkoutApp {
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
         this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
         this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
+        this.printWorkoutBtn.addEventListener('click', () => this.printWorkout());
         
         // Cleanup statistics elements when page becomes visible (e.g., after navigation)
         document.addEventListener('visibilitychange', () => {
@@ -997,6 +999,317 @@ Rest - 0:30`;
                 message.remove();
             }
         }, 5000);
+    }
+    
+    
+    /**
+     * Print the current workout in a print-friendly format
+     */
+    printWorkout() {
+        if (!this.workout) {
+            alert('No workout loaded to print.');
+            return;
+        }
+        
+        // Generate the print-friendly HTML content
+        const printContent = this.generatePrintContent();
+        
+        // Open a new window with the print content
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            alert('Please allow pop-ups to use the print feature.');
+            return;
+        }
+        
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        
+        // Wait for content to load, then trigger print
+        printWindow.onload = () => {
+            printWindow.focus();
+            printWindow.print();
+        };
+    }
+    
+    /**
+     * Generate print-friendly HTML content for the current workout
+     */
+    generatePrintContent() {
+        const workoutTitle = this.workout.title || 'Workout';
+        const totalDuration = this.calculateTotalDuration();
+        const totalExercises = this.workout.exercises.filter(ex => ex.type !== 'rest').length;
+        
+        let exerciseList = '';
+        let exerciseNumber = 1;
+        
+        this.workout.exercises.forEach(exercise => {
+            if (exercise.type === 'rest') {
+                exerciseList += `
+                    <div class="rest-item">
+                        <div class="exercise-name">💤 ${exercise.name}</div>
+                        <div class="exercise-duration">${this.timerManager.formatTime(exercise.duration)}</div>
+                    </div>
+                `;
+            } else {
+                const isRepBased = exercise.exerciseType === 'reps';
+                const displayDuration = isRepBased ? `${exercise.reps} reps` : this.timerManager.formatTime(exercise.duration);
+                
+                exerciseList += `
+                    <div class="exercise-item">
+                        <div class="exercise-header">
+                            <div class="exercise-number">${exerciseNumber}</div>
+                            <div class="exercise-details">
+                                <div class="exercise-name">${exercise.name}</div>
+                                <div class="exercise-duration ${isRepBased ? 'reps-based' : ''}">${displayDuration}</div>
+                            </div>
+                        </div>
+                        ${exercise.description && exercise.description.trim() ? `
+                            <div class="exercise-description">
+                                ${exercise.description.split('\n').map(line => `<p>${line}</p>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                exerciseNumber++;
+            }
+        });
+        
+        return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${workoutTitle} - Printable</title>
+    <style>
+        /* Print-specific styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+        
+        .workout-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #6750A4;
+            padding-bottom: 20px;
+        }
+        
+        .workout-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #6750A4;
+            margin-bottom: 10px;
+        }
+        
+        .workout-summary {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .exercises-container {
+            margin-top: 30px;
+        }
+        
+        .exercise-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            page-break-inside: avoid;
+        }
+        
+        .exercise-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .exercise-number {
+            background: #6750A4;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        .exercise-details {
+            flex: 1;
+        }
+        
+        .exercise-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .exercise-duration {
+            font-size: 16px;
+            color: #6750A4;
+            font-weight: 500;
+        }
+        
+        .exercise-duration.reps-based {
+            color: #1976D2;
+        }
+        
+        .exercise-description {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .exercise-description p {
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .rest-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .rest-item .exercise-name {
+            font-size: 16px;
+            font-weight: normal;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        /* Print-specific styles */
+        @media print {
+            body {
+                margin: 0;
+                padding: 15px;
+                font-size: 12px;
+            }
+            
+            .workout-title {
+                font-size: 28px;
+            }
+            
+            .exercise-name {
+                font-size: 18px;
+            }
+            
+            .exercise-duration {
+                font-size: 14px;
+            }
+            
+            .exercise-description p {
+                font-size: 12px;
+            }
+            
+            .exercise-item {
+                margin-bottom: 20px;
+                padding: 12px;
+            }
+            
+            /* Ensure good page breaks */
+            .exercise-item {
+                break-inside: avoid;
+            }
+            
+            /* Hide elements that shouldn't print */
+            @page {
+                margin: 1in;
+            }
+        }
+        
+        /* Screen-only styles for better preview */
+        @media screen {
+            body {
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="workout-header">
+        <div class="workout-title">${workoutTitle}</div>
+        <div class="workout-summary">
+            <div class="summary-item">
+                <span>📋</span>
+                <span>${totalExercises} exercises</span>
+            </div>
+            <div class="summary-item">
+                <span>⏱️</span>
+                <span>${totalDuration} total time</span>
+            </div>
+            <div class="summary-item">
+                <span>📅</span>
+                <span>${new Date().toLocaleDateString()}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="exercises-container">
+        ${exerciseList}
+    </div>
+    
+    <div class="footer">
+        <p>Generated by Workout Timer App • ${new Date().toLocaleString()}</p>
+    </div>
+</body>
+</html>
+        `;
+    }
+    
+    /**
+     * Calculate the total duration of the workout in formatted time
+     */
+    calculateTotalDuration() {
+        if (!this.workout || !this.workout.exercises) return '0:00';
+        
+        const totalSeconds = this.workout.exercises.reduce((total, exercise) => {
+            return total + (exercise.duration || 0);
+        }, 0);
+        
+        return this.timerManager.formatTime(totalSeconds);
     }
     
     shareWorkout() {
