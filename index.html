@@ -19,55 +19,141 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🏋️ Workout Timer</h1>
+        <header class="mdc-top-app-bar">
+            <div class="mdc-top-app-bar__row">
+                <div class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                    <span class="material-icons mdc-top-app-bar__navigation-icon">fitness_center</span>
+                    <span class="mdc-top-app-bar__title">Workout Timer</span>
+                </div>
+            </div>
         </header>
         
         <main>
-            <section class="file-input-section">
-                <h2>Load Workout</h2>
-                
-                <div class="workout-library" id="workoutLibrary" style="display: none;">
-                    <h3>Saved Workouts</h3>
-                    <div class="workout-selector">
-                        <select id="workoutSelect">
-                            <option value="">Choose a saved workout...</option>
-                        </select>
-                        <div class="workout-actions">
-                            <button id="editWorkoutBtn" class="btn btn-secondary btn-small" disabled>Edit</button>
-                            <button id="deleteWorkoutBtn" class="btn btn-danger btn-small" disabled>Delete</button>
+            <section class="file-input-section mdc-card">
+                <div class="mdc-card__content">
+                    <h2 class="mdc-typography--headline6">Load Workout</h2>
+                    
+                    <div class="workout-library mdc-card mdc-card--outlined" id="workoutLibrary" style="display: none;">
+                        <div class="mdc-card__content">
+                            <h3 class="mdc-typography--subtitle1">Saved Workouts</h3>
+                            <div class="workout-selector">
+                                <div class="mdc-select mdc-select--outlined">
+                                    <div class="mdc-select__anchor">
+                                        <span class="mdc-notched-outline">
+                                            <span class="mdc-notched-outline__leading"></span>
+                                            <span class="mdc-notched-outline__notch">
+                                                <span class="mdc-floating-label">Choose a workout</span>
+                                            </span>
+                                            <span class="mdc-notched-outline__trailing"></span>
+                                        </span>
+                                        <span class="mdc-select__selected-text-container">
+                                            <span class="mdc-select__selected-text"></span>
+                                        </span>
+                                        <span class="mdc-select__dropdown-icon">
+                                            <span class="material-icons">arrow_drop_down</span>
+                                        </span>
+                                    </div>
+                                    <div class="mdc-select__menu mdc-menu mdc-menu-surface mdc-menu-surface--fullwidth">
+                                        <ul class="mdc-list" role="listbox">
+                                            <li class="mdc-list-item mdc-list-item--selected" aria-selected="true" data-value="" role="option">
+                                                <span class="mdc-list-item__ripple"></span>
+                                                <span class="mdc-list-item__text">Choose a saved workout...</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <select id="workoutSelect" style="display: none;">
+                                    <option value="">Choose a saved workout...</option>
+                                </select>
+                                <div class="workout-actions">
+                                    <button id="editWorkoutBtn" class="mdc-button mdc-button--outlined" disabled>
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="material-icons mdc-button__icon">edit</span>
+                                        <span class="mdc-button__label">Edit</span>
+                                    </button>
+                                    <button id="deleteWorkoutBtn" class="mdc-button mdc-button--outlined" disabled>
+                                        <span class="mdc-button__ripple"></span>
+                                        <span class="material-icons mdc-button__icon">delete</span>
+                                        <span class="mdc-button__label">Delete</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="workout-editor" id="workoutEditor" style="display: none;">
-                    <h3>Edit Workout</h3>
-                    <div class="editor-controls">
-                        <input type="text" id="workoutNameInput" placeholder="Workout name" class="workout-name-input">
+                    
+                    <div class="workout-editor mdc-card mdc-card--outlined" id="workoutEditor" style="display: none;">
+                        <div class="mdc-card__content">
+                            <h3 class="mdc-typography--subtitle1">Edit Workout</h3>
+                            <div class="editor-controls">
+                                <label class="mdc-text-field mdc-text-field--outlined">
+                                    <span class="mdc-notched-outline">
+                                        <span class="mdc-notched-outline__leading"></span>
+                                        <span class="mdc-notched-outline__notch">
+                                            <span class="mdc-floating-label">Workout name</span>
+                                        </span>
+                                        <span class="mdc-notched-outline__trailing"></span>
+                                    </span>
+                                    <input type="text" id="workoutNameInput" class="mdc-text-field__input" placeholder="Workout name">
+                                </label>
+                            </div>
+                            <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea">
+                                <span class="mdc-notched-outline">
+                                    <span class="mdc-notched-outline__leading"></span>
+                                    <span class="mdc-notched-outline__notch">
+                                        <span class="mdc-floating-label">Workout markdown</span>
+                                    </span>
+                                    <span class="mdc-notched-outline__trailing"></span>
+                                </span>
+                                <span class="mdc-text-field__resizer">
+                                    <textarea id="workoutMarkdownEditor" class="mdc-text-field__input" rows="15" placeholder="Enter workout markdown here..."></textarea>
+                                </span>
+                            </label>
+                            <div class="editor-actions">
+                                <button id="saveWorkoutBtn" class="mdc-button mdc-button--raised">
+                                    <span class="mdc-button__ripple"></span>
+                                    <span class="material-icons mdc-button__icon">save</span>
+                                    <span class="mdc-button__label">Save Changes</span>
+                                </button>
+                                <button id="cancelEditBtn" class="mdc-button mdc-button--outlined">
+                                    <span class="mdc-button__ripple"></span>
+                                    <span class="mdc-button__label">Cancel</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <textarea id="workoutMarkdownEditor" placeholder="Enter workout markdown here..." rows="15"></textarea>
-                    <div class="editor-actions">
-                        <button id="saveWorkoutBtn" class="btn btn-primary">Save Changes</button>
-                        <button id="cancelEditBtn" class="btn btn-secondary">Cancel</button>
+                    
+                    <div class="file-input-area">
+                        <div class="mdc-card mdc-card--outlined file-drop-zone">
+                            <div class="mdc-card__content">
+                                <span class="material-icons file-upload-icon">upload_file</span>
+                                <input type="file" id="workoutFile" accept=".md" />
+                                <p class="mdc-typography--body2 input-help">Load a new workout file (.md)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="new-workout-section">
+                        <button id="newWorkoutBtn" class="mdc-button mdc-button--raised mdc-button--large">
+                            <span class="mdc-button__ripple"></span>
+                            <span class="material-icons mdc-button__icon">add</span>
+                            <span class="mdc-button__label">Create New Workout</span>
+                        </button>
+                        <p class="mdc-typography--body2 input-help">Start creating a workout from scratch</p>
                     </div>
                 </div>
-                
-                <div class="file-input-area">
-                    <input type="file" id="workoutFile" accept=".md" />
-                    <p class="input-help">Load a new workout file (.md)</p>
-                </div>
-                
-                <div class="new-workout-section">
-                    <button id="newWorkoutBtn" class="btn btn-primary btn-large">📝 Create New Workout</button>
-                    <p class="input-help">Start creating a workout from scratch</p>
-                </div>
-                <div class="sample-format">
-                    <h3>Sample Workout Format:</h3>
-                    <pre># Push Day Workout
+                <div class="sample-format mdc-card mdc-card--outlined">
+                    <div class="mdc-card__content">
+                        <h3 class="mdc-typography--subtitle1">Sample Workout Format:</h3>
+                        <pre class="sample-code"># Push Day Workout
 
 ## Warm-up - 5:00
 Light cardio and dynamic stretching to prepare your body.
@@ -85,50 +171,94 @@ Compound movement for chest, shoulders, and triceps development.
 Lie flat on the bench with feet firmly planted on the ground.
 
 Rest - 0:30</pre>
+                    </div>
                 </div>
             </section>
 
-            <section class="workout-display" id="workoutDisplay" style="display: none;">
-                <h2 id="workoutTitle">Workout</h2>
-                <div class="workout-actions">
-                    <button id="shareWorkoutBtn" class="btn btn-secondary btn-small">📤 Share Workout</button>
-                </div>
-                <div class="timer-container">
-                    <div class="current-exercise">
-                        <h3 id="currentExercise">Exercise</h3>
-                        <div class="exercise-description-main" id="currentDescription" style="display: none;">
-                            <div class="description-toggle" onclick="this.parentElement.classList.toggle('expanded')">
-                                <span>Show Instructions</span>
-                                <span class="expand-icon">▼</span>
+            <section class="workout-display mdc-card" id="workoutDisplay" style="display: none;">
+                <div class="mdc-card__content">
+                    <div class="workout-header">
+                        <h2 id="workoutTitle" class="mdc-typography--headline5">Workout</h2>
+                        <div class="workout-actions">
+                            <button id="shareWorkoutBtn" class="mdc-button mdc-button--outlined">
+                                <span class="mdc-button__ripple"></span>
+                                <span class="material-icons mdc-button__icon">share</span>
+                                <span class="mdc-button__label">Share Workout</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-container">
+                        <div class="current-exercise mdc-card mdc-card--elevated">
+                            <div class="mdc-card__content">
+                                <h3 id="currentExercise" class="mdc-typography--headline6">Exercise</h3>
+                                <div class="exercise-description-main" id="currentDescription" style="display: none;">
+                                    <div class="description-toggle" onclick="this.parentElement.classList.toggle('expanded')">
+                                        <span class="mdc-typography--body2">Show Instructions</span>
+                                        <span class="material-icons expand-icon">expand_more</span>
+                                    </div>
+                                    <div class="description-content" id="descriptionContent"></div>
+                                </div>
+                                
+                                <div class="timer-display" id="timerDisplay">00:00</div>
+                                <div class="reps-display" id="repsDisplay" style="display: none;">
+                                    <span class="material-icons">fitness_center</span>
+                                    <span id="repsCount">0</span> reps
+                                </div>
+                                
+                                <div class="mdc-linear-progress" role="progressbar" aria-label="Exercise Progress" aria-valuemin="0" aria-valuemax="1">
+                                    <div class="mdc-linear-progress__buffer">
+                                        <div class="mdc-linear-progress__buffer-bar"></div>
+                                        <div class="mdc-linear-progress__buffer-dots"></div>
+                                    </div>
+                                    <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                                        <span class="mdc-linear-progress__bar-inner" id="progressFill"></span>
+                                    </div>
+                                    <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                                        <span class="mdc-linear-progress__bar-inner"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="description-content" id="descriptionContent"></div>
                         </div>
-                        <div class="timer-display" id="timerDisplay">00:00</div>
-                        <div class="reps-display" id="repsDisplay" style="display: none;">
-                            <span id="repsCount">0</span> reps
+                        
+                        <div class="rep-completion" id="repCompletion" style="display: none;">
+                            <button id="completeRepBtn" class="mdc-button mdc-button--raised mdc-button--large">
+                                <span class="mdc-button__ripple"></span>
+                                <span class="material-icons mdc-button__icon">check</span>
+                                <span class="mdc-button__label">Complete Exercise</span>
+                            </button>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="progressFill"></div>
+                        
+                        <div class="workout-controls">
+                            <button id="startBtn" class="mdc-button mdc-button--raised">
+                                <span class="mdc-button__ripple"></span>
+                                <span class="material-icons mdc-button__icon">play_arrow</span>
+                                <span class="mdc-button__label">Start</span>
+                            </button>
+                            <button id="pauseBtn" class="mdc-button mdc-button--outlined" disabled>
+                                <span class="mdc-button__ripple"></span>
+                                <span class="material-icons mdc-button__icon">pause</span>
+                                <span class="mdc-button__label">Pause</span>
+                            </button>
+                            <button id="skipBtn" class="mdc-button mdc-button--outlined" disabled>
+                                <span class="mdc-button__ripple"></span>
+                                <span class="material-icons mdc-button__icon">skip_next</span>
+                                <span class="mdc-button__label">Skip</span>
+                            </button>
+                            <button id="resetBtn" class="mdc-button mdc-button--outlined">
+                                <span class="mdc-button__ripple"></span>
+                                <span class="material-icons mdc-button__icon">refresh</span>
+                                <span class="mdc-button__label">Reset</span>
+                            </button>
+                        </div>
+                        
+                        <div class="workout-progress">
+                            <p id="progressText" class="mdc-typography--body1">Exercise 1 of 1</p>
                         </div>
                     </div>
                     
-                    <div class="rep-completion" id="repCompletion" style="display: none;">
-                        <button id="completeRepBtn" class="btn btn-primary btn-large">✓ Complete Exercise</button>
+                    <div class="workout-list mdc-card mdc-card--outlined" id="workoutList">
                     </div>
-                    
-                    <div class="workout-controls">
-                        <button id="startBtn" class="btn btn-primary">▶️ Start</button>
-                        <button id="pauseBtn" class="btn btn-secondary" disabled>⏸️ Pause</button>
-                        <button id="skipBtn" class="btn btn-secondary" disabled>⏭️ Skip</button>
-                        <button id="resetBtn" class="btn btn-danger">🔄 Reset</button>
-                    </div>
-                    
-                    <div class="workout-progress">
-                        <p id="progressText">Exercise 1 of 1</p>
-                    </div>
-                </div>
-                
-                <div class="workout-list" id="workoutList">
                 </div>
             </section>
         </main>
