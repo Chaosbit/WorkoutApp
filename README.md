@@ -138,6 +138,12 @@ cd terraform
 terraform destroy
 ```
 
+## Development & Roadmap
+
+- **[ROADMAP.md](ROADMAP.md)** - Comprehensive development roadmap with prioritized features
+- **[FEATURE_IDEAS.md](FEATURE_IDEAS.md)** - Categorized list of potential features and improvements
+- **Contributing**: See roadmap documents for feature requests and contribution opportunities
+
 ## Files
 
 - `index.html` - Main app interface
