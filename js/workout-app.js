@@ -1396,7 +1396,7 @@ Rest - 0:30`;
         this.showShareSuccessMessage();
         
         // Try clipboard APIs but don't depend on them for UI feedback
-        if (navigator.clipboard && typeof window === 'undefined' || !window.Cypress) {
+        if (navigator.clipboard && (typeof window === 'undefined' || !window.Cypress)) {
             navigator.clipboard.writeText(text).catch(() => {
                 // Silent failure - success message already shown
                 console.log('Clipboard API failed, but success message already shown');
