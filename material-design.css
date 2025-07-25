@@ -1,0 +1,803 @@
+/* Material Design 3 Workout Timer App - Enhanced Implementation */
+
+/* Import local Material Icons */
+@import url('assets/icons/material-icons.css');
+
+/* Import Roboto font with fallbacks */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* CSS Reset */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Material Design 3 Design Tokens */
+:root {
+    /* Primary Palette */
+    --md-sys-color-primary: #6750A4;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #EADDFF;
+    --md-sys-color-on-primary-container: #21005D;
+    
+    /* Secondary Palette */
+    --md-sys-color-secondary: #625B71;
+    --md-sys-color-on-secondary: #FFFFFF;
+    --md-sys-color-secondary-container: #E8DEF8;
+    --md-sys-color-on-secondary-container: #1D192B;
+    
+    /* Tertiary Palette */
+    --md-sys-color-tertiary: #7D5260;
+    --md-sys-color-on-tertiary: #FFFFFF;
+    --md-sys-color-tertiary-container: #FFD8E4;
+    --md-sys-color-on-tertiary-container: #31111D;
+    
+    /* Error Palette */
+    --md-sys-color-error: #BA1A1A;
+    --md-sys-color-on-error: #FFFFFF;
+    --md-sys-color-error-container: #FFDAD6;
+    --md-sys-color-on-error-container: #410002;
+    
+    /* Neutral Palette */
+    --md-sys-color-surface: #FEF7FF;
+    --md-sys-color-on-surface: #1C1B1F;
+    --md-sys-color-surface-variant: #E7E0EC;
+    --md-sys-color-on-surface-variant: #49454F;
+    --md-sys-color-outline: #79747E;
+    --md-sys-color-outline-variant: #CAC4D0;
+    
+    /* Surface Container Levels */
+    --md-sys-color-surface-container-lowest: #FFFFFF;
+    --md-sys-color-surface-container-low: #F7F2FA;
+    --md-sys-color-surface-container: #F3EDF7;
+    --md-sys-color-surface-container-high: #ECE6F0;
+    --md-sys-color-surface-container-highest: #E6E0E9;
+    
+    /* Background */
+    --md-sys-color-background: #FEF7FF;
+    --md-sys-color-on-background: #1C1B1F;
+    
+    /* Inverse Colors */
+    --md-sys-color-inverse-surface: #313033;
+    --md-sys-color-inverse-on-surface: #F4EFF4;
+    --md-sys-color-inverse-primary: #D0BCFF;
+    
+    /* Elevation Tokens */
+    --md-sys-elevation-level0: none;
+    --md-sys-elevation-level1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    --md-sys-elevation-level2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    --md-sys-elevation-level3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30);
+    --md-sys-elevation-level4: 0px 6px 10px 4px rgba(0, 0, 0, 0.15), 0px 2px 3px 0px rgba(0, 0, 0, 0.30);
+    --md-sys-elevation-level5: 0px 8px 12px 6px rgba(0, 0, 0, 0.15), 0px 4px 4px 0px rgba(0, 0, 0, 0.30);
+    
+    /* Shape Tokens */
+    --md-sys-shape-corner-none: 0px;
+    --md-sys-shape-corner-extra-small: 4px;
+    --md-sys-shape-corner-small: 8px;
+    --md-sys-shape-corner-medium: 12px;
+    --md-sys-shape-corner-large: 16px;
+    --md-sys-shape-corner-extra-large: 28px;
+    
+    /* Typography Scale */
+    --md-sys-typescale-display-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --md-sys-typescale-display-large-weight: 400;
+    --md-sys-typescale-display-large-size: 57px;
+    --md-sys-typescale-display-large-line-height: 64px;
+    
+    --md-sys-typescale-headline-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --md-sys-typescale-headline-large-weight: 400;
+    --md-sys-typescale-headline-large-size: 32px;
+    --md-sys-typescale-headline-large-line-height: 40px;
+    
+    --md-sys-typescale-title-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --md-sys-typescale-title-large-weight: 400;
+    --md-sys-typescale-title-large-size: 22px;
+    --md-sys-typescale-title-large-line-height: 28px;
+    
+    --md-sys-typescale-body-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --md-sys-typescale-body-large-weight: 400;
+    --md-sys-typescale-body-large-size: 16px;
+    --md-sys-typescale-body-large-line-height: 24px;
+    
+    --md-sys-typescale-label-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    --md-sys-typescale-label-large-weight: 500;
+    --md-sys-typescale-label-large-size: 14px;
+    --md-sys-typescale-label-large-line-height: 20px;
+    
+    /* Motion Tokens */
+    --md-sys-motion-duration-short1: 50ms;
+    --md-sys-motion-duration-short2: 100ms;
+    --md-sys-motion-duration-short3: 150ms;
+    --md-sys-motion-duration-short4: 200ms;
+    --md-sys-motion-duration-medium1: 250ms;
+    --md-sys-motion-duration-medium2: 300ms;
+    --md-sys-motion-duration-medium3: 350ms;
+    --md-sys-motion-duration-medium4: 400ms;
+    --md-sys-motion-duration-long1: 450ms;
+    --md-sys-motion-duration-long2: 500ms;
+    
+    --md-sys-motion-easing-linear: cubic-bezier(0.0, 0.0, 1.0, 1.0);
+    --md-sys-motion-easing-standard: cubic-bezier(0.2, 0.0, 0, 1.0);
+    --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0, 1.0);
+}
+
+/* Base Styles */
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    font-weight: var(--md-sys-typescale-body-large-weight);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+    color: var(--md-sys-color-on-background);
+    background-color: var(--md-sys-color-background);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Material Design Typography Classes */
+.md-typescale-display-large {
+    font-family: var(--md-sys-typescale-display-large-font);
+    font-weight: var(--md-sys-typescale-display-large-weight);
+    font-size: var(--md-sys-typescale-display-large-size);
+    line-height: var(--md-sys-typescale-display-large-line-height);
+}
+
+.md-typescale-headline-large {
+    font-family: var(--md-sys-typescale-headline-large-font);
+    font-weight: var(--md-sys-typescale-headline-large-weight);
+    font-size: var(--md-sys-typescale-headline-large-size);
+    line-height: var(--md-sys-typescale-headline-large-line-height);
+}
+
+.md-typescale-title-large {
+    font-family: var(--md-sys-typescale-title-large-font);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+    font-size: var(--md-sys-typescale-title-large-size);
+    line-height: var(--md-sys-typescale-title-large-line-height);
+}
+
+.md-typescale-body-large {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-weight: var(--md-sys-typescale-body-large-weight);
+    font-size: var(--md-sys-typescale-body-large-size);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+}
+
+.md-typescale-label-large {
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    font-size: var(--md-sys-typescale-label-large-size);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+}
+
+/* Material Design Components */
+
+/* Top App Bar */
+.md-top-app-bar {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    box-shadow: var(--md-sys-elevation-level2);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    margin-bottom: 24px;
+}
+
+.md-top-app-bar__content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.md-top-app-bar__leading-icon {
+    margin-right: 12px;
+    color: var(--md-sys-color-on-surface);
+    font-size: 24px;
+}
+
+.md-top-app-bar__title {
+    font-family: var(--md-sys-typescale-title-large-font);
+    font-weight: var(--md-sys-typescale-title-large-weight);
+    font-size: var(--md-sys-typescale-title-large-size);
+    line-height: var(--md-sys-typescale-title-large-line-height);
+    color: var(--md-sys-color-on-surface);
+}
+
+/* Cards */
+.md-card {
+    background-color: var(--md-sys-color-surface);
+    border-radius: var(--md-sys-shape-corner-medium);
+    box-shadow: var(--md-sys-elevation-level1);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: box-shadow var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-card--elevated {
+    box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md-card--outlined {
+    box-shadow: none;
+    border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.md-card:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md-card--elevated:hover {
+    box-shadow: var(--md-sys-elevation-level3);
+}
+
+.md-card__content {
+    padding: 24px;
+}
+
+.md-card__header {
+    padding: 24px 24px 0;
+}
+
+.md-card__actions {
+    padding: 8px 24px 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.md-button {
+    font-family: var(--md-sys-typescale-label-large-font);
+    font-weight: var(--md-sys-typescale-label-large-weight);
+    font-size: var(--md-sys-typescale-label-large-size);
+    line-height: var(--md-sys-typescale-label-large-line-height);
+    letter-spacing: 0.1px;
+    
+    height: 40px;
+    padding: 0 24px;
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    user-select: none;
+    white-space: nowrap;
+    min-width: 64px;
+}
+
+.md-button:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+}
+
+/* Button variants */
+.md-button--filled {
+    background-color: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+.md-button--filled:hover:not(:disabled) {
+    box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-button--filled:focus:not(:disabled) {
+    box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-button--outlined {
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    border: 1px solid var(--md-sys-color-outline);
+}
+
+.md-button--outlined:hover:not(:disabled) {
+    background-color: rgba(103, 80, 164, 0.08);
+}
+
+.md-button--text {
+    background-color: transparent;
+    color: var(--md-sys-color-primary);
+    padding: 0 12px;
+}
+
+.md-button--text:hover:not(:disabled) {
+    background-color: rgba(103, 80, 164, 0.08);
+}
+
+/* Large button variant */
+.md-button--large {
+    height: 56px;
+    padding: 0 32px;
+    font-size: 16px;
+}
+
+/* Button with icon */
+.md-button__icon {
+    font-size: 18px;
+}
+
+/* Text Fields */
+.md-text-field {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.md-text-field--outlined {
+    background-color: transparent;
+}
+
+.md-text-field__input {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+    color: var(--md-sys-color-on-surface);
+    
+    background-color: transparent;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    padding: 16px 16px;
+    outline: none;
+    transition: border-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-text-field__input:focus {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 15px 15px; /* Adjust for thicker border */
+}
+
+.md-text-field__input::placeholder {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Textarea variant */
+.md-text-field--textarea .md-text-field__input {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Select Fields */
+.md-select {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.md-select__field {
+    font-family: var(--md-sys-typescale-body-large-font);
+    font-size: var(--md-sys-typescale-body-large-size);
+    line-height: var(--md-sys-typescale-body-large-line-height);
+    color: var(--md-sys-color-on-surface);
+    
+    background-color: transparent;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    padding: 16px 48px 16px 16px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    transition: border-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.md-select__field:focus {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 15px 47px 15px 15px;
+}
+
+.md-select__dropdown-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--md-sys-color-on-surface-variant);
+    pointer-events: none;
+}
+
+/* File Input */
+.md-file-input {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    width: 100%;
+}
+
+.md-file-input__field {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.md-file-input__surface {
+    border: 2px dashed var(--md-sys-color-outline);
+    border-radius: var(--md-sys-shape-corner-medium);
+    padding: 32px 24px;
+    text-align: center;
+    transition: all var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    background-color: var(--md-sys-color-surface-container-lowest);
+}
+
+.md-file-input__surface:hover {
+    border-color: var(--md-sys-color-primary);
+    background-color: rgba(103, 80, 164, 0.04);
+}
+
+.md-file-input__icon {
+    font-size: 48px;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-bottom: 16px;
+    display: block;
+}
+
+.md-file-input__text {
+    color: var(--md-sys-color-on-surface-variant);
+    margin: 0;
+}
+
+/* Progress Indicators */
+.md-linear-progress {
+    height: 4px;
+    background-color: var(--md-sys-color-surface-container-highest);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 16px 0;
+}
+
+.md-linear-progress__bar {
+    height: 100%;
+    background-color: var(--md-sys-color-primary);
+    border-radius: 2px;
+    transition: width var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+}
+
+/* Elevation and State Layers */
+.md-elevation--level1 {
+    box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-elevation--level2 {
+    box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md-elevation--level3 {
+    box-shadow: var(--md-sys-elevation-level3);
+}
+
+/* Focus and Hover States */
+.md-focus-ring {
+    outline: 2px solid var(--md-sys-color-primary);
+    outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+    }
+    
+    .md-card__content {
+        padding: 16px;
+    }
+    
+    .md-top-app-bar {
+        padding: 0 16px;
+    }
+    
+    .md-button {
+        min-width: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .md-card__content {
+        padding: 12px;
+    }
+    
+    .md-button {
+        height: 48px;
+        padding: 0 16px;
+    }
+    
+    .md-button--large {
+        height: 56px;
+        padding: 0 24px;
+    }
+}
+
+/* App-specific Components */
+
+/* Input help text */
+.input-help {
+    text-align: center;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 8px;
+}
+
+/* New workout section */
+.new-workout-section {
+    text-align: center;
+    margin: 24px 0;
+}
+
+/* Workout actions layout */
+.workout-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.workout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Editor actions */
+.editor-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+/* Timer Display */
+.timer-display {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-size: 72px;
+    font-weight: 300;
+    color: var(--md-sys-color-primary);
+    text-align: center;
+    margin: 32px 0;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px) {
+    .timer-display {
+        font-size: 56px;
+        margin: 24px 0;
+    }
+    
+    .workout-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .workout-actions {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .timer-display {
+        font-size: 42px;
+        margin: 16px 0;
+    }
+    
+    .editor-actions {
+        flex-direction: column;
+    }
+    
+    .workout-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Workout Controls */
+.workout-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 24px 0;
+}
+
+/* Exercise Description */
+.exercise-description {
+    margin: 16px 0;
+    padding: 16px;
+    background-color: var(--md-sys-color-surface-container-low);
+    border-radius: var(--md-sys-shape-corner-medium);
+    border-left: 4px solid var(--md-sys-color-primary);
+}
+
+.exercise-description.expanded .description-content {
+    display: block;
+}
+
+.description-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--md-sys-color-primary);
+    font-weight: 500;
+    margin-bottom: 8px;
+    user-select: none;
+    padding: 4px 0;
+    border-radius: var(--md-sys-shape-corner-extra-small);
+    transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.description-toggle:hover {
+    background-color: rgba(103, 80, 164, 0.04);
+}
+
+.description-content {
+    display: none;
+    color: var(--md-sys-color-on-surface-variant);
+    line-height: 1.5;
+    padding-top: 8px;
+}
+
+.expand-icon {
+    transition: transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.exercise-description.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+/* Reps Display */
+.reps-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+    margin: 16px 0;
+}
+
+/* Workout Progress Text */
+.workout-progress {
+    text-align: center;
+    margin: 16px 0;
+}
+
+/* Workout List */
+.workout-list {
+    margin-top: 24px;
+}
+
+.workout-exercise {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    transition: background-color var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+
+.workout-exercise:last-child {
+    border-bottom: none;
+}
+
+.workout-exercise.active {
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+}
+
+.workout-exercise-name {
+    font-weight: 500;
+    flex: 1;
+}
+
+.workout-exercise-duration {
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-size: 14px;
+}
+
+.workout-exercise.active .workout-exercise-duration {
+    color: var(--md-sys-color-on-primary-container);
+}
+
+/* Sample Format */
+.sample-format {
+    margin-top: 24px;
+}
+
+.sample-code {
+    background-color: var(--md-sys-color-surface-container);
+    padding: 16px;
+    border-radius: var(--md-sys-shape-corner-small);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--md-sys-color-on-surface);
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+/* Workout selector */
+.workout-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Rep completion */
+.rep-completion {
+    text-align: center;
+    margin: 24px 0;
+}
+
+/* Timer container improvements */
+.timer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Current exercise card improvements */
+.current-exercise {
+    text-align: center;
+}
+
+.current-exercise h3 {
+    margin-bottom: 16px;
+}
+
+/* File input area improvements */
+.file-input-area {
+    margin: 24px 0;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media (prefers-contrast: high) {
+    :root {
+        --md-sys-color-outline: #000000;
+        --md-sys-color-outline-variant: #666666;
+    }
+}
