@@ -2,6 +2,7 @@ import { WorkoutParser } from './workout-parser.js';
 import { WorkoutLibrary } from './workout-library.js';
 import { AudioManager } from './audio-manager.js';
 import { TimerManager } from './timer-manager.js';
+import { ScreenWakeManager } from './screen-wake-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
 
 /**
@@ -23,6 +24,7 @@ export class WorkoutApp {
         this.library = new WorkoutLibrary();
         this.audioManager = new AudioManager();
         this.timerManager = new TimerManager();
+        this.screenWakeManager = new ScreenWakeManager();
 
         // Setup timer callbacks
         this.timerManager.setOnTick((timeRemaining) => {
@@ -193,6 +195,9 @@ export class WorkoutApp {
         this.isRunning = true;
         this.isPaused = false;
         
+        // Request screen wake lock to prevent screen from turning off
+        this.screenWakeManager.requestWakeLock();
+        
         const currentExercise = this.workout.exercises[this.currentExerciseIndex];
         if (currentExercise && currentExercise.exerciseType === 'timer') {
             this.timerManager.setExercise(currentExercise);
@@ -209,6 +214,10 @@ export class WorkoutApp {
         this.isPaused = true;
         this.isRunning = false;
         this.timerManager.pause();
+        
+        // Release screen wake lock when paused
+        this.screenWakeManager.releaseWakeLock();
+        
         this.updateControls();
     }
 
@@ -248,6 +257,10 @@ export class WorkoutApp {
         this.timerManager.stop();
         this.isRunning = false;
         this.isPaused = false;
+        
+        // Release screen wake lock when workout completes
+        this.screenWakeManager.releaseWakeLock();
+        
         this.currentExercise.textContent = 'Workout Complete! 🎉';
         this.timerDisplay.textContent = '00:00';
         this.timerDisplay.style.display = 'block';
@@ -354,6 +367,9 @@ export class WorkoutApp {
         this.isRunning = false;
         this.isPaused = false;
         this.currentExerciseIndex = 0;
+        
+        // Release screen wake lock when workout is reset
+        this.screenWakeManager.releaseWakeLock();
         
         if (this.workout && this.workout.exercises.length > 0) {
             this.loadCurrentExercise();
