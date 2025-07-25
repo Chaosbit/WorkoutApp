@@ -33,12 +33,16 @@ A Progressive Web App for running markdown-based workouts with timers, designed 
 
 ## Workout Format
 
-Create `.md` files with this format:
+Create `.md` files using the supported markdown syntax. For the complete format specification, see **[WORKOUT_FORMAT_SPEC.md](WORKOUT_FORMAT_SPEC.md)**.
+
+### Quick Reference
 
 ```markdown
 # Workout Title
 
 ## Exercise Name - 1:30
+Optional exercise description
+
 Rest - 0:15
 
 ## Another Exercise - 0:45
@@ -46,16 +50,18 @@ Rest - 0:30
 
 ## Exercise with Sets - 3 sets x 0:45 / 0:15
 Exercise description here (optional)
+
+## Rep-based Exercise - 15 reps
+Complete at your own pace
 ```
 
-**Time format**: `MM:SS` (e.g., `1:30` = 1 minute 30 seconds)
+**Supported formats**:
+- **Timed exercises**: `Exercise Name - MM:SS`
+- **Rep-based exercises**: `Exercise Name - N reps`
+- **Sets notation**: `Exercise Name - N sets x MM:SS / MM:SS`
+- **Rest periods**: `Rest - MM:SS`
 
-**Sets format**: `N sets x MM:SS / MM:SS` where:
-- `N sets` = number of repetitions
-- First time = duration of each exercise 
-- Second time = rest time between sets
-
-**Example**: `3 sets x 0:45 / 0:15` creates 3 rounds of 45-second exercises with 15-second rest between each set.
+For detailed syntax rules, validation requirements, examples, and best practices, see the full **[Workout Format Specification](WORKOUT_FORMAT_SPEC.md)**.
 
 ## Usage
 
