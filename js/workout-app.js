@@ -2,6 +2,7 @@ import { WorkoutParser } from './workout-parser.js';
 import { WorkoutLibrary } from './workout-library.js';
 import { AudioManager } from './audio-manager.js';
 import { TimerManager } from './timer-manager.js';
+import { StatisticsManager } from './statistics-manager.js';
 import { ScreenWakeManager } from './screen-wake-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
 
@@ -24,6 +25,7 @@ export class WorkoutApp {
         this.library = new WorkoutLibrary();
         this.audioManager = new AudioManager();
         this.timerManager = new TimerManager();
+        this.statisticsManager = new StatisticsManager();
         this.screenWakeManager = new ScreenWakeManager();
 
         // Setup timer callbacks
@@ -41,6 +43,7 @@ export class WorkoutApp {
         this.bindEvents();
         this.loadWorkoutSelector();
         this.checkForSharedWorkout(); // Check URL for shared workout
+        this.cleanupStatisticsElements(); // Ensure no leftover statistics elements
 
         // Register service worker
         registerServiceWorker();
@@ -107,6 +110,18 @@ export class WorkoutApp {
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
         this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
         this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
+        
+        // Cleanup statistics elements when page becomes visible (e.g., after navigation)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.cleanupStatisticsElements();
+            }
+        });
+        
+        // Also cleanup on window focus
+        window.addEventListener('focus', () => {
+            this.cleanupStatisticsElements();
+        });
     }
 
     /**
@@ -195,6 +210,13 @@ export class WorkoutApp {
         this.isRunning = true;
         this.isPaused = false;
         
+        // Start tracking workout session
+        this.statisticsManager.startSession(
+            this.currentWorkoutId || 'anonymous',
+            this.workout.title || 'Workout',
+            this.workout.exercises
+        );
+        
         // Request screen wake lock to prevent screen from turning off
         this.screenWakeManager.requestWakeLock();
         
@@ -203,6 +225,9 @@ export class WorkoutApp {
             this.timerManager.setExercise(currentExercise);
             this.timerManager.start();
         }
+        
+        // Track exercise start
+        this.statisticsManager.startExercise(this.currentExerciseIndex);
         
         this.updateControls();
     }
@@ -230,12 +255,20 @@ export class WorkoutApp {
         
         this.timerManager.stop();
         this.audioManager.playExerciseComplete();
+        
+        // Complete current exercise in statistics
+        this.statisticsManager.completeExercise(this.currentExerciseIndex);
+        
         this.currentExerciseIndex++;
         
         if (this.currentExerciseIndex >= this.workout.exercises.length) {
             this.completeWorkout();
         } else {
             this.loadCurrentExercise();
+            
+            // Track new exercise start
+            this.statisticsManager.startExercise(this.currentExerciseIndex);
+            
             if (this.isRunning) {
                 const currentExercise = this.workout.exercises[this.currentExerciseIndex];
                 if (currentExercise && currentExercise.exerciseType === 'timer') {
@@ -257,6 +290,9 @@ export class WorkoutApp {
         this.timerManager.stop();
         this.isRunning = false;
         this.isPaused = false;
+        
+        // Complete the workout session
+        this.statisticsManager.completeSession();
         
         // Release screen wake lock when workout completes
         this.screenWakeManager.releaseWakeLock();
@@ -381,6 +417,12 @@ export class WorkoutApp {
      */
     resetWorkout() {
         this.timerManager.stop();
+        
+        // If there was an active session, abandon it
+        if (this.isRunning || this.isPaused) {
+            this.statisticsManager.abandonSession();
+        }
+        
         this.isRunning = false;
         this.isPaused = false;
         this.currentExerciseIndex = 0;
@@ -1140,5 +1182,33 @@ Rest - 0:30`;
                 message.remove();
             }
         }, 10000);
+    }
+    
+    /**
+     * Cleanup any leftover statistics elements that shouldn't be on the main page
+     * This ensures no statistics UI is displayed on the main page after navigation
+     */
+    cleanupStatisticsElements() {
+        // Remove any statistics sections that might exist on the main page
+        const statisticsSection = document.getElementById('statisticsSection');
+        if (statisticsSection) {
+            statisticsSection.remove();
+        }
+        
+        // Remove any elements with statistics-related classes
+        const statisticsElements = document.querySelectorAll('.statistics-section, .stats-overview, .workout-journal, .journal-list, .stat-card');
+        statisticsElements.forEach(element => {
+            if (element && !element.closest('#navigationDrawer')) { // Keep navigation elements
+                element.remove();
+            }
+        });
+        
+        // Clean up any orphaned statistics elements
+        const suspiciousElements = document.querySelectorAll('[id*="totalWorkouts"], [id*="completedWorkouts"], [id*="totalTime"], [id*="streakDays"], [id*="journalList"]');
+        suspiciousElements.forEach(element => {
+            if (element && !element.closest('#navigationDrawer') && !element.closest('nav')) {
+                element.remove();
+            }
+        });
     }
 }
