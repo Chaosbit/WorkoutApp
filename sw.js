@@ -3,6 +3,7 @@ const urlsToCache = [
   './',
   './index.html',
   './styles.css',
+  './script.js', // backward compatibility
   './js/app.js',
   './js/audio-manager.js',
   './js/sw-registration.js',

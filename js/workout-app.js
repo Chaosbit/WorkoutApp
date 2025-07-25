@@ -133,6 +133,9 @@ export class WorkoutApp {
             // Update button states
             this.updateDeleteButtonState();
             
+            // Clear file input
+            event.target.value = '';
+            
             alert('Workout loaded and saved successfully!');
         } catch (error) {
             console.error('Error loading workout:', error);
@@ -148,7 +151,7 @@ export class WorkoutApp {
         if (!workoutId) {
             this.workout = null;
             this.currentWorkoutId = null;
-            this.workoutDisplay.style.display = 'none';
+            // Don't hide workout display - keep showing last workout for better UX
             this.updateDeleteButtonState();
             return;
         }
