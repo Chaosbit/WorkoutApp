@@ -3,6 +3,7 @@ import { WorkoutLibrary } from './workout-library.js';
 import { AudioManager } from './audio-manager.js';
 import { TimerManager } from './timer-manager.js';
 import { ScreenWakeManager } from './screen-wake-manager.js';
+import { TrainingPlanManager } from './training-plan-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
 
 /**
@@ -25,6 +26,11 @@ export class WorkoutApp {
         this.audioManager = new AudioManager();
         this.timerManager = new TimerManager();
         this.screenWakeManager = new ScreenWakeManager();
+        this.trainingPlanManager = new TrainingPlanManager(this.library);
+
+        // Current view state
+        this.currentView = 'workouts'; // 'workouts' or 'trainingPlan'
+        this.selectedDate = null;
 
         // Setup timer callbacks
         this.timerManager.setOnTick((timeRemaining) => {
@@ -88,6 +94,28 @@ export class WorkoutApp {
         this.skipBtn = document.getElementById('skipBtn');
         this.resetBtn = document.getElementById('resetBtn');
         this.shareWorkoutBtn = document.getElementById('shareWorkoutBtn');
+        
+        // View navigation elements
+        this.workoutsTab = document.getElementById('workoutsTab');
+        this.trainingPlanTab = document.getElementById('trainingPlanTab');
+        this.workoutView = document.getElementById('workoutView');
+        this.trainingPlanView = document.getElementById('trainingPlanView');
+        
+        // Training plan elements
+        this.prevMonthBtn = document.getElementById('prevMonthBtn');
+        this.nextMonthBtn = document.getElementById('nextMonthBtn');
+        this.todayBtn = document.getElementById('todayBtn');
+        this.currentMonthYear = document.getElementById('currentMonthYear');
+        this.calendarDays = document.getElementById('calendarDays');
+        
+        // Modal elements
+        this.workoutAssignmentModal = document.getElementById('workoutAssignmentModal');
+        this.selectedDateText = document.getElementById('selectedDateText');
+        this.workoutAssignmentSelect = document.getElementById('workoutAssignmentSelect');
+        this.assignedWorkouts = document.getElementById('assignedWorkouts');
+        this.assignedWorkoutsList = document.getElementById('assignedWorkoutsList');
+        this.assignWorkoutBtn = document.getElementById('assignWorkoutBtn');
+        this.closeModalBtn = document.getElementById('closeModalBtn');
     }
 
     /**
@@ -107,6 +135,27 @@ export class WorkoutApp {
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
         this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
         this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
+        
+        // View navigation events
+        this.workoutsTab.addEventListener('click', () => this.switchToWorkoutsView());
+        this.trainingPlanTab.addEventListener('click', () => this.switchToTrainingPlanView());
+        
+        // Training plan events
+        this.prevMonthBtn.addEventListener('click', () => this.navigateToPreviousMonth());
+        this.nextMonthBtn.addEventListener('click', () => this.navigateToNextMonth());
+        this.todayBtn.addEventListener('click', () => this.navigateToToday());
+        
+        // Modal events
+        this.assignWorkoutBtn.addEventListener('click', () => this.assignSelectedWorkout());
+        this.closeModalBtn.addEventListener('click', () => this.closeAssignmentModal());
+        this.workoutAssignmentSelect.addEventListener('change', () => this.updateAssignButtonState());
+        
+        // Close modal when clicking outside
+        this.workoutAssignmentModal.addEventListener('click', (e) => {
+            if (e.target === this.workoutAssignmentModal) {
+                this.closeAssignmentModal();
+            }
+        });
     }
 
     /**
@@ -1140,5 +1189,221 @@ Rest - 0:30`;
                 message.remove();
             }
         }, 10000);
+    }
+
+    // Training Plan Methods
+
+    /**
+     * Switch to workouts view
+     */
+    switchToWorkoutsView() {
+        this.currentView = 'workouts';
+        this.workoutsTab.classList.add('active');
+        this.trainingPlanTab.classList.remove('active');
+        this.workoutView.classList.add('active');
+        this.trainingPlanView.classList.remove('active');
+    }
+
+    /**
+     * Switch to training plan view
+     */
+    switchToTrainingPlanView() {
+        this.currentView = 'trainingPlan';
+        this.workoutsTab.classList.remove('active');
+        this.trainingPlanTab.classList.add('active');
+        this.workoutView.classList.remove('active');
+        this.trainingPlanView.classList.add('active');
+        this.renderCalendar();
+        this.populateWorkoutSelect();
+    }
+
+    /**
+     * Navigate to previous month
+     */
+    navigateToPreviousMonth() {
+        this.trainingPlanManager.previousMonth();
+        this.renderCalendar();
+    }
+
+    /**
+     * Navigate to next month
+     */
+    navigateToNextMonth() {
+        this.trainingPlanManager.nextMonth();
+        this.renderCalendar();
+    }
+
+    /**
+     * Navigate to current month
+     */
+    navigateToToday() {
+        this.trainingPlanManager.goToCurrentMonth();
+        this.renderCalendar();
+    }
+
+    /**
+     * Render the calendar
+     */
+    renderCalendar() {
+        const calendarData = this.trainingPlanManager.generateCalendarData();
+        
+        // Update month/year display
+        this.currentMonthYear.textContent = `${calendarData.monthName} ${calendarData.year}`;
+        
+        // Clear calendar days
+        this.calendarDays.innerHTML = '';
+        
+        // Create calendar days
+        calendarData.days.forEach(day => {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'calendar-day';
+            
+            if (day === null) {
+                // Empty day before first day of month
+                dayElement.classList.add('empty');
+            } else {
+                dayElement.innerHTML = `
+                    <div class="calendar-day-number">${day.date}</div>
+                    <div class="calendar-day-workouts">
+                        ${day.workouts.slice(0, 3).map(workout => 
+                            `<div class="calendar-workout" title="${workout.name}">${workout.name}</div>`
+                        ).join('')}
+                        ${day.workouts.length > 3 ? 
+                            `<div class="calendar-day-more">+${day.workouts.length - 3} more</div>` : ''
+                        }
+                    </div>
+                `;
+                
+                if (day.isToday) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Add click event to open assignment modal
+                dayElement.addEventListener('click', () => this.openAssignmentModal(day.fullDate));
+                
+                // Add click events to workout items to start them
+                const workoutElements = dayElement.querySelectorAll('.calendar-workout');
+                workoutElements.forEach((element, index) => {
+                    element.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const workout = day.workouts[index];
+                        this.loadWorkoutFromLibrary(workout);
+                        this.switchToWorkoutsView();
+                    });
+                });
+            }
+            
+            this.calendarDays.appendChild(dayElement);
+        });
+    }
+
+    /**
+     * Open workout assignment modal
+     */
+    openAssignmentModal(date) {
+        this.selectedDate = date;
+        this.selectedDateText.textContent = date.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        this.populateWorkoutSelect();
+        this.renderAssignedWorkouts();
+        this.workoutAssignmentModal.classList.add('show');
+        this.updateAssignButtonState();
+    }
+
+    /**
+     * Close workout assignment modal
+     */
+    closeAssignmentModal() {
+        this.workoutAssignmentModal.classList.remove('show');
+        this.selectedDate = null;
+        this.workoutAssignmentSelect.value = '';
+    }
+
+    /**
+     * Populate workout selection dropdown
+     */
+    populateWorkoutSelect() {
+        const workouts = this.trainingPlanManager.getAvailableWorkouts();
+        this.workoutAssignmentSelect.innerHTML = '<option value="">Choose a workout...</option>';
+        
+        workouts.forEach(workout => {
+            const option = document.createElement('option');
+            option.value = workout.id;
+            option.textContent = workout.name;
+            this.workoutAssignmentSelect.appendChild(option);
+        });
+    }
+
+    /**
+     * Render assigned workouts for selected date
+     */
+    renderAssignedWorkouts() {
+        if (!this.selectedDate) return;
+        
+        const workouts = this.trainingPlanManager.getWorkoutsForDate(this.selectedDate);
+        
+        if (workouts.length === 0) {
+            this.assignedWorkoutsList.innerHTML = '<p class="md-typescale-body-medium">No workouts assigned</p>';
+        } else {
+            this.assignedWorkoutsList.innerHTML = workouts.map(workout => `
+                <div class="assigned-workout-item">
+                    <span class="assigned-workout-name">${workout.name}</span>
+                    <button class="md-button md-button--text remove-workout-btn" 
+                            onclick="workoutApp.removeWorkoutFromDate('${workout.id}')"
+                            title="Remove workout">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
+
+    /**
+     * Update assign button state
+     */
+    updateAssignButtonState() {
+        this.assignWorkoutBtn.disabled = !this.workoutAssignmentSelect.value;
+    }
+
+    /**
+     * Assign selected workout to selected date
+     */
+    assignSelectedWorkout() {
+        if (!this.selectedDate || !this.workoutAssignmentSelect.value) return;
+        
+        this.trainingPlanManager.assignWorkout(this.selectedDate, this.workoutAssignmentSelect.value);
+        this.renderAssignedWorkouts();
+        this.renderCalendar();
+        this.workoutAssignmentSelect.value = '';
+        this.updateAssignButtonState();
+    }
+
+    /**
+     * Remove workout from selected date
+     */
+    removeWorkoutFromDate(workoutId) {
+        if (!this.selectedDate) return;
+        
+        this.trainingPlanManager.removeWorkout(this.selectedDate, workoutId);
+        this.renderAssignedWorkouts();
+        this.renderCalendar();
+    }
+
+    /**
+     * Load workout from library (existing method needs to be accessible)
+     */
+    loadWorkoutFromLibrary(workout) {
+        if (!workout || !workout.data) return;
+        
+        this.workout = workout.data;
+        this.currentWorkoutId = workout.id;
+        this.currentExerciseIndex = 0;
+        this.displayWorkout();
+        this.updateWorkoutSelector(workout.id);
     }
 }

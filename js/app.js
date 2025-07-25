@@ -4,6 +4,7 @@ import { WorkoutLibrary } from './workout-library.js';
 import { AudioManager } from './audio-manager.js';
 import { TimerManager } from './timer-manager.js';
 import { ScreenWakeManager } from './screen-wake-manager.js';
+import { TrainingPlanManager } from './training-plan-manager.js';
 
 /**
  * Application initialization
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.AudioManager = AudioManager;
     window.TimerManager = TimerManager;
     window.ScreenWakeManager = ScreenWakeManager;
+    window.TrainingPlanManager = TrainingPlanManager;
     
     // For backward compatibility, create a WorkoutTimer class that delegates to WorkoutApp
     window.WorkoutTimer = class WorkoutTimer {

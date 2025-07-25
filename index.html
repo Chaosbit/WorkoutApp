@@ -32,7 +32,20 @@
             </div>
         </header>
         
+        <nav class="view-tabs">
+            <button id="workoutsTab" class="md-button md-button--text view-tab active">
+                <span class="material-icons md-button__icon">fitness_center</span>
+                <span class="md-button__label">Workouts</span>
+            </button>
+            <button id="trainingPlanTab" class="md-button md-button--text view-tab">
+                <span class="material-icons md-button__icon">calendar_month</span>
+                <span class="md-button__label">Training Plan</span>
+            </button>
+        </nav>
+        
         <main>
+            <!-- Workout View -->
+            <div id="workoutView" class="view-content active">
             <section class="file-input-section md-card">
                 <div class="md-card__content">
                     <h2 class="md-typescale-headline-large">Load Workout</h2>
@@ -198,7 +211,82 @@ Rest - 0:30</pre>
                     </div>
                 </div>
             </section>
+            </div>
+
+            <!-- Training Plan View -->
+            <div id="trainingPlanView" class="view-content">
+                <section class="training-plan-section md-card">
+                    <div class="md-card__content">
+                        <div class="training-plan-header">
+                            <h2 class="md-typescale-headline-large">Training Plan</h2>
+                            <div class="calendar-controls">
+                                <button id="prevMonthBtn" class="md-button md-button--text">
+                                    <span class="material-icons md-button__icon">chevron_left</span>
+                                </button>
+                                <h3 id="currentMonthYear" class="md-typescale-title-large">January 2024</h3>
+                                <button id="nextMonthBtn" class="md-button md-button--text">
+                                    <span class="material-icons md-button__icon">chevron_right</span>
+                                </button>
+                                <button id="todayBtn" class="md-button md-button--outlined">
+                                    <span class="md-button__label">Today</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="calendar-container">
+                            <div class="calendar-grid">
+                                <div class="calendar-header">
+                                    <div class="calendar-day-header">Sun</div>
+                                    <div class="calendar-day-header">Mon</div>
+                                    <div class="calendar-day-header">Tue</div>
+                                    <div class="calendar-day-header">Wed</div>
+                                    <div class="calendar-day-header">Thu</div>
+                                    <div class="calendar-day-header">Fri</div>
+                                    <div class="calendar-day-header">Sat</div>
+                                </div>
+                                <div id="calendarDays" class="calendar-days">
+                                    <!-- Calendar days will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
+
+        <!-- Workout Assignment Modal -->
+        <div id="workoutAssignmentModal" class="modal">
+            <div class="modal-content md-card">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Assign Workout</h3>
+                    <p id="selectedDateText" class="md-typescale-body-large"></p>
+                    
+                    <div class="workout-selection">
+                        <div class="md-select">
+                            <select id="workoutAssignmentSelect" class="md-select__field">
+                                <option value="">Choose a workout...</option>
+                            </select>
+                            <span class="material-icons md-select__dropdown-icon">▼</span>
+                        </div>
+                    </div>
+
+                    <div class="assigned-workouts" id="assignedWorkouts">
+                        <h4 class="md-typescale-title-medium">Assigned Workouts:</h4>
+                        <div id="assignedWorkoutsList"></div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button id="assignWorkoutBtn" class="md-button md-button--filled" disabled>
+                            <span class="material-icons md-button__icon">add</span>
+                            <span class="md-button__label">Assign</span>
+                        </button>
+                        <button id="closeModalBtn" class="md-button md-button--outlined">
+                            <span class="md-button__label">Close</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script type="module" src="js/app.js"></script>
