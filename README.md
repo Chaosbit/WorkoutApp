@@ -97,6 +97,12 @@ The app automatically deploys to GitHub Pages on every push to main/master branc
 
 
 
+## Development & Roadmap
+
+- **[ROADMAP.md](ROADMAP.md)** - Comprehensive development roadmap with prioritized features
+- **[FEATURE_IDEAS.md](FEATURE_IDEAS.md)** - Categorized list of potential features and improvements
+- **Contributing**: See roadmap documents for feature requests and contribution opportunities
+
 ## Files
 
 - `index.html` - Main app interface
