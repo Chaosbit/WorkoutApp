@@ -43,6 +43,7 @@ export class WorkoutApp {
         this.bindEvents();
         this.loadWorkoutSelector();
         this.checkForSharedWorkout(); // Check URL for shared workout
+        this.cleanupStatisticsElements(); // Ensure no leftover statistics elements
 
         // Register service worker
         registerServiceWorker();
@@ -109,6 +110,18 @@ export class WorkoutApp {
         this.resetBtn.addEventListener('click', () => this.resetWorkout());
         this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
         this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
+        
+        // Cleanup statistics elements when page becomes visible (e.g., after navigation)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.cleanupStatisticsElements();
+            }
+        });
+        
+        // Also cleanup on window focus
+        window.addEventListener('focus', () => {
+            this.cleanupStatisticsElements();
+        });
     }
 
     /**
@@ -1113,5 +1126,33 @@ Rest - 0:30`;
                 message.remove();
             }
         }, 10000);
+    }
+    
+    /**
+     * Cleanup any leftover statistics elements that shouldn't be on the main page
+     * This ensures no statistics UI is displayed on the main page after navigation
+     */
+    cleanupStatisticsElements() {
+        // Remove any statistics sections that might exist on the main page
+        const statisticsSection = document.getElementById('statisticsSection');
+        if (statisticsSection) {
+            statisticsSection.remove();
+        }
+        
+        // Remove any elements with statistics-related classes
+        const statisticsElements = document.querySelectorAll('.statistics-section, .stats-overview, .workout-journal, .journal-list, .stat-card');
+        statisticsElements.forEach(element => {
+            if (element && !element.closest('#navigationDrawer')) { // Keep navigation elements
+                element.remove();
+            }
+        });
+        
+        // Clean up any orphaned statistics elements
+        const suspiciousElements = document.querySelectorAll('[id*="totalWorkouts"], [id*="completedWorkouts"], [id*="totalTime"], [id*="streakDays"], [id*="journalList"]');
+        suspiciousElements.forEach(element => {
+            if (element && !element.closest('#navigationDrawer') && !element.closest('nav')) {
+                element.remove();
+            }
+        });
     }
 }
