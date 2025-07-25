@@ -133,10 +133,7 @@ export class WorkoutApp {
             // Update button states
             this.updateDeleteButtonState();
             
-            // Don't show alert in test environment
-            if (!window.Cypress) {
-                alert('Workout loaded and saved successfully!');
-            }
+            alert('Workout loaded and saved successfully!');
         } catch (error) {
             console.error('Error loading workout:', error);
             alert('Error loading workout: ' + error.message);
@@ -180,8 +177,8 @@ export class WorkoutApp {
             sampleFormat.style.display = 'none';
         }
         
+        this.renderWorkoutList();
         this.resetWorkout();
-        this.updateWorkoutList();
     }
 
     /**
@@ -259,12 +256,10 @@ export class WorkoutApp {
         
         this.audioManager.playWorkoutComplete();
         
-        // Don't show alert in test environment
-        if (!window.Cypress) {
-            setTimeout(() => {
-                alert('Workout completed! Great job! 💪');
-            }, 500);
-        }
+        // Show completion alert
+        setTimeout(() => {
+            alert('Workout completed! Great job! 💪');
+        }, 500);
     }
 
     /**
@@ -339,11 +334,30 @@ export class WorkoutApp {
      */
     updateControls() {
         const hasWorkout = this.workout && this.workout.exercises.length > 0;
+        const currentExercise = hasWorkout && this.currentExerciseIndex < this.workout.exercises.length 
+            ? this.workout.exercises[this.currentExerciseIndex] 
+            : null;
+        const isRepBased = currentExercise && currentExercise.exerciseType === 'reps';
         
         this.startBtn.disabled = !hasWorkout || this.isRunning;
-        this.pauseBtn.disabled = !hasWorkout || !this.isRunning;
+        this.pauseBtn.disabled = !hasWorkout || !this.isRunning || isRepBased;
         this.skipBtn.disabled = !hasWorkout || (!this.isRunning && !this.isPaused);
         this.resetBtn.disabled = !hasWorkout;
+        
+        // For rep-based exercises, enable skip when workout is running
+        if (isRepBased && this.isRunning) {
+            this.skipBtn.disabled = false;
+        }
+        
+        // Enable complete rep button for rep exercises when not completed
+        if (this.completeRepBtn) {
+            if (isRepBased) {
+                this.completeRepBtn.disabled = (currentExercise && currentExercise.completed);
+            } else {
+                // For timer exercises, button should not be visible anyway
+                this.completeRepBtn.disabled = true;
+            }
+        }
     }
 
     /**
@@ -434,45 +448,64 @@ export class WorkoutApp {
             return;
         }
         
+        // Only update classes if the list structure already exists
+        const items = this.workoutList.querySelectorAll('.exercise-item');
+        if (items.length === this.workout.exercises.length) {
+            // Update existing items
+            items.forEach((item, index) => {
+                item.className = 'exercise-item';
+                if (index < this.currentExerciseIndex) {
+                    item.classList.add('completed');
+                } else if (index === this.currentExerciseIndex) {
+                    item.classList.add('current');
+                } else {
+                    item.classList.add('pending');
+                }
+            });
+        } else {
+            // Re-render the entire list
+            this.renderWorkoutList();
+        }
+    }
+
+    /**
+     * Render the complete workout list with clickable headers
+     */
+    renderWorkoutList() {
+        if (!this.workout) {
+            this.workoutList.innerHTML = '';
+            return;
+        }
+        
         this.workoutList.innerHTML = '';
         this.workout.exercises.forEach((exercise, index) => {
-            const exerciseElement = document.createElement('div');
-            exerciseElement.className = 'exercise-item';
-            if (index === this.currentExerciseIndex) {
-                exerciseElement.classList.add('current');
-            }
-            if (index < this.currentExerciseIndex) {
-                exerciseElement.classList.add('completed');
-            }
+            const item = document.createElement('div');
+            item.className = 'exercise-item pending';
             
-            const exerciseInfo = document.createElement('div');
-            exerciseInfo.className = 'exercise-info';
+            const hasDescription = exercise.description && exercise.description.trim().length > 0;
+            const isRepBased = exercise.exerciseType === 'reps';
+            const displayDuration = isRepBased ? `${exercise.reps} reps` : this.timerManager.formatTime(exercise.duration);
             
-            const exerciseName = document.createElement('div');
-            exerciseName.className = 'exercise-name';
-            exerciseName.textContent = exercise.name;
+            item.innerHTML = `
+                <div class="exercise-header" ${hasDescription ? `onclick="this.parentElement.classList.toggle('expanded')"` : ''}>
+                    <span class="exercise-name">${exercise.name}</span>
+                    <div class="exercise-meta">
+                        <span class="exercise-duration ${isRepBased ? 'reps-based' : ''}">${displayDuration}</span>
+                        ${hasDescription ? '<span class="expand-icon">▼</span>' : ''}
+                    </div>
+                </div>
+                ${hasDescription ? `
+                    <div class="exercise-description">
+                        ${exercise.description.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    </div>
+                ` : ''}
+            `;
             
-            const exerciseTime = document.createElement('div');
-            exerciseTime.className = 'exercise-time';
-            if (exercise.exerciseType === 'timer') {
-                exerciseTime.textContent = this.timerManager.formatTime(exercise.duration);
-            } else {
-                exerciseTime.textContent = `${exercise.reps} reps`;
-            }
-            
-            exerciseInfo.appendChild(exerciseName);
-            exerciseInfo.appendChild(exerciseTime);
-            exerciseElement.appendChild(exerciseInfo);
-            
-            if (exercise.description && exercise.description.trim().length > 0) {
-                const descriptionElement = document.createElement('div');
-                descriptionElement.className = 'exercise-description';
-                descriptionElement.innerHTML = exercise.description.split('\n').map(line => `<p>${line}</p>`).join('');
-                exerciseElement.appendChild(descriptionElement);
-            }
-            
-            this.workoutList.appendChild(exerciseElement);
+            this.workoutList.appendChild(item);
         });
+        
+        // Update current exercise state
+        this.updateWorkoutList();
     }
 
     // Workout editing functionality
