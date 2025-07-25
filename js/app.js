@@ -5,6 +5,7 @@ import { AudioManager } from './audio-manager.js';
 import { TimerManager } from './timer-manager.js';
 import { StatisticsManager } from './statistics-manager.js';
 import { ScreenWakeManager } from './screen-wake-manager.js';
+import { NavigationManager } from './navigation-manager.js';
 
 /**
  * Application initialization
@@ -14,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the main application
     window.workoutApp = new WorkoutApp();
     
+    // Initialize navigation
+    window.navigationManager = new NavigationManager();
+    
     // Expose classes globally for backward compatibility with tests
     window.WorkoutApp = WorkoutApp;
     window.WorkoutParser = WorkoutParser;
@@ -22,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.TimerManager = TimerManager;
     window.StatisticsManager = StatisticsManager;
     window.ScreenWakeManager = ScreenWakeManager;
+    window.NavigationManager = NavigationManager;
     
     // For backward compatibility, create a WorkoutTimer class that delegates to WorkoutApp
     window.WorkoutTimer = class WorkoutTimer {
