@@ -14,6 +14,7 @@ import { NavigationManager } from './navigation-manager.js';
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize the main application
     window.workoutApp = new WorkoutApp();
+    window.app = window.workoutApp; // Make app globally accessible for onclick handlers
     
     // Initialize navigation
     window.navigationManager = new NavigationManager();
