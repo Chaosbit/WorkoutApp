@@ -108,11 +108,14 @@ Symbols: @#$%^&*()_+-=[]{}|;:,.<>?`;
       });
     });
 
+    // Wait for workout to load
+    cy.wait(1000);
+
     // Click share button
     cy.get('#shareWorkoutBtn').click();
     
     // Check for success message (will appear briefly)
-    cy.get('body').should('contain', 'copied to clipboard');
+    cy.get('body', { timeout: 10000 }).should('contain', 'Workout link copied to clipboard!');
   });
 
   it('should automatically save shared workouts to library', () => {
