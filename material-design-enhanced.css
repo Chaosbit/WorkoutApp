@@ -1144,4 +1144,273 @@ body {
     .journal-status {
         align-self: flex-end;
     }
+
+    /* Library controls mobile adjustments */
+    .library-controls {
+        flex-direction: column;
+    }
+    
+    .filter-section {
+        flex-direction: column;
+    }
+    
+    .sort-controls {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+}
+
+/* Workout Library Management Styles */
+.library-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background-color: var(--md-sys-color-surface-variant);
+    border-radius: 8px;
+}
+
+.filter-section {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.tag-filter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 24px;
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.tag-chip .remove-tag {
+    background: none;
+    border: none;
+    color: var(--md-sys-color-on-secondary-container);
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.tag-chip .remove-tag:hover {
+    opacity: 1;
+}
+
+.tag-input-wrapper {
+    position: relative;
+}
+
+.tag-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--md-sys-color-surface-container);
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.tag-suggestion {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.tag-suggestion:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.tag-suggestion:last-child {
+    border-bottom: none;
+}
+
+.duration-filter select {
+    width: 100%;
+}
+
+.sort-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.sort-section label {
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sort-controls select {
+    min-width: 150px;
+}
+
+#sortOrderBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--md-sys-color-outline);
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#sortOrderBtn:hover {
+    background-color: var(--md-sys-color-surface-container-high);
+}
+
+.workout-info {
+    margin: 12px 0;
+    padding: 12px;
+    background-color: var(--md-sys-color-surface-container-low);
+    border-radius: 8px;
+}
+
+.workout-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.workout-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.workout-meta span::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    background-color: var(--md-sys-color-primary);
+    border-radius: 50%;
+}
+
+.workout-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.workout-tag {
+    background-color: var(--md-sys-color-tertiary-container);
+    color: var(--md-sys-color-on-tertiary-container);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.tag-editor {
+    margin: 16px 0;
+}
+
+.tag-editor label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 500;
+}
+
+.tag-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.workout-tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 24px;
+}
+
+.editable-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.editable-tag .remove-tag {
+    background: none;
+    border: none;
+    color: var(--md-sys-color-on-primary-container);
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.editable-tag .remove-tag:hover {
+    opacity: 1;
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 8px;
+}
+
+/* Show library controls when workouts exist */
+.has-workouts .library-controls {
+    display: flex;
 }
