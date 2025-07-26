@@ -8,7 +8,7 @@ describe('PWA Features', () => {
   })
 
   it('should have correct meta tags for PWA', () => {
-    cy.get('meta[name="theme-color"]').should('have.attr', 'content', '#667eea')
+    cy.get('meta[name="theme-color"]').should('have.attr', 'content', '#6750A4')
     cy.get('meta[name="apple-mobile-web-app-capable"]').should('have.attr', 'content', 'yes')
     cy.get('meta[name="mobile-web-app-capable"]').should('have.attr', 'content', 'yes')
     cy.get('link[rel="apple-touch-icon"]').should('exist')
@@ -66,8 +66,8 @@ describe('PWA Features', () => {
     cy.viewport('iphone-x')
     
     cy.get('.container').should('be.visible')
-    cy.get('h1').should('be.visible')
-    cy.get('#workoutFile').should('be.visible')
+    cy.get('h2').should('be.visible')
+    cy.get('#workoutFile').should('exist') // File input has opacity: 0 by design
     cy.get('.sample-format').should('be.visible')
   })
 
@@ -75,7 +75,7 @@ describe('PWA Features', () => {
     cy.viewport('ipad-2')
     
     cy.get('.container').should('be.visible')
-    cy.get('h1').should('be.visible')
+    cy.get('h2').should('be.visible')
     cy.get('.file-input-section').should('be.visible')
   })
 
