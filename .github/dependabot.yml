@@ -15,14 +15,6 @@ updates:
     allow:
       - dependency-type: "direct"
       - dependency-type: "indirect"
-    # Automatically merge minor and patch updates for dev dependencies
-    auto-merge:
-      - match:
-          dependency-type: "development"
-          update-type: "semver:minor"
-      - match:
-          dependency-type: "development"
-          update-type: "semver:patch"
     # Group similar updates together to reduce PR noise  
     groups:
       babel:
