@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/WorkoutApp.Api.props" />
-</Project>
