@@ -7,6 +7,8 @@ import { StatisticsManager } from './statistics-manager.js';
 import { ScreenWakeManager } from './screen-wake-manager.js';
 import { TrainingPlanManager } from './training-plan-manager.js';
 import { NavigationManager } from './navigation-manager.js';
+import { UIUtils } from './ui-utils.js';
+import { APP_CONFIG, APP_UTILS } from './constants.js';
 
 /**
  * Application initialization
@@ -30,6 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.ScreenWakeManager = ScreenWakeManager;
     window.TrainingPlanManager = TrainingPlanManager;
     window.NavigationManager = NavigationManager;
+    
+    // Expose new utility classes for testing and development
+    window.UIUtils = UIUtils;
+    window.APP_CONFIG = APP_CONFIG;
+    window.APP_UTILS = APP_UTILS;
     
     // For backward compatibility, create a WorkoutTimer class that delegates to WorkoutApp
     window.WorkoutTimer = class WorkoutTimer {
