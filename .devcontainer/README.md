@@ -8,6 +8,8 @@ This repository includes a VS Code Dev Container configuration that provides a c
 - **Node.js 18**: For frontend development and testing
 - **.NET 8 SDK**: For backend API development
 - **Git & GitHub CLI**: For version control operations
+- **Terraform**: For infrastructure as code management
+- **Azure CLI**: For Azure cloud deployments
 - **Python 3**: For development scripts and utilities
 - **SQLite**: For local database development
 
@@ -17,6 +19,9 @@ This repository includes a VS Code Dev Container configuration that provides a c
 - **Jest Test Explorer**: For running and debugging unit tests
 - **Playwright**: For end-to-end testing
 - **Tailwind CSS**: For CSS IntelliSense
+- **Terraform**: For infrastructure as code support
+- **Azure CLI**: For Azure cloud integration
+- **Azure Resource Groups**: For Azure resource management
 
 ### Development Tools
 - **Jest**: For unit testing (globally installed)
@@ -52,6 +57,12 @@ This repository includes a VS Code Dev Container configuration that provides a c
    # Check .NET
    dotnet --version
    
+   # Check Terraform
+   terraform --version
+   
+   # Check Azure CLI
+   az --version
+   
    # Install dependencies
    npm install
    cd backend && dotnet restore && cd ..
@@ -84,6 +95,25 @@ dotnet run
 
 # Run backend tests
 dotnet test
+```
+
+### Infrastructure Management
+```bash
+# Navigate to terraform directory
+cd terraform
+
+# Initialize Terraform
+terraform init
+
+# Plan infrastructure changes
+terraform plan
+
+# Apply infrastructure changes
+terraform apply
+
+# Check Azure resources
+az account show
+az group list
 ```
 
 ## Port Forwarding
@@ -139,6 +169,14 @@ sudo apt-get install -y nodejs
 wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
 sudo apt-get update && sudo apt-get install -y dotnet-sdk-8.0
+
+# Install Terraform
+wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+
+# Install Azure CLI
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
 # Install dependencies
 npm install

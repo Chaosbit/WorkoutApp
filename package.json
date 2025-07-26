@@ -14,7 +14,11 @@
     "test:backend": "cd backend && dotnet test WorkoutApp.Tests/WorkoutApp.Tests.csproj",
     "test:all": "npm run test:unit && npm run test:backend && npm run serve & sleep 5 && npm run test:e2e && kill $!",
     "serve": "python3 -m http.server 8000",
-    "start": "python3 -m http.server 8000"
+    "start": "python3 -m http.server 8000",
+    "backend:api": "cd backend && dotnet run --project WorkoutApp.Api",
+    "backend:apphost": "cd backend && dotnet run --project WorkoutApp.AppHost",
+    "backend:build": "cd backend && dotnet build",
+    "backend:restore": "cd backend && dotnet restore"
   },
   "keywords": [
     "pwa",

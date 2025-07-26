@@ -13,7 +13,11 @@
                 "ms-vscode.test-adapter-converter",
                 "hbenl.vscode-test-explorer",
                 "ms-playwright.playwright",
-                "ms-vscode.vscode-jest"
+                "ms-vscode.vscode-jest",
+                "HashiCorp.terraform",
+                "ms-vscode.azurecli",
+                "ms-azuretools.vscode-azureresourcegroups",
+                "ms-azuretools.vscode-azureappservice"
             ],
             "settings": {
                 "terminal.integrated.defaultProfile.linux": "bash",
@@ -26,7 +30,7 @@
             }
         }
     },
-    "forwardPorts": [8000, 5000, 3000],
+    "forwardPorts": [8000, 5000, 3000, 15888],
     "portsAttributes": {
         "8000": {
             "label": "PWA Development Server",
@@ -39,9 +43,13 @@
         "3000": {
             "label": "Alternative Dev Server",
             "protocol": "http"
+        },
+        "15888": {
+            "label": "Aspire Dashboard",
+            "protocol": "https"
         }
     },
-    "postCreateCommand": "npm install && cd backend && dotnet restore",
+    "postCreateCommand": "npm install && cd backend && dotnet restore && dotnet workload install aspire",
     "remoteUser": "vscode",
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
@@ -51,6 +59,12 @@
             "version": "8.0"
         },
         "ghcr.io/devcontainers/features/git:1": {},
-        "ghcr.io/devcontainers/features/github-cli:1": {}
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/terraform:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/azure-cli:1": {
+            "version": "latest"
+        }
     }
 }

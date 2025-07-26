@@ -8,6 +8,9 @@ using WorkoutApp.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Aspire service defaults (observability, health checks, service discovery)
+builder.AddServiceDefaults();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -103,6 +106,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Map Aspire default endpoints (health checks)
+app.MapDefaultEndpoints();
 
 app.Run();
 
