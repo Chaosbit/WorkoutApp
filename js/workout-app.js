@@ -2099,5 +2099,4 @@ Rest - 0:30`;
         
         return this.timerManager.formatTime(totalSeconds);
     }
-    }
 }
