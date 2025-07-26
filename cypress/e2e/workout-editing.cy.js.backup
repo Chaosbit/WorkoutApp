@@ -231,6 +231,10 @@ Another new exercise`
       // Editor should still be visible
       cy.get('#workoutEditor').should('be.visible')
     })
+      
+      // Editor should still be visible
+      cy.get('#workoutEditor').should('be.visible')
+    })
 
     it('should prevent saving with invalid markdown format', () => {
       cy.get('#editWorkoutBtn').click()
