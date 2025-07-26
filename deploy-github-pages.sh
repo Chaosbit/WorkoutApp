@@ -39,7 +39,7 @@ mkdir -p "$DEPLOY_DIR"
 # Copy application files
 echo -e "${GREEN}📋 Copying application files...${NC}"
 cp index.html "$DEPLOY_DIR/"
-cp styles.css "$DEPLOY_DIR/"
+cp material-design-enhanced.css "$DEPLOY_DIR/"
 cp script.js "$DEPLOY_DIR/"
 cp manifest.json "$DEPLOY_DIR/"
 cp sw.js "$DEPLOY_DIR/"
