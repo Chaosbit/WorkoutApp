@@ -106,7 +106,6 @@ export class StatisticsManager {
         if (!this.stats.firstWorkoutDate) {
             this.stats.firstWorkoutDate = now;
         }
-        this.stats.lastWorkoutDate = now;
         
         this.saveStats();
     }
@@ -166,6 +165,7 @@ export class StatisticsManager {
         this.stats.completedWorkouts++;
         this.stats.totalTimeSeconds += durationSeconds;
         this.updateStreak();
+        this.stats.lastWorkoutDate = now.split('T')[0]; // Store just the date part after updating streak
 
         // Save session
         this.sessions.unshift(this.currentSession); // Add to beginning for recent-first order
@@ -209,39 +209,30 @@ export class StatisticsManager {
      * Update workout streak based on recent activity
      */
     updateStreak() {
-        if (this.sessions.length === 0) {
+        const today = new Date().toISOString().split('T')[0];
+        const lastWorkoutDate = this.stats.lastWorkoutDate ? this.stats.lastWorkoutDate.split('T')[0] : null;
+        
+        if (!lastWorkoutDate) {
+            // First workout ever
             this.stats.streakDays = 1;
             return;
         }
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
         
-        let streak = 0;
-        let currentDate = new Date(today);
+        const todayDate = new Date(today);
+        const lastDate = new Date(lastWorkoutDate);
+        const diffTime = todayDate - lastDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         
-        // Check each day backwards to count consecutive workout days
-        for (let i = 0; i < 365; i++) { // Max 365 days
-            const dayStart = new Date(currentDate);
-            const dayEnd = new Date(currentDate);
-            dayEnd.setHours(23, 59, 59, 999);
-            
-            const hasWorkoutThisDay = this.sessions.some(session => {
-                if (session.status !== 'completed') return false;
-                const sessionDate = new Date(session.startTime);
-                return sessionDate >= dayStart && sessionDate <= dayEnd;
-            });
-            
-            if (hasWorkoutThisDay) {
-                streak++;
-            } else if (i > 0) { // Don't break on first day (today) if no workout yet
-                break;
-            }
-            
-            currentDate.setDate(currentDate.getDate() - 1);
+        if (diffDays === 0) {
+            // Same day workout, maintain streak
+            return;
+        } else if (diffDays === 1) {
+            // Consecutive day, increment streak
+            this.stats.streakDays = (this.stats.streakDays || 0) + 1;
+        } else {
+            // Gap in workouts, reset streak
+            this.stats.streakDays = 1;
         }
-        
-        this.stats.streakDays = streak;
     }
 
     /**

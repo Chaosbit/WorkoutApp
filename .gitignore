@@ -24,6 +24,10 @@ coverage/
 *.swp
 *.swo
 
+# Dev Container
+.devcontainer/.env
+.devcontainer/docker-compose.override.yml
+
 # OS
 .DS_Store
 Thumbs.db

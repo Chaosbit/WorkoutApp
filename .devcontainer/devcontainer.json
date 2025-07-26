@@ -1,0 +1,56 @@
+{
+    "name": "Workout Timer PWA",
+    "dockerFile": "Dockerfile",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.vscode-json",
+                "bradlc.vscode-tailwindcss",
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.vscode-dotnet-runtime",
+                "ms-vscode.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-vscode.test-adapter-converter",
+                "hbenl.vscode-test-explorer",
+                "ms-playwright.playwright",
+                "ms-vscode.vscode-jest"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "javascript.preferences.includePackageJsonAutoImports": "on",
+                "typescript.preferences.includePackageJsonAutoImports": "on",
+                "jest.autoRun": "off",
+                "jest.showCoverageOnLoad": true
+            }
+        }
+    },
+    "forwardPorts": [8000, 5000, 3000],
+    "portsAttributes": {
+        "8000": {
+            "label": "PWA Development Server",
+            "protocol": "http"
+        },
+        "5000": {
+            "label": ".NET Backend API",
+            "protocol": "http"
+        },
+        "3000": {
+            "label": "Alternative Dev Server",
+            "protocol": "http"
+        }
+    },
+    "postCreateCommand": "npm install && cd backend && dotnet restore",
+    "remoteUser": "vscode",
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "18"
+        },
+        "ghcr.io/devcontainers/features/dotnet:1": {
+            "version": "8.0"
+        },
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    }
+}

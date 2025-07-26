@@ -125,7 +125,7 @@ describe('SyncManager', () => {
                 await syncManager.login({ username: 'testuser', password: 'wrongpassword' });
                 fail('Should have thrown an error');
             } catch (error) {
-                expect(error.message).toContain('API error');
+                expect(error.message).toContain('Authentication required');
                 expect(syncManager.token).toBeNull();
             }
         });
