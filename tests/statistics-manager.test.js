@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { StatisticsManager } from '../js/statistics-manager.js';
 
 describe('StatisticsManager', () => {
@@ -141,9 +140,9 @@ describe('StatisticsManager', () => {
                 exercises: [{ name: 'Push Ups', duration: 60 }]
             };
             
-            newManager.startWorkout(workout);
-            newManager.completeExercise(0, 60);
-            newManager.completeWorkout();
+            newManager.startSession("workout1", workout.title, workout.exercises);
+            newManager.completeExercise(0);
+            newManager.completeSession();
             
             const stats = newManager.getStats();
             expect(stats.streakDays).toBe(2);
@@ -173,9 +172,9 @@ describe('StatisticsManager', () => {
                 exercises: [{ name: 'Push Ups', duration: 60 }]
             };
             
-            newManager.startWorkout(workout);
-            newManager.completeExercise(0, 60);
-            newManager.completeWorkout();
+            newManager.startSession("workout1", workout.title, workout.exercises);
+            newManager.completeExercise(0);
+            newManager.completeSession();
             
             const stats = newManager.getStats();
             expect(stats.streakDays).toBe(1); // Reset to 1
@@ -219,9 +218,9 @@ describe('StatisticsManager', () => {
                 exercises: [{ name: 'Push Ups', duration: 60 }]
             };
             
-            statisticsManager.startWorkout(workout);
-            statisticsManager.completeExercise(0, 60);
-            statisticsManager.completeWorkout();
+            statisticsManager.startSession("workout1", workout.title, workout.exercises);
+            statisticsManager.completeExercise(0);
+            statisticsManager.completeSession();
             
             const storedStats = JSON.parse(localStorage.getItem('workoutStats'));
             expect(storedStats.totalWorkouts).toBe(1);
