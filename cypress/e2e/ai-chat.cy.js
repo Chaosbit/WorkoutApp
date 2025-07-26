@@ -32,7 +32,7 @@ describe('AI Chat Feature', () => {
         
         // Check initial welcome message
         cy.get('.ai-message').should('be.visible');
-        cy.get('.ai-message .message-bubble').should('contain', 'Hi! I\'m your AI workout assistant');
+        cy.get('.ai-message .message-bubble').should('contain', 'Hi! I\'m your AI workout assistant powered by advanced language models');
         
         // Check suggestion chips
         cy.get('.suggestion-chips').should('be.visible');
@@ -43,12 +43,12 @@ describe('AI Chat Feature', () => {
         cy.get('#aiChatSendBtn').should('be.visible');
     });
 
-    it('should handle chat input and responses', () => {
+    it('should handle chat input and show configuration requirement', () => {
         // Navigate to AI Chat
         cy.get('#aiChatTab').click();
         
         // Type a message
-        const testMessage = 'What are good push-up alternatives?';
+        const testMessage = 'What are good exercise alternatives?';
         cy.get('#aiChatInput').type(testMessage);
         cy.get('#aiChatSendBtn').click();
         
@@ -60,8 +60,9 @@ describe('AI Chat Feature', () => {
         cy.get('#aiChatStatus').should('be.visible');
         cy.get('#aiChatStatus').should('contain', 'AI is thinking');
         
-        // Wait for AI response
+        // Wait for AI response indicating configuration is needed
         cy.get('.ai-message').should('have.length.at.least', 2);
+        cy.get('.ai-message').last().should('contain.text', 'Configuration');
         
         // Check input is cleared
         cy.get('#aiChatInput').should('have.value', '');
@@ -104,28 +105,12 @@ describe('AI Chat Feature', () => {
         // Navigate to AI Chat
         cy.get('#aiChatTab').click();
         
-        // Test substitution query
-        cy.get('#aiChatInput').type('I need alternatives to push-ups for shoulder pain');
+        // Test that AI requires configuration
+        cy.get('#aiChatInput').type('I need help with my workout');
         cy.get('#aiChatSendBtn').click();
         
-        // Wait for response with more flexible content check
+        // Wait for response indicating configuration is needed
         cy.get('.ai-message').should('have.length.at.least', 2);
-        cy.get('.ai-message').last().should('contain.text', 'alternatives').or('contain.text', 'substitute');
-        
-        // Test time reduction query
-        cy.get('#aiChatInput').type('How can I make this workout shorter?');
-        cy.get('#aiChatSendBtn').click();
-        
-        // Wait for response with more flexible content check
-        cy.get('.ai-message').should('have.length.at.least', 3);
-        cy.get('.ai-message').last().should('contain.text', 'time').or('contain.text', 'workout').or('contain.text', 'reduce');
-        
-        // Test warm-up query
-        cy.get('#aiChatInput').type('What warm-up should I do?');
-        cy.get('#aiChatSendBtn').click();
-        
-        // Wait for response with more flexible content check
-        cy.get('.ai-message').should('have.length.at.least', 4);
-        cy.get('.ai-message').last().should('contain.text', 'warm').or('contain.text', 'exercise');
+        cy.get('.ai-message').last().should('contain.text', 'Configuration');
     });
 });
