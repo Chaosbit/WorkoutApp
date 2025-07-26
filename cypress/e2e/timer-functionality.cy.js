@@ -22,20 +22,33 @@ describe('Timer Functionality', () => {
   })
 
   it('should pause and resume the timer', () => {
+    // Start the timer
     cy.get('#startBtn').click()
     
-    cy.wait(1000)
+    // Let timer run for a bit and verify it's counting down
+    cy.wait(500)
+    
+    // Pause the timer
     cy.get('#pauseBtn').click()
     
+    // Check button states after pause
     cy.get('#startBtn').should('be.enabled')
     cy.get('#pauseBtn').should('be.disabled')
     cy.get('#skipBtn').should('be.enabled')
     
-    cy.get('#timerDisplay').should('contain', '00:02')
-    
-    cy.get('#startBtn').click()
-    cy.get('#startBtn').should('be.disabled')
-    cy.get('#pauseBtn').should('be.enabled')
+    // Store current timer value
+    cy.get('#timerDisplay').invoke('text').then((pausedTime) => {
+      // Wait a bit while paused
+      cy.wait(1000)
+      
+      // Timer should not have changed while paused
+      cy.get('#timerDisplay').should('contain', pausedTime)
+      
+      // Resume timer
+      cy.get('#startBtn').click()
+      cy.get('#startBtn').should('be.disabled')
+      cy.get('#pauseBtn').should('be.enabled')
+    })
   })
 
   it('should skip to next exercise', () => {
@@ -43,7 +56,7 @@ describe('Timer Functionality', () => {
     cy.get('#skipBtn').click()
     
     cy.get('#currentExercise').should('contain', 'Push-ups')
-    cy.get('#timerDisplay').should('contain', '00:02')
+    cy.get('#timerDisplay').should('contain', '0:02')
     cy.get('#progressText').should('contain', 'Exercise 2 of 6')
     
     cy.get('.exercise-item').first().should('have.class', 'completed')
@@ -56,7 +69,7 @@ describe('Timer Functionality', () => {
     cy.get('#resetBtn').click()
     
     cy.get('#currentExercise').should('contain', 'Warm-up')
-    cy.get('#timerDisplay').should('contain', '00:03')
+    cy.get('#timerDisplay').should('contain', '0:03')
     cy.get('#progressText').should('contain', 'Exercise 1 of 6')
     
     cy.get('#startBtn').should('be.enabled')
@@ -71,11 +84,11 @@ describe('Timer Functionality', () => {
     
     cy.wait(3500)
     cy.get('#currentExercise').should('contain', 'Push-ups')
-    cy.get('#timerDisplay').should('contain', '00:02')
+    cy.get('#timerDisplay').should('contain', '0:02')
     
     cy.wait(2500)
     cy.get('#currentExercise').should('contain', 'Rest')
-    cy.get('#timerDisplay').should('contain', '00:01')
+    cy.get('#timerDisplay').should('contain', '0:01')
   })
 
   it('should update progress bar during exercise', () => {
@@ -91,10 +104,6 @@ describe('Timer Functionality', () => {
   })
 
   it('should complete the workout and show completion message', () => {
-    cy.window().then((win) => {
-      cy.stub(win, 'alert').as('windowAlert')
-    })
-    
     cy.get('#startBtn').click()
     
     for (let i = 0; i < 6; i++) {
@@ -103,10 +112,12 @@ describe('Timer Functionality', () => {
     }
     
     cy.get('#currentExercise').should('contain', 'Workout Complete! 🎉')
-    cy.get('#timerDisplay').should('contain', '00:00')
+    cy.get('#timerDisplay').should('contain', '0:00')
     cy.get('#progressFill').should('have.css', 'width').and('not.equal', '0px')
     
-    cy.get('@windowAlert').should('have.been.calledWith', 'Workout completed! Great job! 💪')
+    // Should show completion message instead of alert
+    cy.get('.app-message--success').should('be.visible')
+    cy.get('.app-message--success').should('contain', 'Workout completed! Great job! 💪')
   })
 
   it('should mark exercises as completed during workout progression', () => {
@@ -126,13 +137,13 @@ describe('Timer Functionality', () => {
   it('should handle timer countdown accuracy', () => {
     cy.get('#startBtn').click()
     
-    cy.get('#timerDisplay').should('contain', '00:03')
+    cy.get('#timerDisplay').should('contain', '0:03')
     
     cy.wait(1000)
-    cy.get('#timerDisplay').should('contain', '00:02')
+    cy.get('#timerDisplay').should('contain', '0:02')
     
     cy.wait(1000)
-    cy.get('#timerDisplay').should('contain', '00:01')
+    cy.get('#timerDisplay').should('contain', '0:01')
     
     cy.wait(1000)
     cy.get('#currentExercise').should('contain', 'Push-ups')

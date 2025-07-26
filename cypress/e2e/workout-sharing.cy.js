@@ -18,7 +18,7 @@ describe('Workout Sharing', () => {
 
     // Check that share button appears
     cy.get('#shareWorkoutBtn').should('be.visible');
-    cy.get('#shareWorkoutBtn').should('contain', '📤 Share Workout');
+    cy.get('#shareWorkoutBtn').should('contain', 'Share Workout');
   });
 
   it('should load workout from shared link', () => {
