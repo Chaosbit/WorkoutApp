@@ -93,6 +93,14 @@ export class WorkoutLibrary {
     }
 
     /**
+     * Get all workouts (alias for getAllWorkouts for consistency)
+     * @returns {Array} Copy of all workouts
+     */
+    getWorkouts() {
+        return this.getAllWorkouts();
+    }
+
+    /**
      * Delete a workout by ID
      * @param {string} id - Workout ID to delete
      */
