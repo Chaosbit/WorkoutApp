@@ -1,11 +1,11 @@
 name: Security Audit
 
-on:
+"on":
   # Run weekly on Mondays at 7 AM UTC (after Dependabot runs)
   schedule:
     - cron: '0 7 * * 1'
   # Allow manual triggering
-  workflow_dispatch:
+  workflow_dispatch: {}
   # Run on pushes to main/master branches
   push:
     branches: [ main, master ]
