@@ -483,9 +483,9 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
         }
 
         this.showThinking();
+        // Save temporarily for testing
+        const oldConfig = { ...this.aiConfig };
         try {
-            // Save temporarily for testing
-            const oldConfig = { ...this.aiConfig };
             this.aiConfig.provider = provider;
             this.aiConfig.apiKey = apiKey;
 
