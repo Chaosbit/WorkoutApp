@@ -26,9 +26,9 @@
   "author": "Claude Code",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.23.5",
-    "@babel/preset-env": "^7.23.5",
-    "babel-jest": "^29.7.0",
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "babel-jest": "^30.0.5",
     "cypress": "^13.6.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
