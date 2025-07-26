@@ -4,6 +4,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Build/Deploy
+dist/
+
+# Test coverage
+coverage/
+
 # Cypress
 cypress/videos/
 cypress/screenshots/

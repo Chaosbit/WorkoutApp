@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { WorkoutParser } from '../js/workout-parser.js';
 
 describe('WorkoutParser', () => {

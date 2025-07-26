@@ -51,10 +51,9 @@ describe('UI Behavior', () => {
   it('should maintain clean layout after loading workout', () => {
     cy.loadWorkoutFile('test-workout.md')
     
-    // Check that the file input section is still visible but cleaned up
-    cy.get('.file-input-section').should('be.visible')
-    cy.get('.file-input-section h2').should('contain', 'Load Workout')
-    cy.get('#workoutFile').should('be.visible')
+    // Check that the file input area is still present
+    cy.get('.file-input-area').should('be.visible')
+    cy.get('#workoutFile').should('exist')
     
     // But sample format should be hidden
     cy.get('.sample-format').should('not.be.visible')

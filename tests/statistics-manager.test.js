@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { StatisticsManager } from '../js/statistics-manager.js';
 
 describe('StatisticsManager', () => {

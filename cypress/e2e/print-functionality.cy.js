@@ -58,17 +58,15 @@ describe('Print Functionality', () => {
         cy.get('@windowOpen').should('have.been.calledWith', '', '_blank');
     });
 
-    it('should show alert when trying to print without workout loaded', () => {
-        cy.window().then((win) => {
-            cy.stub(win, 'alert').as('windowAlert');
-            
-            // Get the app instance and test print with no workout
-            cy.window().its('workoutApp').then((app) => {
-                app.workout = null;
-                app.printWorkout();
-            });
+    it('should show message when trying to print without workout loaded', () => {        
+        // Get the app instance and test print with no workout
+        cy.window().its('workoutApp').then((app) => {
+            app.workout = null;
+            app.printWorkout();
         });
         
-        cy.get('@windowAlert').should('have.been.calledWith', 'No workout loaded to print.');
+        // Should show warning message instead of alert
+        cy.get('.app-message--warning').should('be.visible')
+        cy.get('.app-message--warning').should('contain', 'No workout loaded to print.')
     });
 });

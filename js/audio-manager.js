@@ -1,3 +1,5 @@
+import { APP_CONFIG } from './constants.js';
+
 /**
  * AudioManager - Manages audio notifications for workout events
  */
@@ -20,11 +22,11 @@ export class AudioManager {
 
     /**
      * Play a sound with specified parameters
-     * @param {number} frequency - Sound frequency in Hz (default: 800)
-     * @param {number} duration - Sound duration in ms (default: 500)
+     * @param {number} frequency - Sound frequency in Hz (default: from config)
+     * @param {number} duration - Sound duration in ms (default: from config) 
      * @param {string} type - Oscillator type ('sine', 'square', 'sawtooth', 'triangle')
      */
-    playSound(frequency = 800, duration = 500, type = 'sine') {
+    playSound(frequency = APP_CONFIG.AUDIO_FREQUENCIES.EXERCISE_COMPLETE, duration = APP_CONFIG.AUDIO_DURATION, type = 'sine') {
         if (!this.audioContext) return;
         
         try {
@@ -55,15 +57,16 @@ export class AudioManager {
      * Play exercise completion sound (single beep)
      */
     playExerciseComplete() {
-        this.playSound(600, 300);
+        this.playSound(APP_CONFIG.AUDIO_FREQUENCIES.REST_START, 300);
     }
 
     /**
      * Play workout completion sound (ascending melody)
      */
     playWorkoutComplete() {
-        setTimeout(() => this.playSound(523, 200), 0);    // C5
-        setTimeout(() => this.playSound(659, 200), 200);  // E5
-        setTimeout(() => this.playSound(784, 400), 400);  // G5
+        const [c5, e5, g5] = APP_CONFIG.AUDIO_FREQUENCIES.WORKOUT_COMPLETE;
+        setTimeout(() => this.playSound(c5, APP_CONFIG.AUDIO_DURATION), 0);    
+        setTimeout(() => this.playSound(e5, APP_CONFIG.AUDIO_DURATION), 200);  
+        setTimeout(() => this.playSound(g5, APP_CONFIG.AUDIO_DURATION * 2), 400);  
     }
 }
