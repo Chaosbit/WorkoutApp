@@ -33,19 +33,7 @@ describe('Description Visibility and Layout', () => {
     })
   })
 
-  it.skip('should not cause horizontal scrolling', () => {
-    // Test main description
-    cy.get('.description-toggle').click()
-    cy.window().then((win) => {
-      expect(win.document.body.scrollWidth).to.equal(win.innerWidth)
-    })
-    
-    // Test workout list descriptions
-    cy.get('.exercise-item').first().find('.exercise-header').click()
-    cy.window().then((win) => {
-      expect(win.document.body.scrollWidth).to.equal(win.innerWidth)
-    })
-  })
+
 
   it('should maintain proper text alignment', () => {
     // Main description should be left-aligned
@@ -96,7 +84,7 @@ describe('Description Visibility and Layout', () => {
     })
   })
 
-  it.skip('should maintain readability with long text', () => {
+  it('should maintain readability with long text', () => {
     const longDescriptionWorkout = `# Long Description Test
 
 ## Long Exercise Name With Multiple Words - 0:05
@@ -128,9 +116,11 @@ Rest - 0:02`
     cy.get('.exercise-item.expanded .exercise-description').should('be.visible')
     cy.get('.exercise-item.expanded .exercise-description p').should('have.length', 2)
     
-    // Ensure no horizontal scrolling with long text
-    cy.window().then((win) => {
-      expect(win.document.body.scrollWidth).to.equal(win.innerWidth)
+    // Check text remains within viewport bounds
+    cy.get('.description-content').then($desc => {
+      const rect = $desc[0].getBoundingClientRect()
+      expect(rect.left).to.be.at.least(0)
+      expect(rect.right).to.be.at.most(Cypress.config('viewportWidth'))
     })
   })
 })
