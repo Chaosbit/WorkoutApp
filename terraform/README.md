@@ -97,10 +97,10 @@ The configuration supports different environments through variables:
 - No staging slot
 - Relaxed user registration
 
-**Production:**
-- Uses Azure SQL Database
-- Higher-tier App Service Plan (P1v2)
-- Staging slot for deployments
+**Production (Cost Optimized for Private Use):**
+- Uses Azure SQL Database Basic tier
+- Basic App Service Plan (B2)
+- No staging slot (cost savings)
 - Strict user registration with approval
 
 ### Database Options
@@ -110,12 +110,12 @@ The configuration supports different environments through variables:
 use_sql_database = false
 ```
 
-**Azure SQL Database (Production):**
+**Azure SQL Database (Production - Cost Optimized):**
 ```hcl
 use_sql_database    = true
 sql_admin_username  = "workoutadmin"
 sql_admin_password  = "YourSecurePassword123!"
-sql_database_sku    = "S1"
+sql_database_sku    = "Basic"
 ```
 
 ## Resource Naming
@@ -184,19 +184,27 @@ az webapp deployment slot swap \
   --target-slot production
 ```
 
-## Cost Optimization
+## Cost Optimization (West Europe Pricing)
 
 ### Development Environment
 - App Service Plan: B1 (~$13/month)
 - Application Insights: Free tier
 - Key Vault: ~$0.03/10,000 operations
 - SQLite: No additional cost
+- **Total**: ~$13/month
 
-### Production Environment
-- App Service Plan: P1v2 (~$146/month)
-- SQL Database: S1 (~$20/month)
-- Application Insights: Pay-per-use
+### Production Environment (Cost Optimized for Private Use)
+- App Service Plan: B2 (~$26/month)
+- SQL Database: Basic (~$5/month)
+- Application Insights: Free tier for basic usage
 - Key Vault: ~$0.03/10,000 operations
+- **Total**: ~$31/month
+
+### Cost Savings Tips
+- Use Basic SKUs instead of Premium for private use
+- Disable staging slots if not needed
+- Monitor usage and scale down when not in use
+- Use SQLite for development environments
 
 ## Backup and Disaster Recovery
 

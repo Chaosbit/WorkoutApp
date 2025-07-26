@@ -177,26 +177,27 @@ Test your deployment:
 
 ## Cost Management
 
-### Development Costs (Estimated Monthly)
+### Development Costs (Estimated Monthly) - West Europe
 - App Service Plan B1: ~$13
 - Application Insights: Free tier
 - Key Vault: ~$0.03 per 10,000 operations
 - SQLite: No additional cost
-- **Total**: ~$15/month
+- **Total**: ~$13/month
 
-### Production Costs (Estimated Monthly)
-- App Service Plan P1v2: ~$146
-- SQL Database S1: ~$20
-- Application Insights: Pay-per-use (~$5-20)
+### Production Costs (Estimated Monthly) - West Europe (Cost Optimized for Private Use)
+- App Service Plan B2: ~$26
+- SQL Database Basic: ~$5
+- Application Insights: Free tier for basic usage
 - Key Vault: ~$0.03 per 10,000 operations
-- **Total**: ~$175/month
+- **Total**: ~$31/month
 
 ### Cost Optimization Tips
 
-1. **Use appropriate tiers** for your needs
-2. **Enable auto-scaling** to handle traffic spikes
+1. **Use Basic tiers** for private use scenarios
+2. **Disable staging slots** if not needed for deployments
 3. **Set up alerts** for cost thresholds
-4. **Consider Reserved Instances** for predictable workloads
+4. **Monitor usage** and scale down when not needed
+5. **Use SQLite** for development to avoid database costs
 
 ## Scaling and Performance
 

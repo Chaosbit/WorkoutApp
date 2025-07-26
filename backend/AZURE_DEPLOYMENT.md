@@ -14,7 +14,7 @@ This document provides instructions for deploying the Workout App backend to Azu
 
 1. **Create Resource Group**
 ```bash
-az group create --name WorkoutApp-RG --location "East US"
+az group create --name WorkoutApp-RG --location "West Europe"
 ```
 
 2. **Create App Service Plan**

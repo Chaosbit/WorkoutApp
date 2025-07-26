@@ -3,7 +3,7 @@
 
 # Environment Configuration
 environment = "production"
-location    = "East US"
+location    = "West Europe"
 
 # Resource Naming
 resource_group_name     = "WorkoutApp-RG"
@@ -11,8 +11,8 @@ app_name               = "workoutapp"
 app_service_plan_name  = "WorkoutApp-Plan"
 
 # App Service Configuration
-app_service_sku     = "P1v2"  # Premium tier for production
-create_staging_slot = true    # Create staging slot for blue-green deployment
+app_service_sku     = "B2"  # Basic tier - cost optimized for private use
+create_staging_slot = false # No staging slot to reduce costs
 
 # Database Configuration - Use SQL Database for production
 use_sql_database    = true
@@ -20,7 +20,7 @@ sql_server_name     = "workoutapp-sql"
 database_name       = "WorkoutAppDB"
 sql_admin_username  = "workoutadmin"
 # sql_admin_password = "YourVerySecurePassword123!"  # Set via environment variable or secure input
-sql_database_sku    = "S1"  # Standard tier for production
+sql_database_sku    = "Basic"  # Basic tier - cost optimized for private use
 
 # JWT Configuration
 jwt_issuer         = "WorkoutApp"

@@ -3,7 +3,7 @@
 
 # Environment Configuration
 environment = "dev"
-location    = "East US"
+location    = "West Europe"
 
 # Resource Naming
 resource_group_name     = "WorkoutApp-RG"
