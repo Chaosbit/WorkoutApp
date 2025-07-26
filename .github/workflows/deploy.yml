@@ -87,8 +87,9 @@ jobs:
       - name: Copy application files
         run: |
           cp index.html ./dist/
-          cp styles.css ./dist/
+          cp material-design-enhanced.css ./dist/
           cp script.js ./dist/
+          cp statistics.html ./dist/
           cp manifest.json ./dist/
           cp sw.js ./dist/
           cp *.png ./dist/ 2>/dev/null || true

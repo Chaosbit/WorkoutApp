@@ -67,7 +67,7 @@ describe('PWA Features', () => {
     cy.request('/sw.js').then((response) => {
       const swContent = response.body
       expect(swContent).to.include('index.html')
-      expect(swContent).to.include('styles.css')
+      expect(swContent).to.include('material-design-enhanced.css')
       expect(swContent).to.include('script.js')
       expect(swContent).to.include('manifest.json')
     })

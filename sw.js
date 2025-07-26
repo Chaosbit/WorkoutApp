@@ -2,19 +2,28 @@ const CACHE_NAME = 'workout-timer-v5';
 const urlsToCache = [
   './',
   './index.html',
-  './styles.css',
+  './material-design-enhanced.css',
   './script.js', // backward compatibility
   './js/app.js',
   './js/audio-manager.js',
+  './js/constants.js',
+  './js/navigation-manager.js',
+  './js/screen-wake-manager.js',
+  './js/statistics-manager.js',
+  './js/statistics-page.js',
   './js/sw-registration.js',
   './js/timer-manager.js',
+  './js/training-plan-manager.js',
+  './js/ui-utils.js',
   './js/workout-app.js',
   './js/workout-library.js',
   './js/workout-parser.js',
+  './statistics.html',
   './manifest.json',
   './sample-workout.md',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon.svg'
 ];
 
 self.addEventListener('install', (event) => {
