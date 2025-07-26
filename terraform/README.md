@@ -1,0 +1,285 @@
+# Workout App Azure Infrastructure
+
+This directory contains Terraform configurations for provisioning Azure infrastructure for the Workout App backend.
+
+## Architecture
+
+The Terraform configuration creates the following Azure resources:
+
+- **Resource Group**: Container for all resources
+- **App Service Plan**: Hosting plan for the web application
+- **Linux Web App**: The main application hosting service
+- **Application Insights**: Application performance monitoring and logging
+- **Key Vault**: Secure storage for secrets and connection strings
+- **SQL Server & Database** (optional): Azure SQL Database for production workloads
+- **Deployment Slot** (optional): Staging slot for blue-green deployments
+
+## Prerequisites
+
+1. **Azure CLI**: Install and login to Azure
+   ```bash
+   az login
+   az account set --subscription "your-subscription-id"
+   ```
+
+2. **Terraform**: Install Terraform CLI (>= 1.0)
+   ```bash
+   # On macOS
+   brew install terraform
+   
+   # On Ubuntu/Debian
+   sudo apt-get update && sudo apt-get install terraform
+   
+   # On Windows
+   choco install terraform
+   ```
+
+3. **Azure Subscription**: Ensure you have appropriate permissions to create resources
+
+## Quick Start
+
+### 1. Configure Variables
+
+Copy the example variables file and customize it:
+
+```bash
+# For development
+cp terraform.tfvars.example terraform.tfvars
+
+# For production
+cp terraform.tfvars.prod terraform.tfvars
+```
+
+Edit `terraform.tfvars` with your specific configuration.
+
+### 2. Initialize Terraform
+
+```bash
+terraform init
+```
+
+### 3. Plan Deployment
+
+```bash
+terraform plan
+```
+
+### 4. Deploy Infrastructure
+
+```bash
+terraform apply
+```
+
+### 5. Get Deployment Information
+
+```bash
+terraform output
+```
+
+## Configuration Options
+
+### Environment Variables
+
+For sensitive values like SQL passwords, use environment variables:
+
+```bash
+export TF_VAR_sql_admin_password="YourSecurePassword123!"
+terraform apply
+```
+
+### Development vs Production
+
+The configuration supports different environments through variables:
+
+**Development:**
+- Uses SQLite database (default)
+- Lower-tier App Service Plan (B1)
+- No staging slot
+- Relaxed user registration
+
+**Production:**
+- Uses Azure SQL Database
+- Higher-tier App Service Plan (P1v2)
+- Staging slot for deployments
+- Strict user registration with approval
+
+### Database Options
+
+**SQLite (Development):**
+```hcl
+use_sql_database = false
+```
+
+**Azure SQL Database (Production):**
+```hcl
+use_sql_database    = true
+sql_admin_username  = "workoutadmin"
+sql_admin_password  = "YourSecurePassword123!"
+sql_database_sku    = "S1"
+```
+
+## Resource Naming
+
+All resources are created with a consistent naming pattern:
+- Format: `{app_name}-{resource_type}-{environment}-{random_suffix}`
+- Example: `workoutapp-api-prod-a1b2c3d4`
+
+The random suffix ensures unique resource names across Azure.
+
+## Security Features
+
+### Key Vault Integration
+
+Sensitive configuration is stored in Azure Key Vault:
+- JWT signing secret (auto-generated)
+- SQL connection string (if using SQL Database)
+- Application settings reference Key Vault secrets
+
+### Managed Identity
+
+The App Service uses system-assigned managed identity:
+- Eliminates need for connection strings in code
+- Automatic authentication to Key Vault
+- Enhanced security posture
+
+### Network Security
+
+- HTTPS-only enforcement
+- CORS configuration for allowed origins
+- SQL Server firewall rules (Azure services only)
+
+## Monitoring and Logging
+
+### Application Insights
+
+Automatic integration provides:
+- Performance monitoring
+- Exception tracking
+- Custom telemetry
+- Availability tests
+
+### Access Logs
+
+```bash
+# View recent logs
+az webapp log tail --name <app-service-name> --resource-group <resource-group>
+
+# Download logs
+az webapp log download --name <app-service-name> --resource-group <resource-group>
+```
+
+## Deployment Slots
+
+When `create_staging_slot = true`, a staging slot is created for:
+- Blue-green deployments
+- Testing before production
+- Zero-downtime deployments
+
+**Swap slots:**
+```bash
+az webapp deployment slot swap \
+  --name <app-service-name> \
+  --resource-group <resource-group> \
+  --slot staging \
+  --target-slot production
+```
+
+## Cost Optimization
+
+### Development Environment
+- App Service Plan: B1 (~$13/month)
+- Application Insights: Free tier
+- Key Vault: ~$0.03/10,000 operations
+- SQLite: No additional cost
+
+### Production Environment
+- App Service Plan: P1v2 (~$146/month)
+- SQL Database: S1 (~$20/month)
+- Application Insights: Pay-per-use
+- Key Vault: ~$0.03/10,000 operations
+
+## Backup and Disaster Recovery
+
+### App Service
+- Automatic backups (Premium plans)
+- Source control deployment
+- Configuration snapshots
+
+### SQL Database
+- Automatic backups (point-in-time recovery)
+- Geo-redundant storage
+- Long-term retention policies
+
+## Terraform State Management
+
+### Local State (Development)
+Default configuration uses local state files. Ensure `terraform.tfstate` is not committed to version control.
+
+### Remote State (Production)
+For production environments, consider using remote state:
+
+```hcl
+terraform {
+  backend "azurerm" {
+    resource_group_name  = "terraform-state-rg"
+    storage_account_name = "terraformstate"
+    container_name       = "tfstate"
+    key                  = "workoutapp.terraform.tfstate"
+  }
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Resource name conflicts**: The random suffix should prevent this, but you can modify `app_name` if needed.
+
+2. **Insufficient permissions**: Ensure your Azure account has Contributor access to the subscription.
+
+3. **SQL password requirements**: Azure SQL requires complex passwords (8+ characters, mixed case, numbers, symbols).
+
+4. **Key Vault access**: The deployment process grants access to your user and the App Service managed identity.
+
+### Debug Commands
+
+```bash
+# Check Terraform state
+terraform show
+
+# Validate configuration
+terraform validate
+
+# Format configuration files
+terraform fmt
+
+# Check for drift
+terraform plan -detailed-exitcode
+```
+
+## Cleanup
+
+To destroy all resources:
+
+```bash
+terraform destroy
+```
+
+**Warning**: This will permanently delete all resources and data. Ensure you have backups if needed.
+
+## Integration with GitHub Actions
+
+This Terraform configuration is designed to work with the GitHub Actions workflows in `.github/workflows/`:
+
+- `terraform.yml`: Provisions infrastructure
+- `deploy-backend.yml`: Deploys application to provisioned infrastructure
+
+See the GitHub Actions documentation for setup instructions.
+
+## Support
+
+For issues with the Terraform configuration:
+1. Check the troubleshooting section above
+2. Review Azure provider documentation
+3. Check Terraform logs for detailed error messages
+4. Open an issue in the repository with error details

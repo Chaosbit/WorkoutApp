@@ -1,0 +1,38 @@
+# Workout App Terraform Variables - Production Environment
+# Copy this file to terraform.tfvars and modify as needed
+
+# Environment Configuration
+environment = "production"
+location    = "East US"
+
+# Resource Naming
+resource_group_name     = "WorkoutApp-RG"
+app_name               = "workoutapp"
+app_service_plan_name  = "WorkoutApp-Plan"
+
+# App Service Configuration
+app_service_sku     = "P1v2"  # Premium tier for production
+create_staging_slot = true    # Create staging slot for blue-green deployment
+
+# Database Configuration - Use SQL Database for production
+use_sql_database    = true
+sql_server_name     = "workoutapp-sql"
+database_name       = "WorkoutAppDB"
+sql_admin_username  = "workoutadmin"
+# sql_admin_password = "YourVerySecurePassword123!"  # Set via environment variable or secure input
+sql_database_sku    = "S1"  # Standard tier for production
+
+# JWT Configuration
+jwt_issuer         = "WorkoutApp"
+jwt_audience       = "WorkoutApp-Users"
+jwt_expiry_minutes = 60
+
+# Application Settings
+require_user_approval   = true   # Require approval for production
+require_referral_code   = false  # Optional: set to true if you want referral codes
+
+# CORS Configuration - Add your production URLs
+cors_allowed_origins = [
+  "https://chaosbit.github.io",
+  "https://your-custom-domain.com"  # Replace with your actual domain
+]
