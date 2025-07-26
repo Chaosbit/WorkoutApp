@@ -41,9 +41,15 @@ echo -e "${GREEN}📋 Copying application files...${NC}"
 cp index.html "$DEPLOY_DIR/"
 cp material-design-enhanced.css "$DEPLOY_DIR/"
 cp script.js "$DEPLOY_DIR/"
+cp statistics.html "$DEPLOY_DIR/"
 cp manifest.json "$DEPLOY_DIR/"
 cp sw.js "$DEPLOY_DIR/"
 cp sample-workout.md "$DEPLOY_DIR/"
+
+# Copy js directory
+if [ -d "js" ]; then
+    cp -r js/ "$DEPLOY_DIR/"
+fi
 
 # Copy icon files if they exist
 if [ -f "icon-192.png" ]; then

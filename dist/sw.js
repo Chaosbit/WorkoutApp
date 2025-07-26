@@ -22,8 +22,7 @@ const urlsToCache = [
   './manifest.json',
   './sample-workout.md',
   './icon-192.png',
-  './icon-512.png',
-  './icon.svg'
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
