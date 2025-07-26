@@ -23,7 +23,7 @@ public class AuthServiceTests
         var mockConfig = new Mock<IConfiguration>();
         var mockJwtSection = new Mock<IConfigurationSection>();
         
-        mockJwtSection.Setup(x => x["SecretKey"]).Returns("YourSuperSecretKeyThatIsAtLeast32CharactersLong");
+        mockJwtSection.Setup(x => x["Secret"]).Returns("test-secret-key-that-is-long-enough-for-jwt-token-generation-and-validation");
         mockJwtSection.Setup(x => x["Issuer"]).Returns("WorkoutApp");
         mockJwtSection.Setup(x => x["Audience"]).Returns("WorkoutApp");
         

@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using WorkoutApp.Api.Data;
 using WorkoutApp.Api.DTOs;
 using WorkoutApp.Api.Models;
@@ -30,7 +31,19 @@ public class AuthControllerIntegrationTests : IClassFixture<WebApplicationFactor
                 // Add in-memory database for testing
                 services.AddDbContext<WorkoutAppDbContext>(options =>
                 {
-                    options.UseInMemory("TestDatabase_" + Guid.NewGuid());
+                    options.UseInMemoryDatabase("TestDatabase_" + Guid.NewGuid());
+                });
+            });
+
+            // Add test configuration
+            builder.ConfigureAppConfiguration((context, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["JwtSettings:Secret"] = "test-secret-key-that-is-long-enough-for-jwt-token-generation-and-validation",
+                    ["JwtSettings:Issuer"] = "TestWorkoutApp",
+                    ["JwtSettings:Audience"] = "TestWorkoutAppUsers",
+                    ["JwtSettings:ExpiryInMinutes"] = "60"
                 });
             });
         });
