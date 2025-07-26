@@ -11,6 +11,7 @@ export class AIChatManager {
         
         // AI Provider configuration
         this.aiConfig = {
+            proxyUrl: localStorage.getItem('aiProxyUrl') || '',
             provider: localStorage.getItem('aiProvider') || 'openai', // openai, gemini, anthropic
             apiKey: localStorage.getItem('aiApiKey') || '',
             model: localStorage.getItem('aiModel') || 'gpt-3.5-turbo'
@@ -33,18 +34,18 @@ export class AIChatManager {
      * Check AI configuration and show settings if needed
      */
     checkAIConfiguration() {
-        if (!this.aiConfig.apiKey) {
+        if (!this.aiConfig.proxyUrl || !this.aiConfig.apiKey) {
             const configSuggestion = [{
                 action: 'configure_ai',
                 data: {},
                 icon: 'settings',
-                label: 'Configure AI'
+                label: 'Setup AI Assistant'
             }];
             
             this.addMessage(
-                '<p>🔧 <strong>AI Configuration Required</strong></p>' +
-                '<p>This AI assistant requires an API key from a supported provider (OpenAI, Google Gemini, or Anthropic Claude). ' +
-                'Please configure your AI provider to start chatting.</p>', 
+                '<p>🤖 <strong>Welcome to AI Workout Assistant!</strong></p>' +
+                '<p>To get personalized workout advice, you need to set up the AI assistant with your preferred provider.</p>' +
+                '<p><strong>Note:</strong> A proxy server is required due to browser security limitations. <a href="https://github.com/Chaosbit/WorkoutApp/blob/main/AI_SETUP.md" target="_blank">See setup guide</a></p>',
                 'ai',
                 configSuggestion
             );
@@ -211,6 +212,28 @@ export class AIChatManager {
             return await this.generateAIResponse(userMessage);
         } catch (error) {
             console.error('AI API failed:', error);
+            
+            // Handle CORS errors specifically
+            if (error.message.includes('CORS_ERROR:')) {
+                return {
+                    text: '<p>🚫 <strong>Browser Security Limitation</strong></p>' +
+                          '<p>AI providers block direct browser connections for security reasons. To use AI features, you need to set up a simple proxy server.</p>' +
+                          '<p><strong>Quick Setup Options:</strong></p>' +
+                          '<ul>' +
+                          '<li><strong>Vercel/Netlify Functions:</strong> Serverless proxy (recommended)</li>' +
+                          '<li><strong>Local Node.js server:</strong> Simple Express proxy</li>' +
+                          '<li><strong>Cloudflare Workers:</strong> Edge-based proxy</li>' +
+                          '</ul>' +
+                          '<p>See the <a href="#" onclick="window.open(\'https://github.com/Chaosbit/WorkoutApp/blob/main/AI_SETUP.md\', \'_blank\')">AI Setup Guide</a> for detailed instructions.</p>',
+                    suggestions: [{
+                        action: 'configure_ai',
+                        data: {},
+                        icon: 'settings',
+                        label: 'Setup Guide'
+                    }]
+                };
+            }
+            
             return {
                 text: '<p>❌ <strong>AI Service Error</strong></p>' +
                       '<p>There was an error communicating with the AI service. Please check your API key configuration and try again.</p>' +
@@ -283,91 +306,136 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
     }
 
     /**
-     * Call OpenAI API
+     * Call OpenAI API through proxy
      */
     async callOpenAI(systemPrompt, userMessage) {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.aiConfig.apiKey}`
-            },
-            body: JSON.stringify({
-                model: this.aiConfig.model,
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userMessage }
-                ],
-                max_tokens: 500,
-                temperature: 0.7
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`OpenAI API error: ${response.status}`);
+        if (!this.aiConfig.proxyUrl) {
+            throw new Error('CORS_ERROR: Proxy URL not configured. You need to set up a proxy server to use AI features. See the AI Chat documentation for setup instructions.');
         }
 
-        const data = await response.json();
-        return data.choices[0].message.content;
+        try {
+            const response = await fetch(this.aiConfig.proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    provider: 'openai',
+                    apiKey: this.aiConfig.apiKey,
+                    body: {
+                        model: this.aiConfig.model,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userMessage }
+                        ],
+                        max_tokens: 500,
+                        temperature: 0.7
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`OpenAI API error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        } catch (error) {
+            if (error.message.includes('NetworkError') || error.message.includes('CORS') || error.name === 'TypeError') {
+                throw new Error('CORS_ERROR: Cannot connect to proxy server. Please check your proxy URL configuration and ensure the server is running.');
+            }
+            throw error;
+        }
     }
 
     /**
-     * Call Google Gemini API
+     * Call Google Gemini API through proxy
      */
     async callGemini(systemPrompt, userMessage) {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.aiConfig.apiKey}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `${systemPrompt}\n\nUser: ${userMessage}`
-                    }]
-                }],
-                generationConfig: {
-                    maxOutputTokens: 500,
-                    temperature: 0.7
-                }
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Gemini API error: ${response.status}`);
+        if (!this.aiConfig.proxyUrl) {
+            throw new Error('CORS_ERROR: Proxy URL not configured. You need to set up a proxy server to use AI features. See the AI Chat documentation for setup instructions.');
         }
 
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        try {
+            const response = await fetch(this.aiConfig.proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    provider: 'gemini',
+                    apiKey: this.aiConfig.apiKey,
+                    body: {
+                        contents: [{
+                            parts: [{
+                                text: `${systemPrompt}\n\nUser: ${userMessage}`
+                            }]
+                        }],
+                        generationConfig: {
+                            maxOutputTokens: 500,
+                            temperature: 0.7
+                        }
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`Gemini API error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+            }
+
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        } catch (error) {
+            if (error.message.includes('NetworkError') || error.message.includes('CORS') || error.name === 'TypeError') {
+                throw new Error('CORS_ERROR: Cannot connect to proxy server. Please check your proxy URL configuration and ensure the server is running.');
+            }
+            throw error;
+        }
     }
 
     /**
-     * Call Anthropic Claude API
+     * Call Anthropic Claude API through proxy
      */
     async callAnthropic(systemPrompt, userMessage) {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': this.aiConfig.apiKey,
-                'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-                model: 'claude-3-haiku-20240307',
-                max_tokens: 500,
-                system: systemPrompt,
-                messages: [
-                    { role: 'user', content: userMessage }
-                ]
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Anthropic API error: ${response.status}`);
+        if (!this.aiConfig.proxyUrl) {
+            throw new Error('CORS_ERROR: Proxy URL not configured. You need to set up a proxy server to use AI features. See the AI Chat documentation for setup instructions.');
         }
 
-        const data = await response.json();
-        return data.content[0].text;
+        try {
+            const response = await fetch(this.aiConfig.proxyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    provider: 'anthropic',
+                    apiKey: this.aiConfig.apiKey,
+                    body: {
+                        model: 'claude-3-haiku-20240307',
+                        max_tokens: 500,
+                        system: systemPrompt,
+                        messages: [
+                            { role: 'user', content: userMessage }
+                        ]
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`Anthropic API error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+            }
+
+            const data = await response.json();
+            return data.content[0].text;
+        } catch (error) {
+            if (error.message.includes('NetworkError') || error.message.includes('CORS') || error.name === 'TypeError') {
+                throw new Error('CORS_ERROR: Cannot connect to proxy server. Please check your proxy URL configuration and ensure the server is running.');
+            }
+            throw error;
+        }
     }
 
 
@@ -409,6 +477,13 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
                 <h4 class="md-typescale-title-medium">AI Configuration</h4>
                 
                 <div class="md-form-field">
+                    <label class="md-form-field__label">Proxy Server URL:</label>
+                    <input type="text" id="aiProxyUrlInput" class="md-text-field__input" 
+                           value="${this.aiConfig.proxyUrl || ''}" placeholder="https://your-proxy.vercel.app/api/ai-proxy">
+                    <small class="help-text">Required: Set up a proxy server to enable AI features. <a href="https://github.com/Chaosbit/WorkoutApp/blob/main/AI_SETUP.md" target="_blank">See setup guide</a></small>
+                </div>
+                
+                <div class="md-form-field">
                     <label class="md-form-field__label">AI Provider:</label>
                     <select id="aiProviderSelect" class="md-select">
                         <option value="openai" ${this.aiConfig.provider === 'openai' ? 'selected' : ''}>OpenAI GPT</option>
@@ -441,6 +516,7 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
 
         // Bind configuration events
         setTimeout(() => {
+            const proxyUrlInput = document.getElementById('aiProxyUrlInput');
             const providerSelect = document.getElementById('aiProviderSelect');
             const apiKeyInput = document.getElementById('aiApiKeyInput');
             const saveBtn = document.getElementById('saveAIConfig');
@@ -448,13 +524,13 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
 
             if (saveBtn) {
                 saveBtn.addEventListener('click', () => {
-                    this.saveAIConfiguration(providerSelect.value, apiKeyInput.value);
+                    this.saveAIConfiguration(proxyUrlInput.value, providerSelect.value, apiKeyInput.value);
                 });
             }
 
             if (testBtn) {
                 testBtn.addEventListener('click', () => {
-                    this.testAIConnection(providerSelect.value, apiKeyInput.value);
+                    this.testAIConnection(proxyUrlInput.value, providerSelect.value, apiKeyInput.value);
                 });
             }
         }, 100);
@@ -463,10 +539,12 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
     /**
      * Save AI configuration
      */
-    saveAIConfiguration(provider, apiKey) {
+    saveAIConfiguration(proxyUrl, provider, apiKey) {
+        this.aiConfig.proxyUrl = proxyUrl;
         this.aiConfig.provider = provider;
         this.aiConfig.apiKey = apiKey;
 
+        localStorage.setItem('aiProxyUrl', proxyUrl);
         localStorage.setItem('aiProvider', provider);
         localStorage.setItem('aiApiKey', apiKey);
 
@@ -476,7 +554,12 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
     /**
      * Test AI connection
      */
-    async testAIConnection(provider, apiKey) {
+    async testAIConnection(proxyUrl, provider, apiKey) {
+        if (!proxyUrl) {
+            this.addMessage('<p>❌ <strong>Proxy URL required!</strong> Please enter your proxy server URL to test the connection. <a href="https://github.com/Chaosbit/WorkoutApp/blob/main/AI_SETUP.md" target="_blank">See setup guide</a></p>', 'ai');
+            return;
+        }
+        
         if (!apiKey) {
             this.addMessage('<p>❌ <strong>API key required!</strong> Please enter your API key to test the connection.</p>', 'ai');
             return;
@@ -486,6 +569,7 @@ Keep responses concise, practical, and focused on actionable advice. Use HTML fo
         // Save temporarily for testing
         const oldConfig = { ...this.aiConfig };
         try {
+            this.aiConfig.proxyUrl = proxyUrl;
             this.aiConfig.provider = provider;
             this.aiConfig.apiKey = apiKey;
 
