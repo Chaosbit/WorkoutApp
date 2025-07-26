@@ -16,6 +16,7 @@ export class NavigationManager {
         this.navigationDrawer = document.getElementById('navigationDrawer');
         this.navigationScrim = document.getElementById('navigationScrim');
         this.navHome = document.getElementById('navHome');
+        this.navAIChat = document.getElementById('navAIChat');
         this.navStatistics = document.getElementById('navStatistics');
     }
 
@@ -28,6 +29,9 @@ export class NavigationManager {
         this.menuButton.addEventListener('click', () => this.toggleNavigation());
         this.navigationScrim.addEventListener('click', () => this.closeNavigation());
         this.navHome.addEventListener('click', () => this.navigateToHome());
+        if (this.navAIChat) {
+            this.navAIChat.addEventListener('click', () => this.navigateToAIChat());
+        }
         this.navStatistics.addEventListener('click', () => this.navigateToStatistics());
         
         // Close navigation on escape key
@@ -92,6 +96,22 @@ export class NavigationManager {
         if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
             window.location.href = 'statistics.html';
         } else {
+            this.closeNavigation();
+        }
+    }
+
+    /**
+     * Navigate to AI Chat (trigger tab switch on home page)
+     */
+    navigateToAIChat() {
+        if (window.location.pathname.includes('statistics.html')) {
+            window.location.href = 'index.html#ai-chat';
+        } else {
+            // Trigger AI Chat tab on home page
+            const aiChatTab = document.getElementById('aiChatTab');
+            if (aiChatTab) {
+                aiChatTab.click();
+            }
             this.closeNavigation();
         }
     }

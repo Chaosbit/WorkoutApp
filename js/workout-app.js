@@ -5,6 +5,7 @@ import { TimerManager } from './timer-manager.js';
 import { StatisticsManager } from './statistics-manager.js';
 import { ScreenWakeManager } from './screen-wake-manager.js';
 import { TrainingPlanManager } from './training-plan-manager.js';
+import { AIChatManager } from './ai-chat-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
 
 /**
@@ -29,6 +30,7 @@ export class WorkoutApp {
         this.statisticsManager = new StatisticsManager();
         this.screenWakeManager = new ScreenWakeManager();
         this.trainingPlanManager = new TrainingPlanManager(this.library);
+        this.aiChatManager = new AIChatManager(this);
 
         // Current view state
         this.currentView = 'workouts'; // 'workouts' or 'trainingPlan'
@@ -49,6 +51,7 @@ export class WorkoutApp {
         this.bindEvents();
         this.loadWorkoutSelector();
         this.checkForSharedWorkout(); // Check URL for shared workout
+        this.handleInitialHashNavigation(); // Handle initial URL hash navigation
         this.cleanupStatisticsElements(); // Ensure no leftover statistics elements
 
         // Register service worker
@@ -101,8 +104,10 @@ export class WorkoutApp {
         // View navigation elements
         this.workoutsTab = document.getElementById('workoutsTab');
         this.trainingPlanTab = document.getElementById('trainingPlanTab');
+        this.aiChatTab = document.getElementById('aiChatTab');
         this.workoutView = document.getElementById('workoutView');
         this.trainingPlanView = document.getElementById('trainingPlanView');
+        this.aiChatView = document.getElementById('aiChatView');
         
         // Training plan elements
         this.prevMonthBtn = document.getElementById('prevMonthBtn');
@@ -143,6 +148,7 @@ export class WorkoutApp {
         // View navigation events
         this.workoutsTab.addEventListener('click', () => this.switchToWorkoutsView());
         this.trainingPlanTab.addEventListener('click', () => this.switchToTrainingPlanView());
+        this.aiChatTab.addEventListener('click', () => this.switchToAIChatView());
         
         // Training plan events
         this.prevMonthBtn.addEventListener('click', () => this.navigateToPreviousMonth());
@@ -1555,8 +1561,10 @@ Rest - 0:30`;
         this.currentView = 'workouts';
         this.workoutsTab.classList.add('active');
         this.trainingPlanTab.classList.remove('active');
+        this.aiChatTab.classList.remove('active');
         this.workoutView.classList.add('active');
         this.trainingPlanView.classList.remove('active');
+        this.aiChatView.classList.remove('active');
     }
 
     /**
@@ -1566,10 +1574,30 @@ Rest - 0:30`;
         this.currentView = 'trainingPlan';
         this.workoutsTab.classList.remove('active');
         this.trainingPlanTab.classList.add('active');
+        this.aiChatTab.classList.remove('active');
         this.workoutView.classList.remove('active');
         this.trainingPlanView.classList.add('active');
+        this.aiChatView.classList.remove('active');
         this.renderCalendar();
         this.populateWorkoutSelect();
+    }
+
+    /**
+     * Switch to AI Chat view
+     */
+    switchToAIChatView() {
+        this.currentView = 'aiChat';
+        this.workoutsTab.classList.remove('active');
+        this.trainingPlanTab.classList.remove('active');
+        this.aiChatTab.classList.add('active');
+        this.workoutView.classList.remove('active');
+        this.trainingPlanView.classList.remove('active');
+        this.aiChatView.classList.add('active');
+        
+        // Show suggestions if this is the first time viewing AI chat
+        if (this.aiChatManager) {
+            this.aiChatManager.showSuggestions();
+        }
     }
 
     /**
@@ -2099,5 +2127,17 @@ Rest - 0:30`;
         
         return this.timerManager.formatTime(totalSeconds);
     }
+
+    /**
+     * Handle initial hash navigation from URL
+     */
+    handleInitialHashNavigation() {
+        const hash = window.location.hash;
+        if (hash === '#ai-chat') {
+            // Switch to AI Chat view if the URL contains the hash
+            setTimeout(() => {
+                this.switchToAIChatView();
+            }, 100); // Small delay to ensure DOM is ready
+        }
     }
 }

@@ -45,6 +45,12 @@
                     </button>
                 </li>
                 <li>
+                    <button class="md-navigation-drawer__item" id="navAIChat">
+                        <span class="material-icons md-navigation-drawer__item-icon">smart_toy</span>
+                        <span class="md-navigation-drawer__item-text">AI Chat</span>
+                    </button>
+                </li>
+                <li>
                     <button class="md-navigation-drawer__item" id="navStatistics">
                         <span class="material-icons md-navigation-drawer__item-icon">analytics</span>
                         <span class="md-navigation-drawer__item-text">Statistics</span>
@@ -71,6 +77,10 @@
             <button id="trainingPlanTab" class="md-button md-button--text view-tab">
                 <span class="material-icons md-button__icon">calendar_month</span>
                 <span class="md-button__label">Training Plan</span>
+            </button>
+            <button id="aiChatTab" class="md-button md-button--text view-tab">
+                <span class="material-icons md-button__icon">smart_toy</span>
+                <span class="md-button__label">AI Chat</span>
             </button>
         </nav>
         
@@ -350,6 +360,80 @@ Rest - 0:30</pre>
                                 </div>
                                 <div id="calendarDays" class="calendar-days">
                                     <!-- Calendar days will be generated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- AI Chat View -->
+            <div id="aiChatView" class="view-content">
+                <section class="ai-chat-section md-card">
+                    <div class="md-card__content">
+                        <div class="ai-chat-header">
+                            <h2 class="md-typescale-headline-large">
+                                <span class="material-icons">smart_toy</span>
+                                AI Workout Assistant
+                            </h2>
+                            <p class="md-typescale-body-large ai-chat-subtitle">
+                                Get personalized workout advice and modifications
+                            </p>
+                        </div>
+
+                        <div class="ai-chat-container">
+                            <div class="ai-chat-messages" id="aiChatMessages">
+                                <div class="ai-message">
+                                    <div class="message-avatar">
+                                        <span class="material-icons">smart_toy</span>
+                                    </div>
+                                    <div class="message-content">
+                                        <div class="message-bubble ai-bubble">
+                                            <p>Hi! I'm your AI workout assistant. I can help you with:</p>
+                                            <ul>
+                                                <li>Exercise substitutions for injuries or equipment limitations</li>
+                                                <li>Workout modifications to fit your time constraints</li>
+                                                <li>Warm-up and cool-down suggestions</li>
+                                                <li>General fitness advice</li>
+                                            </ul>
+                                            <p>What would you like help with today?</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ai-chat-suggestions" id="aiChatSuggestions" style="display: none;">
+                                <div class="suggestions-header">
+                                    <h4 class="md-typescale-title-medium">Quick Questions:</h4>
+                                </div>
+                                <div class="suggestion-chips">
+                                    <button class="md-chip suggestion-chip" data-suggestion="What's a good substitute for push-ups?">
+                                        <span class="md-chip__label">Push-up alternatives</span>
+                                    </button>
+                                    <button class="md-chip suggestion-chip" data-suggestion="How can I reduce this workout to 15 minutes?">
+                                        <span class="md-chip__label">Shorten workout</span>
+                                    </button>
+                                    <button class="md-chip suggestion-chip" data-suggestion="What warm-up should I do?">
+                                        <span class="md-chip__label">Warm-up ideas</span>
+                                    </button>
+                                    <button class="md-chip suggestion-chip" data-suggestion="How to make this workout harder?">
+                                        <span class="md-chip__label">Increase difficulty</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="ai-chat-input-container">
+                                <div class="ai-chat-input-wrapper">
+                                    <div class="md-text-field md-text-field--outlined">
+                                        <input type="text" id="aiChatInput" class="md-text-field__input" placeholder="Ask me about your workout...">
+                                    </div>
+                                    <button id="aiChatSendBtn" class="md-button md-button--filled">
+                                        <span class="material-icons md-button__icon">send</span>
+                                    </button>
+                                </div>
+                                <div class="ai-chat-status" id="aiChatStatus" style="display: none;">
+                                    <span class="material-icons ai-thinking">psychology</span>
+                                    <span class="status-text">AI is thinking...</span>
                                 </div>
                             </div>
                         </div>

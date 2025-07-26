@@ -7,6 +7,7 @@ import { StatisticsManager } from './statistics-manager.js';
 import { ScreenWakeManager } from './screen-wake-manager.js';
 import { TrainingPlanManager } from './training-plan-manager.js';
 import { NavigationManager } from './navigation-manager.js';
+import { AIChatManager } from './ai-chat-manager.js';
 
 /**
  * Application initialization
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.ScreenWakeManager = ScreenWakeManager;
     window.TrainingPlanManager = TrainingPlanManager;
     window.NavigationManager = NavigationManager;
+    window.AIChatManager = AIChatManager;
     
     // For backward compatibility, create a WorkoutTimer class that delegates to WorkoutApp
     window.WorkoutTimer = class WorkoutTimer {
