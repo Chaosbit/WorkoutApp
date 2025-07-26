@@ -7,6 +7,8 @@ import { ScreenWakeManager } from './screen-wake-manager.js';
 import { TrainingPlanManager } from './training-plan-manager.js';
 import { AIChatManager } from './ai-chat-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
+import { UIUtils } from './ui-utils.js';
+import { APP_CONFIG, APP_UTILS } from './constants.js';
 
 /**
  * WorkoutApp - Main application coordinator class
@@ -36,11 +38,11 @@ export class WorkoutApp {
         this.currentView = 'workouts'; // 'workouts' or 'trainingPlan'
         this.selectedDate = null;
 
-        // Setup timer callbacks
-        this.timerManager.setOnTick((timeRemaining) => {
+        // Setup timer callbacks with throttling for better performance
+        this.timerManager.setOnTick(UIUtils.throttle((timeRemaining) => {
             this.updateTimerDisplay();
             this.updateProgressBar();
-        });
+        }, APP_CONFIG.THROTTLE_LIMIT));
         
         this.timerManager.setOnComplete(() => {
             this.nextExercise();
@@ -210,10 +212,10 @@ export class WorkoutApp {
             // Clear file input
             event.target.value = '';
             
-            alert('Workout loaded and saved successfully!');
+            UIUtils.showMessage(APP_CONFIG.SUCCESS_MESSAGES.WORKOUT_LOADED, APP_CONFIG.MESSAGE_TYPES.SUCCESS);
         } catch (error) {
             console.error('Error loading workout:', error);
-            alert('Error loading workout: ' + error.message);
+            UIUtils.showMessage(APP_CONFIG.ERROR_MESSAGES.WORKOUT_LOAD_FAILED + ': ' + error.message, APP_CONFIG.MESSAGE_TYPES.ERROR);
         }
     }
 
@@ -367,7 +369,7 @@ export class WorkoutApp {
         
         // Show completion alert
         setTimeout(() => {
-            alert('Workout completed! Great job! 💪');
+            UIUtils.showMessage(APP_CONFIG.SUCCESS_MESSAGES.WORKOUT_COMPLETED, APP_CONFIG.MESSAGE_TYPES.SUCCESS);
         }, 500);
     }
 
@@ -709,8 +711,17 @@ Rest - 0:30`;
         const newName = this.workoutNameInput.value.trim();
         const newContent = this.workoutMarkdownEditor.value.trim();
         
-        if (!newName || !newContent) {
-            alert('Please provide both a workout name and content.');
+        // Validate inputs
+        const nameValidation = UIUtils.validateInput(newName, 'workoutName');
+        const contentValidation = UIUtils.validateInput(newContent, 'workoutContent');
+        
+        if (!nameValidation.isValid) {
+            UIUtils.showMessage(nameValidation.error, APP_CONFIG.MESSAGE_TYPES.ERROR);
+            return;
+        }
+        
+        if (!contentValidation.isValid) {
+            UIUtils.showMessage(contentValidation.error, APP_CONFIG.MESSAGE_TYPES.ERROR);
             return;
         }
         
@@ -719,7 +730,7 @@ Rest - 0:30`;
             const newWorkoutData = WorkoutParser.parseMarkdown(newContent);
             
             if (!newWorkoutData.exercises || newWorkoutData.exercises.length === 0) {
-                alert('Please provide valid workout content with at least one exercise.');
+                UIUtils.showMessage(APP_CONFIG.ERROR_MESSAGES.INVALID_WORKOUT_CONTENT, APP_CONFIG.MESSAGE_TYPES.ERROR);
                 return;
             }
             
@@ -785,7 +796,7 @@ Rest - 0:30`;
                     // Update button states
                     this.updateDeleteButtonState();
                     
-                    alert('Workout updated successfully!');
+                    UIUtils.showMessage(APP_CONFIG.SUCCESS_MESSAGES.WORKOUT_UPDATED, APP_CONFIG.MESSAGE_TYPES.SUCCESS);
                 }
             } else {
                 // Creating new workout
@@ -810,11 +821,11 @@ Rest - 0:30`;
                 // Clear previous workout memory since we successfully created a new one
                 this.previousWorkoutId = null;
                 
-                alert('New workout created successfully!');
+                UIUtils.showMessage(APP_CONFIG.SUCCESS_MESSAGES.WORKOUT_CREATED, APP_CONFIG.MESSAGE_TYPES.SUCCESS);
             }
         } catch (error) {
             console.error('Error parsing workout:', error);
-            alert('Error parsing workout content. Please check your markdown format.');
+            UIUtils.showMessage(APP_CONFIG.ERROR_MESSAGES.WORKOUT_PARSE_FAILED, APP_CONFIG.MESSAGE_TYPES.ERROR);
         }
     }
 
@@ -940,7 +951,7 @@ Rest - 0:30`;
                 
             } catch (error) {
                 console.error('Error loading shared workout:', error);
-                alert('Error loading shared workout. The link may be invalid or corrupted.');
+                UIUtils.showMessage(APP_CONFIG.ERROR_MESSAGES.SHARE_FAILED, APP_CONFIG.MESSAGE_TYPES.ERROR);
             }
         }
     }
@@ -1062,7 +1073,7 @@ Rest - 0:30`;
      */
     printWorkout() {
         if (!this.workout) {
-            alert('No workout loaded to print.');
+            UIUtils.showMessage(APP_CONFIG.ERROR_MESSAGES.NO_WORKOUT_TO_PRINT, APP_CONFIG.MESSAGE_TYPES.WARNING);
             return;
         }
         
@@ -1072,7 +1083,7 @@ Rest - 0:30`;
         // Open a new window with the print content
         const printWindow = window.open('', '_blank');
         if (!printWindow) {
-            alert('Please allow pop-ups to use the print feature.');
+            UIUtils.showMessage(APP_CONFIG.ERROR_MESSAGES.POPUP_BLOCKED, APP_CONFIG.MESSAGE_TYPES.ERROR);
             return;
         }
         
@@ -1370,7 +1381,7 @@ Rest - 0:30`;
     shareWorkout() {
         const shareLink = this.generateShareLink();
         if (!shareLink) {
-            alert('No workout loaded to share.');
+            UIUtils.showMessage(APP_CONFIG.ERROR_MESSAGES.NO_WORKOUT_TO_SHARE, APP_CONFIG.MESSAGE_TYPES.WARNING);
             return;
         }
         
@@ -1816,35 +1827,6 @@ Rest - 0:30`;
                 element.remove();
             }
         });
-    }
-
-    /**
-     * Print the current workout in a clean, printable format
-     */
-    printWorkout() {
-        if (!this.workout) {
-            alert('No workout loaded to print.');
-            return;
-        }
-        
-        // Generate the print-friendly HTML content
-        const printContent = this.generatePrintContent();
-        
-        // Open a new window with the print content
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            alert('Please allow pop-ups to use the print feature.');
-            return;
-        }
-        
-        printWindow.document.write(printContent);
-        printWindow.document.close();
-        
-        // Wait for content to load, then trigger print
-        printWindow.onload = () => {
-            printWindow.focus();
-            printWindow.print();
-        };
     }
     
     /**

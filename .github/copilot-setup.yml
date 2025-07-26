@@ -1,0 +1,103 @@
+# GitHub Copilot Environment Setup
+# This file defines the software requirements for GitHub Copilot coding agent environment
+# It should be used as a setup step before the firewall is enabled
+
+name: Copilot Environment Setup
+description: Pre-install required software for WorkoutApp development and testing
+
+requirements:
+  # Core runtime requirements
+  node:
+    version: "20"
+    manager: "npm"
+    
+  python:
+    version: "3.9+"
+    packages:
+      - http.server (built-in)
+      
+  browsers:
+    chrome:
+      version: "latest"
+      purpose: "Cypress e2e testing"
+      headless: true
+      
+  # Development dependencies (from package.json)
+  npm_packages:
+    production: []
+    development:
+      - "@babel/core@^7.23.5"
+      - "@babel/preset-env@^7.23.5" 
+      - "babel-jest@^29.7.0"
+      - "cypress@^13.6.0"
+      - "jest@^29.7.0"
+      - "jest-environment-jsdom@^29.7.0"
+      - "wait-on@^8.0.3"
+
+# External dependencies that may be blocked by firewall
+external_resources:
+  fonts:
+    - "fonts.googleapis.com"
+    - "fonts.gstatic.com"
+  cdn:
+    - "redirector.gvt1.com"
+    
+  # These should be allowlisted or cached before firewall activation
+  allowlist_domains:
+    - "fonts.googleapis.com"
+    - "fonts.gstatic.com" 
+    - "redirector.gvt1.com"
+
+# Setup commands (run in order)
+setup_commands:
+  - name: "Install Node.js"
+    command: "setup-node@v4"
+    params:
+      node-version: "20"
+      cache: "npm"
+      
+  - name: "Install Python (if not available)"
+    command: "setup-python@v4" 
+    params:
+      python-version: "3.x"
+      
+  - name: "Install npm dependencies"
+    command: "npm ci"
+    working_directory: "/workspace"
+    
+  - name: "Install Chrome for Cypress"
+    command: "browser-tools@v1"
+    params:
+      chrome: true
+      
+  - name: "Verify installations"
+    commands:
+      - "node --version"
+      - "npm --version" 
+      - "python3 --version"
+      - "google-chrome --version"
+
+# Testing verification
+verification:
+  unit_tests:
+    command: "npm run test:unit"
+    expected_result: "106 tests passing"
+    
+  e2e_tests:
+    command: "npm run test:e2e"
+    expected_result: "119 tests passing"
+    prerequisites:
+      - "Start local server: python3 -m http.server 8000"
+      - "Wait for server: wait-on http://localhost:8000"
+
+# Caching strategy 
+cache_directories:
+  - "~/.npm"
+  - "~/.cache/Cypress" 
+  - "node_modules"
+  
+# Environment variables
+environment:
+  NODE_ENV: "test"
+  CI: "true"
+  CYPRESS_CACHE_FOLDER: "~/.cache/Cypress"
