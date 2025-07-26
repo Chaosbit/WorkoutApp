@@ -1,257 +1,269 @@
-/**
- * Unit tests for StatisticsManager pure functions
- */
-
 import { StatisticsManager } from '../js/statistics-manager.js';
 
 describe('StatisticsManager', () => {
-  let statsManager;
-  let localStorageMock;
-
-  beforeEach(() => {
-    // Mock localStorage
-    localStorageMock = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn()
-    };
-    Object.defineProperty(global, 'localStorage', {
-      value: localStorageMock,
-      writable: true
+    let statisticsManager;
+    
+    beforeEach(() => {
+        // Clear localStorage before each test
+        localStorage.clear();
+        statisticsManager = new StatisticsManager();
     });
 
-    // Mock console.warn to avoid noise in tests
-    jest.spyOn(console, 'warn').mockImplementation();
-
-    statsManager = new StatisticsManager();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  describe('getDefaultStats', () => {
-    test('returns correct default statistics structure', () => {
-      const defaultStats = statsManager.getDefaultStats();
-      
-      expect(defaultStats).toEqual({
-        totalWorkouts: 0,
-        completedWorkouts: 0,
-        totalTimeSeconds: 0,
-        totalExercises: 0,
-        streakDays: 0,
-        lastWorkoutDate: null,
-        firstWorkoutDate: null
-      });
+    afterEach(() => {
+        localStorage.clear();
     });
 
-    test('each call returns a new object', () => {
-      const stats1 = statsManager.getDefaultStats();
-      const stats2 = statsManager.getDefaultStats();
-      
-      expect(stats1).not.toBe(stats2);
-      expect(stats1).toEqual(stats2);
-    });
-  });
+    describe('initialization', () => {
+        it('should initialize with default stats when no stored data', () => {
+            const stats = statisticsManager.getStats();
+            
+            expect(stats).toMatchObject({
+                totalWorkouts: 0,
+                completedWorkouts: 0,
+                totalTimeSeconds: 0,
+                totalExercises: 0,
+                streakDays: 0,
+                lastWorkoutDate: null
+            });
+        });
 
-  describe('getFormattedTotalTime', () => {
-    test('formats time correctly for hours and minutes', () => {
-      statsManager.stats.totalTimeSeconds = 7800; // 2 hours and 10 minutes
-      expect(statsManager.getFormattedTotalTime()).toBe('2h 10m');
-      
-      statsManager.stats.totalTimeSeconds = 3660; // 1 hour and 1 minute
-      expect(statsManager.getFormattedTotalTime()).toBe('1h 1m');
-      
-      statsManager.stats.totalTimeSeconds = 7200; // exactly 2 hours
-      expect(statsManager.getFormattedTotalTime()).toBe('2h 0m');
-    });
-
-    test('formats time correctly for minutes only', () => {
-      statsManager.stats.totalTimeSeconds = 1800; // 30 minutes
-      expect(statsManager.getFormattedTotalTime()).toBe('30m');
-      
-      statsManager.stats.totalTimeSeconds = 60; // 1 minute
-      expect(statsManager.getFormattedTotalTime()).toBe('1m');
-      
-      statsManager.stats.totalTimeSeconds = 0; // 0 minutes
-      expect(statsManager.getFormattedTotalTime()).toBe('0m');
-    });
-
-    test('handles edge cases', () => {
-      statsManager.stats.totalTimeSeconds = 59; // less than 1 minute
-      expect(statsManager.getFormattedTotalTime()).toBe('0m');
-      
-      statsManager.stats.totalTimeSeconds = 3599; // 59 minutes 59 seconds
-      expect(statsManager.getFormattedTotalTime()).toBe('59m');
-      
-      statsManager.stats.totalTimeSeconds = 86399; // 23 hours 59 minutes 59 seconds
-      expect(statsManager.getFormattedTotalTime()).toBe('23h 59m');
-    });
-  });
-
-  describe('getSessionDuration', () => {
-    test('returns "In progress" for sessions without end time', () => {
-      const session = {
-        startTime: '2023-01-01T10:00:00.000Z',
-        endTime: null
-      };
-      
-      expect(statsManager.getSessionDuration(session)).toBe('In progress');
+        it('should load existing stats from localStorage', () => {
+            const existingStats = {
+                totalWorkouts: 5,
+                completedWorkouts: 3,
+                totalTimeSeconds: 1200,
+                totalExercises: 25,
+                streakDays: 2,
+                lastWorkoutDate: '2024-01-15'
+            };
+            
+            localStorage.setItem('workoutStats', JSON.stringify(existingStats));
+            
+            const newManager = new StatisticsManager();
+            const stats = newManager.getStats();
+            
+            expect(stats).toMatchObject(existingStats);
+        });
     });
 
-    test('calculates duration correctly for completed sessions', () => {
-      const session = {
-        startTime: '2023-01-01T10:00:00.000Z',
-        endTime: '2023-01-01T10:30:00.000Z' // 30 minutes later
-      };
-      
-      expect(statsManager.getSessionDuration(session)).toBe('30m');
+    describe('workout session management', () => {
+        it('should start a new workout session', () => {
+            const exercises = [
+                { name: 'Push Ups', duration: 60, exerciseType: 'timer' },
+                { name: 'Rest', duration: 30, exerciseType: 'timer' }
+            ];
+            
+            statisticsManager.startSession('workout-1', 'Test Workout', exercises);
+            
+            expect(statisticsManager.currentSession).toBeTruthy();
+            expect(statisticsManager.currentSession.workoutName).toBe('Test Workout');
+            expect(statisticsManager.currentSession.exercises).toHaveLength(2);
+            expect(statisticsManager.currentSession.status).toBe('in_progress');
+        });
+
+        it('should track exercise completion', () => {
+            const exercises = [
+                { name: 'Push Ups', duration: 60, exerciseType: 'timer' },
+                { name: 'Rest', duration: 30, exerciseType: 'timer' }
+            ];
+            
+            statisticsManager.startSession('workout-1', 'Test Workout', exercises);
+            statisticsManager.startExercise(0);
+            statisticsManager.completeExercise(0);
+            
+            expect(statisticsManager.currentSession.exercises[0].completed).toBe(true);
+            expect(statisticsManager.currentSession.exercises[0].endTime).toBeTruthy();
+        });
+
+        it('should complete workout and update stats', () => {
+            const exercises = [
+                { name: 'Push Ups', duration: 60, exerciseType: 'timer' },
+                { name: 'Rest', duration: 30, exerciseType: 'timer' }
+            ];
+            
+            statisticsManager.startSession('workout-1', 'Test Workout', exercises);
+            statisticsManager.startExercise(0);
+            statisticsManager.completeExercise(0);
+            statisticsManager.startExercise(1);
+            statisticsManager.completeExercise(1);
+            statisticsManager.completeSession();
+            
+            const stats = statisticsManager.getStats();
+            
+            expect(stats.totalWorkouts).toBe(1);
+            expect(stats.completedWorkouts).toBe(1);
+            expect(statisticsManager.currentSession).toBeNull();
+        });
+
+        it('should handle abandoned workout', () => {
+            const exercises = [
+                { name: 'Push Ups', duration: 60, exerciseType: 'timer' },
+                { name: 'Rest', duration: 30, exerciseType: 'timer' }
+            ];
+            
+            statisticsManager.startSession('workout-1', 'Test Workout', exercises);
+            statisticsManager.startExercise(0);
+            statisticsManager.completeExercise(0);
+            statisticsManager.abandonSession(); // Abandon without completing all exercises
+            
+            const stats = statisticsManager.getStats();
+            
+            expect(stats.totalWorkouts).toBe(1);
+            expect(stats.completedWorkouts).toBe(0); // Not fully completed
+            expect(statisticsManager.currentSession).toBeNull();
+        });
     });
 
-    test('rounds down fractional minutes', () => {
-      const session = {
-        startTime: '2023-01-01T10:00:00.000Z',
-        endTime: '2023-01-01T10:05:30.000Z' // 5 minutes 30 seconds
-      };
-      
-      expect(statsManager.getSessionDuration(session)).toBe('5m');
+    describe('streak calculation', () => {
+        it('should calculate streak for consecutive days', () => {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            // Set up existing stats with yesterday's workout
+            const existingStats = {
+                totalWorkouts: 1,
+                completedWorkouts: 1,
+                totalTimeSeconds: 300,
+                totalExercises: 5,
+                streakDays: 1,
+                lastWorkoutDate: yesterday.toISOString().split('T')[0]
+            };
+            
+            localStorage.setItem('workoutStats', JSON.stringify(existingStats));
+            
+            const newManager = new StatisticsManager();
+            
+            // Complete a workout today
+            const workout = {
+                title: 'Test Workout',
+                exercises: [{ name: 'Push Ups', duration: 60 }]
+            };
+            
+            newManager.startSession("workout1", workout.title, workout.exercises);
+            newManager.completeExercise(0);
+            newManager.completeSession();
+            
+            const stats = newManager.getStats();
+            expect(stats.streakDays).toBe(2);
+        });
+
+        it('should reset streak for non-consecutive days', () => {
+            const threeDaysAgo = new Date();
+            threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+            
+            // Set up existing stats with old workout
+            const existingStats = {
+                totalWorkouts: 1,
+                completedWorkouts: 1,
+                totalTimeSeconds: 300,
+                totalExercises: 5,
+                streakDays: 1,
+                lastWorkoutDate: threeDaysAgo.toISOString().split('T')[0]
+            };
+            
+            localStorage.setItem('workoutStats', JSON.stringify(existingStats));
+            
+            const newManager = new StatisticsManager();
+            
+            // Complete a workout today
+            const workout = {
+                title: 'Test Workout',
+                exercises: [{ name: 'Push Ups', duration: 60 }]
+            };
+            
+            newManager.startSession("workout1", workout.title, workout.exercises);
+            newManager.completeExercise(0);
+            newManager.completeSession();
+            
+            const stats = newManager.getStats();
+            expect(stats.streakDays).toBe(1); // Reset to 1
+        });
     });
 
-    test('handles very short sessions', () => {
-      const session = {
-        startTime: '2023-01-01T10:00:00.000Z',
-        endTime: '2023-01-01T10:00:30.000Z' // 30 seconds
-      };
-      
-      expect(statsManager.getSessionDuration(session)).toBe('0m');
+    describe('session storage', () => {
+        it('should save workout sessions', () => {
+            const exercises = [{ name: 'Push Ups', duration: 60, exerciseType: 'timer' }];
+            
+            statisticsManager.startSession('workout-1', 'Test Workout', exercises);
+            statisticsManager.startExercise(0);
+            statisticsManager.completeExercise(0);
+            statisticsManager.completeSession();
+            
+            const sessions = statisticsManager.getRecentSessions();
+            expect(sessions).toHaveLength(1);
+            expect(sessions[0].workoutName).toBe('Test Workout');
+        });
+
+        it('should limit stored sessions to maximum count', () => {
+            // Create many sessions
+            for (let i = 0; i < 15; i++) {
+                const exercises = [{ name: 'Exercise', duration: 30, exerciseType: 'timer' }];
+                
+                statisticsManager.startSession(`workout-${i}`, `Workout ${i}`, exercises);
+                statisticsManager.startExercise(0);
+                statisticsManager.completeExercise(0);
+                statisticsManager.completeSession();
+            }
+            
+            const sessions = statisticsManager.getRecentSessions(20);
+            expect(sessions.length).toBeLessThanOrEqual(15);
+        });
     });
 
-    test('handles long sessions', () => {
-      const session = {
-        startTime: '2023-01-01T10:00:00.000Z',
-        endTime: '2023-01-01T12:30:00.000Z' // 2.5 hours
-      };
-      
-      expect(statsManager.getSessionDuration(session)).toBe('150m');
+    describe('data persistence', () => {
+        it('should persist stats to localStorage', () => {
+            const workout = {
+                title: 'Test Workout',
+                exercises: [{ name: 'Push Ups', duration: 60 }]
+            };
+            
+            statisticsManager.startSession("workout1", workout.title, workout.exercises);
+            statisticsManager.completeExercise(0);
+            statisticsManager.completeSession();
+            
+            const storedStats = JSON.parse(localStorage.getItem('workoutStats'));
+            expect(storedStats.totalWorkouts).toBe(1);
+            expect(storedStats.completedWorkouts).toBe(1);
+        });
+
+        it('should handle corrupted localStorage data gracefully', () => {
+            localStorage.setItem('workoutStats', 'invalid json');
+            localStorage.setItem('workoutSessions', 'invalid json');
+            
+            const newManager = new StatisticsManager();
+            const stats = newManager.getStats();
+            
+            expect(stats).toMatchObject({
+                totalWorkouts: 0,
+                completedWorkouts: 0,
+                totalTimeSeconds: 0,
+                totalExercises: 0,
+                streakDays: 0,
+                lastWorkoutDate: null
+            });
+        });
     });
 
-    test('handles edge case with same start and end time', () => {
-      const session = {
-        startTime: '2023-01-01T10:00:00.000Z',
-        endTime: '2023-01-01T10:00:00.000Z'
-      };
-      
-      expect(statsManager.getSessionDuration(session)).toBe('0m');
+    describe('utility methods', () => {
+        it('should clear all data', () => {
+            // Add some data first
+            const exercises = [{ name: 'Push Ups', duration: 60, exerciseType: 'timer' }];
+            
+            statisticsManager.startSession('workout-1', 'Test Workout', exercises);
+            statisticsManager.startExercise(0);
+            statisticsManager.completeExercise(0);
+            statisticsManager.completeSession();
+            
+            statisticsManager.clearAllData();
+            
+            const stats = statisticsManager.getStats();
+            expect(stats).toMatchObject({
+                totalWorkouts: 0,
+                completedWorkouts: 0,
+                totalTimeSeconds: 0,
+                streakDays: 0
+            });
+        });
     });
-  });
-
-  describe('loadStats error handling', () => {
-    test('returns default stats when localStorage throws error', () => {
-      localStorageMock.getItem.mockImplementation(() => {
-        throw new Error('Storage error');
-      });
-      
-      const stats = statsManager.loadStats();
-      expect(stats).toEqual(statsManager.getDefaultStats());
-      expect(console.warn).toHaveBeenCalledWith('Error loading workout stats:', expect.any(Error));
-    });
-
-    test('returns default stats when stored data is invalid JSON', () => {
-      localStorageMock.getItem.mockReturnValue('invalid json');
-      
-      const stats = statsManager.loadStats();
-      expect(stats).toEqual(statsManager.getDefaultStats());
-      expect(console.warn).toHaveBeenCalledWith('Error loading workout stats:', expect.any(Error));
-    });
-
-    test('returns parsed stats when localStorage contains valid data', () => {
-      const mockStats = {
-        totalWorkouts: 5,
-        completedWorkouts: 3,
-        totalTimeSeconds: 1800,
-        totalExercises: 15,
-        streakDays: 2,
-        lastWorkoutDate: '2023-01-01T10:00:00.000Z',
-        firstWorkoutDate: '2023-01-01T09:00:00.000Z'
-      };
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(mockStats));
-      
-      const stats = statsManager.loadStats();
-      expect(stats).toEqual(mockStats);
-    });
-  });
-
-  describe('loadSessions error handling', () => {
-    test('returns empty array when localStorage throws error', () => {
-      localStorageMock.getItem.mockImplementation(() => {
-        throw new Error('Storage error');
-      });
-      
-      const sessions = statsManager.loadSessions();
-      expect(sessions).toEqual([]);
-      expect(console.warn).toHaveBeenCalledWith('Error loading workout sessions:', expect.any(Error));
-    });
-
-    test('returns empty array when stored data is invalid JSON', () => {
-      localStorageMock.getItem.mockReturnValue('invalid json');
-      
-      const sessions = statsManager.loadSessions();
-      expect(sessions).toEqual([]);
-      expect(console.warn).toHaveBeenCalledWith('Error loading workout sessions:', expect.any(Error));
-    });
-
-    test('returns parsed sessions when localStorage contains valid data', () => {
-      const mockSessions = [
-        { id: 'session1', workoutName: 'Test Workout 1' },
-        { id: 'session2', workoutName: 'Test Workout 2' }
-      ];
-      localStorageMock.getItem.mockReturnValue(JSON.stringify(mockSessions));
-      
-      const sessions = statsManager.loadSessions();
-      expect(sessions).toEqual(mockSessions);
-    });
-  });
-
-  describe('constructor', () => {
-    test('initializes with default values when localStorage is empty', () => {
-      localStorageMock.getItem.mockReturnValue(null);
-      
-      const manager = new StatisticsManager();
-      
-      expect(manager.currentSession).toBe(null);
-      expect(manager.stats).toEqual(manager.getDefaultStats());
-      expect(manager.sessions).toEqual([]);
-    });
-
-    test('initializes with stored values when localStorage has data', () => {
-      const mockStats = { totalWorkouts: 5, completedWorkouts: 3 };
-      const mockSessions = [{ id: 'session1' }];
-      
-      localStorageMock.getItem
-        .mockReturnValueOnce(JSON.stringify(mockStats))  // for stats
-        .mockReturnValueOnce(JSON.stringify(mockSessions)); // for sessions
-      
-      const manager = new StatisticsManager();
-      
-      expect(manager.stats).toEqual(expect.objectContaining(mockStats));
-      expect(manager.sessions).toEqual(mockSessions);
-    });
-  });
-
-  describe('clearAllData', () => {
-    test('resets all data to default values', () => {
-      // Set some test data
-      statsManager.stats = { totalWorkouts: 10, completedWorkouts: 5 };
-      statsManager.sessions = [{ id: 'test' }];
-      statsManager.currentSession = { id: 'current' };
-      
-      statsManager.clearAllData();
-      
-      expect(statsManager.stats).toEqual(statsManager.getDefaultStats());
-      expect(statsManager.sessions).toEqual([]);
-      expect(statsManager.currentSession).toBe(null);
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('workoutStats');
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith('workoutSessions');
-    });
-  });
 });

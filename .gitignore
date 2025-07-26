@@ -14,6 +14,10 @@ coverage/
 cypress/videos/
 cypress/screenshots/
 
+# Test Coverage Reports
+coverage/
+*.lcov
+
 # IDE
 .vscode/
 .idea/
@@ -33,3 +37,23 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+# .NET Backend
+backend/**/*.db
+backend/**/*.db-shm
+backend/**/*.db-wal
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/*.userosscache
+backend/**/*.suo
+backend/**/*.cache
+backend/**/.vs/
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+.tmp/
+temp/

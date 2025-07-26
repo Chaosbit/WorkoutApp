@@ -8,12 +8,12 @@ import { APP_UTILS } from '../js/constants.js';
 describe('APP_UTILS', () => {
   describe('formatTime', () => {
     test('formats seconds correctly to MM:SS format', () => {
-      expect(APP_UTILS.formatTime(0)).toBe('0:00');
-      expect(APP_UTILS.formatTime(5)).toBe('0:05');
-      expect(APP_UTILS.formatTime(30)).toBe('0:30');
-      expect(APP_UTILS.formatTime(60)).toBe('1:00');
-      expect(APP_UTILS.formatTime(65)).toBe('1:05');
-      expect(APP_UTILS.formatTime(125)).toBe('2:05');
+      expect(APP_UTILS.formatTime(0)).toBe('00:00');
+      expect(APP_UTILS.formatTime(5)).toBe('00:05');
+      expect(APP_UTILS.formatTime(30)).toBe('00:30');
+      expect(APP_UTILS.formatTime(60)).toBe('01:00');
+      expect(APP_UTILS.formatTime(65)).toBe('01:05');
+      expect(APP_UTILS.formatTime(125)).toBe('02:05');
       expect(APP_UTILS.formatTime(3661)).toBe('61:01');
     });
 

@@ -50,6 +50,18 @@
                         <span class="md-navigation-drawer__item-text">Statistics</span>
                     </button>
                 </li>
+                <li>
+                    <button class="md-navigation-drawer__item" id="navSync">
+                        <span class="material-icons md-navigation-drawer__item-icon">sync</span>
+                        <span class="md-navigation-drawer__item-text">Sync</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item" id="navSettings">
+                        <span class="material-icons md-navigation-drawer__item-icon">settings</span>
+                        <span class="md-navigation-drawer__item-text">Settings</span>
+                    </button>
+                </li>
             </ul>
         </nav>
         
@@ -392,7 +404,129 @@ Rest - 0:30</pre>
             </div>
         </div>
     </div>
+
+    <!-- Sync & Auth Dialogs -->
+    <div id="syncDialog" class="modal" style="display: none;">
+        <div class="modal-content md-card">
+            <div class="md-card__content">
+                <h3 class="md-typescale-title-large">Sync Settings</h3>
+                
+                <div class="sync-status" id="syncStatus">
+                    <div class="status-indicator">
+                        <span class="material-icons" id="syncStatusIcon">sync_disabled</span>
+                        <span id="syncStatusText">Sync disabled</span>
+                    </div>
+                </div>
+
+                <div class="sync-settings">
+                    <div class="setting-item">
+                        <label class="md-switch">
+                            <input type="checkbox" id="syncEnabledToggle">
+                            <div class="md-switch__track"></div>
+                            <div class="md-switch__handle">
+                                <div class="md-switch__shadow"></div>
+                                <div class="md-switch__ripple"></div>
+                            </div>
+                        </label>
+                        <div class="setting-text">
+                            <span class="md-typescale-body-large">Enable Sync</span>
+                            <span class="md-typescale-body-medium">Sync your workouts and statistics with the server</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item" id="authSection" style="display: none;">
+                        <div class="auth-status" id="authStatus">
+                            <span class="material-icons">account_circle</span>
+                            <span id="authStatusText">Not logged in</span>
+                        </div>
+                        <div class="auth-actions">
+                            <button id="loginBtn" class="md-button md-button--filled">
+                                <span class="md-button__label">Login</span>
+                            </button>
+                            <button id="registerBtn" class="md-button md-button--outlined">
+                                <span class="md-button__label">Register</span>
+                            </button>
+                            <button id="logoutBtn" class="md-button md-button--outlined" style="display: none;">
+                                <span class="md-button__label">Logout</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item" id="syncActions" style="display: none;">
+                        <button id="syncNowBtn" class="md-button md-button--filled">
+                            <span class="material-icons md-button__icon">sync</span>
+                            <span class="md-button__label">Sync Now</span>
+                        </button>
+                        <div class="sync-info">
+                            <span class="md-typescale-body-small" id="lastSyncTime">Never synced</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button id="closeSyncBtn" class="md-button md-button--outlined">
+                        <span class="md-button__label">Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Dialog -->
+    <div id="authDialog" class="modal" style="display: none;">
+        <div class="modal-content md-card">
+            <div class="md-card__content">
+                <h3 class="md-typescale-title-large" id="authDialogTitle">Login</h3>
+                
+                <form id="authForm">
+                    <div class="auth-tabs">
+                        <button type="button" id="loginTab" class="md-button md-button--text auth-tab active">Login</button>
+                        <button type="button" id="registerTab" class="md-button md-button--text auth-tab">Register</button>
+                    </div>
+
+                    <div class="auth-fields">
+                        <div class="md-text-field md-text-field--outlined" id="usernameField" style="display: none;">
+                            <input type="text" id="username" class="md-text-field__input" placeholder="Username" required>
+                            <label class="md-text-field__label">Username</label>
+                        </div>
+                        
+                        <div class="md-text-field md-text-field--outlined">
+                            <input type="email" id="usernameOrEmail" class="md-text-field__input" placeholder="Username or Email" required>
+                            <label class="md-text-field__label" id="usernameOrEmailLabel">Username or Email</label>
+                        </div>
+                        
+                        <div class="md-text-field md-text-field--outlined" id="emailField" style="display: none;">
+                            <input type="email" id="email" class="md-text-field__input" placeholder="Email" required>
+                            <label class="md-text-field__label">Email</label>
+                        </div>
+                        
+                        <div class="md-text-field md-text-field--outlined">
+                            <input type="password" id="password" class="md-text-field__input" placeholder="Password" required>
+                            <label class="md-text-field__label">Password</label>
+                        </div>
+                        
+                        <div class="md-text-field md-text-field--outlined" id="referredByField" style="display: none;">
+                            <input type="text" id="referredBy" class="md-text-field__input" placeholder="Referral Code (optional)">
+                            <label class="md-text-field__label">Referred By</label>
+                        </div>
+                    </div>
+
+                    <div class="auth-message" id="authMessage" style="display: none;"></div>
+
+                    <div class="modal-actions">
+                        <button type="submit" id="authSubmitBtn" class="md-button md-button--filled">
+                            <span class="md-button__label">Login</span>
+                        </button>
+                        <button type="button" id="cancelAuthBtn" class="md-button md-button--outlined">
+                            <span class="md-button__label">Cancel</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     
     <script type="module" src="js/app.js"></script>
 </body>
+</html>
 </html>
