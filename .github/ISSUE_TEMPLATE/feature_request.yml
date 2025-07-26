@@ -1,0 +1,138 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for the Workout Timer PWA
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in improving the Workout Timer PWA! Please describe your feature request in detail.
+
+  - type: input
+    id: feature_title
+    attributes:
+      label: Feature Title
+      description: A concise title for your feature request
+      placeholder: "e.g., Add support for custom rest music"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_category
+    attributes:
+      label: Feature Category
+      description: What category does this feature belong to?
+      options:
+        - Timer Functionality
+        - Workout File Format
+        - User Interface
+        - PWA Features
+        - Audio/Sound
+        - Progress Tracking
+        - Data Export/Import
+        - Accessibility
+        - Performance
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: What problem does this feature solve? What's missing currently?
+      placeholder: "e.g., Currently there's no way to play background music during rest periods, which makes workouts less engaging"
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your ideal solution in detail
+      placeholder: |
+        e.g., Add an option to:
+        - Upload custom audio files
+        - Play them during rest periods
+        - Control volume from the timer interface
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative approaches?
+      placeholder: "e.g., Integration with Spotify, or just built-in nature sounds"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would improve experience
+        - High - Important for usability
+        - Critical - App is unusable without it
+    validations:
+      required: true
+
+  - type: dropdown
+    id: target_users
+    attributes:
+      label: Target Users
+      description: Who would benefit most from this feature?
+      options:
+        - All users
+        - Beginner users
+        - Advanced users
+        - Mobile users specifically
+        - PWA users specifically
+        - Accessibility users
+        - Other specific group
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use Cases
+      description: Describe specific scenarios where this feature would be useful
+      placeholder: |
+        1. During HIIT workouts with short rest periods
+        2. For longer strength training sessions
+        3. When using the app in noisy environments
+
+  - type: textarea
+    id: technical_considerations
+    attributes:
+      label: Technical Considerations
+      description: Any technical aspects, limitations, or implementation ideas you've thought of?
+      placeholder: "e.g., This might require file storage APIs, audio APIs, or specific PWA capabilities"
+
+  - type: checkboxes
+    id: related_features
+    attributes:
+      label: Related Features
+      description: Would this feature work well with any existing or planned features?
+      options:
+        - label: Timer controls (play/pause/skip)
+        - label: Progress tracking
+        - label: Workout file format
+        - label: Offline functionality
+        - label: PWA installation
+        - label: Statistics/history
+        - label: Settings/preferences
+
+  - type: textarea
+    id: mockup
+    attributes:
+      label: Mockups or Examples
+      description: If you have any sketches, mockups, or examples from other apps, describe them here
+      placeholder: "e.g., Similar to the timer in the XYZ fitness app, or I've drawn a sketch of the UI"
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any other details, references, or context that might be helpful
+      placeholder: "Links to similar features, research, or any other relevant information"
