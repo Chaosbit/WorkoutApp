@@ -58,16 +58,12 @@ Rest - 0:30`
 
       cy.get('#workoutMarkdownEditor').clear().type(customWorkout, { parseSpecialCharSequences: false })
       
-      // Stub alert for success message
-      cy.window().then((win) => {
-        cy.stub(win, 'alert').as('alertStub')
-      })
-      
       // Save the new workout
       cy.get('#saveWorkoutBtn').click()
       
       // Should show success message
-      cy.get('@alertStub').should('have.been.calledWith', 'New workout created successfully!')
+      cy.get('.app-message--success').should('be.visible')
+      cy.get('.app-message--success').should('contain', 'New workout created successfully!')
       
       // Editor should be hidden, workout display should be visible
       cy.get('#workoutEditor').should('not.be.visible')
@@ -143,14 +139,11 @@ Rest - 0:30`
 
     it('should prevent saving with empty workout name', () => {
       // Leave name empty, try to save
-      cy.window().then((win) => {
-        cy.stub(win, 'alert').as('alertStub')
-      })
-      
       cy.get('#saveWorkoutBtn').click()
       
       // Should show validation error
-      cy.get('@alertStub').should('have.been.calledWith', 'Please provide both a workout name and content.')
+      cy.get('.app-message--error').should('be.visible')
+      cy.get('.app-message--error').should('contain', 'Workout name must be at least 3 characters')
       
       // Editor should still be visible
       cy.get('#workoutEditor').should('be.visible')
@@ -160,14 +153,11 @@ Rest - 0:30`
       cy.get('#workoutNameInput').type('Test Workout')
       cy.get('#workoutMarkdownEditor').clear()
       
-      cy.window().then((win) => {
-        cy.stub(win, 'alert').as('alertStub')
-      })
-      
       cy.get('#saveWorkoutBtn').click()
       
       // Should show validation error
-      cy.get('@alertStub').should('have.been.calledWith', 'Please provide both a workout name and content.')
+      cy.get('.app-message--error').should('be.visible')
+      cy.get('.app-message--error').should('contain', 'Workout must contain at least one exercise')
       
       // Editor should still be visible
       cy.get('#workoutEditor').should('be.visible')
@@ -177,14 +167,11 @@ Rest - 0:30`
       cy.get('#workoutNameInput').type('Invalid Workout')
       cy.get('#workoutMarkdownEditor').clear().type('# Title with no exercises', { parseSpecialCharSequences: false })
       
-      cy.window().then((win) => {
-        cy.stub(win, 'alert').as('alertStub')
-      })
-      
       cy.get('#saveWorkoutBtn').click()
       
       // Should show validation error
-      cy.get('@alertStub').should('have.been.calledWith', 'Please provide valid workout content with at least one exercise.')
+      cy.get('.app-message--error').should('be.visible')
+      cy.get('.app-message--error').should('contain', 'Workout must contain at least one exercise')
       
       // Editor should still be visible
       cy.get('#workoutEditor').should('be.visible')
@@ -194,14 +181,11 @@ Rest - 0:30`
       cy.get('#workoutNameInput').type('Parsing Error Workout')
       cy.get('#workoutMarkdownEditor').clear().type('# Title\n\n## Exercise with no time\nNo time format', { parseSpecialCharSequences: false })
       
-      cy.window().then((win) => {
-        cy.stub(win, 'alert').as('alertStub')
-      })
-      
       cy.get('#saveWorkoutBtn').click()
       
-      // Should show parsing error
-      cy.get('@alertStub').should('have.been.calledWith', 'Error parsing workout content. Please check your markdown format.')
+      // Should show parsing error  
+      cy.get('.app-message--error').should('be.visible')
+      cy.get('.app-message--error').should('contain', 'Error parsing workout content')
       
       // Editor should still be visible
       cy.get('#workoutEditor').should('be.visible')

@@ -169,13 +169,13 @@ describe('Workout Library', () => {
   it('should show proper styling and layout for workout library', () => {
     cy.loadWorkoutFile('test-workout.md')
     
-    // Check library styling
-    cy.get('.workout-library').should('have.css', 'background-color', 'rgb(248, 249, 250)')
+    // Check library styling - updated for Material Design colors
+    cy.get('.workout-library').should('have.css', 'background-color', 'rgb(254, 247, 255)')
     cy.get('.workout-library').should('be.visible')
     
     // Check selector styling
-    cy.get('#workoutSelect').should('have.css', 'border-width', '2px')
-    cy.get('#workoutSelect').should('have.css', 'background-color', 'rgb(255, 255, 255)')
+    cy.get('#workoutSelect').should('have.css', 'border-width', '1px')
+    cy.get('#workoutSelect').should('have.css', 'background-color', 'rgb(254, 247, 255)')
     
     // Check responsive behavior
     cy.viewport('iphone-x')
