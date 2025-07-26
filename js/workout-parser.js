@@ -1,3 +1,5 @@
+import { APP_CONFIG, APP_UTILS } from './constants.js';
+
 /**
  * WorkoutParser - Parses markdown workout files into structured workout data
  */
@@ -23,9 +25,9 @@ export class WorkoutParser {
             
             if (!line) continue;
             
-            if (line.startsWith('# ')) {
+            if (APP_CONFIG.REGEX_PATTERNS.TITLE.test(line)) {
                 workout.title = line.substring(2).trim();
-            } else if (line.startsWith('## ') || line.startsWith('### ')) {
+            } else if (APP_CONFIG.REGEX_PATTERNS.EXERCISE_HEADER.test(line)) {
                 if (currentExercise && descriptionLines.length > 0) {
                     currentExercise.description = descriptionLines.join('\n').trim();
                     descriptionLines = [];
@@ -34,7 +36,7 @@ export class WorkoutParser {
                 const exerciseLine = line.replace(/^#{2,3}\s+/, '');
                 
                 // Check for sets syntax: "Exercise Name - 3 sets x 0:30 / 0:15"
-                const setsMatch = exerciseLine.match(/^(.+?)\s*-\s*(\d+)\s+sets?\s*x\s*(\d+):(\d+)\s*\/\s*(\d+):(\d+)$/);
+                const setsMatch = exerciseLine.match(APP_CONFIG.REGEX_PATTERNS.SETS_FORMAT);
                 if (setsMatch) {
                     const [, name, sets, exMinutes, exSeconds, restMinutes, restSeconds] = setsMatch;
                     const exerciseDuration = parseInt(exMinutes) * 60 + parseInt(exSeconds);
@@ -79,10 +81,10 @@ export class WorkoutParser {
                     continue;
                 }
                 
-                // Check for regular time syntax: "Exercise Name - 1:30"
-                const timeMatch = exerciseLine.match(/^(.+?)\s*-\s*(\d+):(\d+)$/);
+                // Check for regular time syntax: "Exercise Name - 1:30"  
+                const timeMatch = exerciseLine.match(APP_CONFIG.REGEX_PATTERNS.EXERCISE_TIME);
                 // Check for rep syntax: "Exercise Name - 10 reps"
-                const repMatch = exerciseLine.match(/^(.+?)\s*-\s*(\d+)\s+reps?$/i);
+                const repMatch = exerciseLine.match(APP_CONFIG.REGEX_PATTERNS.EXERCISE_REPS);
                 if (timeMatch) {
                     const [, name, minutes, seconds] = timeMatch;
                     const duration = parseInt(minutes) * 60 + parseInt(seconds);

@@ -1,3 +1,5 @@
+import { APP_CONFIG, APP_UTILS } from './constants.js';
+
 /**
  * TimerManager - Handles countdown timer functionality for exercises
  */
@@ -45,13 +47,13 @@ export class TimerManager {
         this.isRunning = true;
         this.lastSecondUpdate = Date.now();
         
-        // Use 100ms intervals for smooth progress bar updates
+        // Use configured interval for smooth progress bar updates
         this.intervalId = setInterval(() => {
-            const now = Date.now();
+            const now = APP_UTILS.now();
             const timeSinceLastSecond = now - this.lastSecondUpdate;
             
             // Decrement a full second if 1000ms or more have passed
-            if (timeSinceLastSecond >= 1000) {
+            if (timeSinceLastSecond >= APP_CONFIG.PERFORMANCE.TIMER_PRECISION) {
                 this.timeRemaining--;
                 this.lastSecondUpdate = now;
                 
@@ -66,7 +68,7 @@ export class TimerManager {
             if (this.onTick) {
                 this.onTick(this.timeRemaining);
             }
-        }, 100); // Update every 100ms for smooth progress bar
+        }, APP_CONFIG.TIMER_UPDATE_INTERVAL); // Update frequency from config
     }
 
     /**
@@ -123,14 +125,12 @@ export class TimerManager {
     }
 
     /**
-     * Format time in MM:SS format
+     * Format time in MM:SS format using utility
      * @param {number} seconds - Time in seconds
      * @returns {string} Formatted time string
      */
     formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        return APP_UTILS.formatTime(seconds);
     }
 
     /**

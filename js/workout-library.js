@@ -1,3 +1,5 @@
+import { APP_CONFIG, APP_UTILS } from './constants.js';
+
 /**
  * WorkoutLibrary - Manages storage and retrieval of workout data in localStorage
  */
@@ -7,12 +9,12 @@ export class WorkoutLibrary {
     }
 
     /**
-     * Load workouts from localStorage
+     * Load workouts from localStorage  
      * @returns {Array} Array of saved workouts
      */
     loadWorkouts() {
         try {
-            const stored = localStorage.getItem('workoutLibrary');
+            const stored = localStorage.getItem(APP_CONFIG.STORAGE_KEYS.WORKOUTS);
             return stored ? JSON.parse(stored) : [];
         } catch (error) {
             console.warn('Error loading workout library:', error);
@@ -25,9 +27,10 @@ export class WorkoutLibrary {
      */
     saveWorkouts() {
         try {
-            localStorage.setItem('workoutLibrary', JSON.stringify(this.workouts));
+            localStorage.setItem(APP_CONFIG.STORAGE_KEYS.WORKOUTS, JSON.stringify(this.workouts));
         } catch (error) {
             console.warn('Error saving workout library:', error);
+            throw new Error(APP_CONFIG.ERROR_MESSAGES.WORKOUT_SAVE_FAILED);
         }
     }
 
@@ -39,7 +42,7 @@ export class WorkoutLibrary {
      * @returns {Object} The added/updated workout
      */
     addWorkout(filename, content, workoutData) {
-        const id = Date.now().toString();
+        const id = APP_UTILS.generateId();
         const workout = {
             id,
             name: filename.replace('.md', ''),

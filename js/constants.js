@@ -132,7 +132,7 @@ export const APP_UTILS = {
      * @returns {number} Time in seconds
      */
     parseTime(timeStr) {
-        const match = timeStr.match(APP_CONFIG.REGEX_PATTERNS.TIME_FORMAT);
+        const match = timeStr.match(/(\d+):(\d{2})$/);
         if (!match) return 0;
         return parseInt(match[1]) * 60 + parseInt(match[2]);
     },
