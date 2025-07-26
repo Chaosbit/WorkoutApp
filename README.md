@@ -103,6 +103,19 @@ The app automatically deploys to GitHub Pages on every push to main/master branc
 
 
 
+## Security & Dependencies
+
+This project uses automated dependency management to ensure security and keep packages up to date:
+
+- **Dependabot**: Automatically checks for dependency updates weekly and creates pull requests
+- **Security Audit**: Runs weekly security scans and creates issues if vulnerabilities are found
+- **Manual Commands**: 
+  ```bash
+  npm audit              # Check for security vulnerabilities
+  npm audit fix          # Automatically fix vulnerabilities where possible
+  npm outdated           # Check for outdated packages
+  ```
+
 ## Development & Roadmap
 
 - **[ROADMAP.md](ROADMAP.md)** - Comprehensive development roadmap with prioritized features

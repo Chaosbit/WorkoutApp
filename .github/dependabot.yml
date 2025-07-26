@@ -1,0 +1,52 @@
+# Dependabot configuration for automatic dependency updates
+# https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  # Enable version updates for npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    # Allow both major and minor version updates
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    # Automatically merge minor and patch updates for dev dependencies
+    auto-merge:
+      - match:
+          dependency-type: "development"
+          update-type: "semver:minor"
+      - match:
+          dependency-type: "development"
+          update-type: "semver:patch"
+    # Group similar updates together to reduce PR noise  
+    groups:
+      babel:
+        patterns:
+          - "@babel/*"
+          - "babel-*"
+      testing:
+        patterns:
+          - "jest*"
+          - "cypress*"
+          - "*jest*"
+    # Add labels for easy identification
+    labels:
+      - "dependencies"
+      - "automated"
+    # Limit open PRs to avoid overwhelming the repository
+    open-pull-requests-limit: 5
+    # Configure commit message
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    # Configure pull request settings
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "Chaosbit"

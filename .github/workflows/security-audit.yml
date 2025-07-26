@@ -1,0 +1,126 @@
+name: Security Audit
+
+on:
+  # Run weekly on Mondays at 7 AM UTC (after Dependabot runs)
+  schedule:
+    - cron: '0 7 * * 1'
+  # Allow manual triggering
+  workflow_dispatch:
+  # Run on pushes to main/master branches
+  push:
+    branches: [ main, master ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        id: audit
+        run: |
+          # Run audit and capture both exit code and output
+          set +e  # Don't exit on error
+          AUDIT_OUTPUT=$(npm audit --audit-level=moderate --json 2>&1)
+          AUDIT_EXIT_CODE=$?
+          echo "exit_code=$AUDIT_EXIT_CODE" >> $GITHUB_OUTPUT
+          
+          if [ $AUDIT_EXIT_CODE -ne 0 ]; then
+            echo "vulnerabilities_found=true" >> $GITHUB_OUTPUT
+            # Extract summary information
+            VULN_COUNT=$(echo "$AUDIT_OUTPUT" | jq -r '.metadata.vulnerabilities.total // 0' 2>/dev/null || echo "0")
+            echo "vulnerability_count=$VULN_COUNT" >> $GITHUB_OUTPUT
+            echo "$AUDIT_OUTPUT" > audit_report.json
+          else
+            echo "vulnerabilities_found=false" >> $GITHUB_OUTPUT
+            echo "vulnerability_count=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Security Issue
+        if: steps.audit.outputs.vulnerabilities_found == 'true'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const vulnerabilityCount = '${{ steps.audit.outputs.vulnerability_count }}';
+            
+            // Read audit report if it exists
+            let auditDetails = 'Run `npm audit` for detailed information.';
+            try {
+              const auditReport = JSON.parse(fs.readFileSync('audit_report.json', 'utf8'));
+              if (auditReport.advisories) {
+                auditDetails = 'Found vulnerabilities:\n\n';
+                Object.values(auditReport.advisories).forEach(advisory => {
+                  auditDetails += `- **${advisory.title}** (${advisory.severity})\n`;
+                  auditDetails += `  - Module: ${advisory.module_name}\n`;
+                  auditDetails += `  - More info: ${advisory.url}\n\n`;
+                });
+              }
+            } catch (error) {
+              console.log('Could not parse audit report:', error.message);
+            }
+
+            const issueTitle = '🔒 Security Alert: ' + vulnerabilityCount + ' vulnerabilities found';
+            const issueBody = '## Security Vulnerabilities Detected\n\n' +
+              vulnerabilityCount + ' security vulnerabilities have been detected in the project dependencies.\n\n' +
+              auditDetails + '\n\n' +
+              '### Next Steps\n' +
+              '1. Review the vulnerabilities listed above\n' +
+              '2. Update affected dependencies to secure versions\n' +
+              '3. Run `npm audit fix` to automatically fix vulnerabilities where possible\n' +
+              '4. For vulnerabilities that cannot be automatically fixed, consider:\n' +
+              '   - Updating to a major version of the dependency\n' +
+              '   - Finding alternative packages\n' +
+              '   - Implementing workarounds if the risk is acceptable\n\n' +
+              '### Commands to run locally\n' +
+              '```bash\n' +
+              'npm audit\n' +
+              'npm audit fix\n' +
+              '```\n\n' +
+              '*This issue was created automatically by the Security Audit workflow.*';
+
+            // Check if there's already an open security issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'security,automated'
+            });
+
+            if (issues.length === 0) {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: issueBody,
+                labels: ['security', 'dependencies', 'automated']
+              });
+              console.log('Created new security issue');
+            } else {
+              // Update existing issue
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                title: issueTitle,
+                body: issueBody
+              });
+              console.log('Updated existing security issue');
+            }
+
+      - name: Comment on Success
+        if: steps.audit.outputs.vulnerabilities_found == 'false'
+        run: |
+          echo "✅ No security vulnerabilities found in dependencies"
