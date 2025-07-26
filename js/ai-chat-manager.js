@@ -1,13 +1,26 @@
 /**
  * AI Chat Manager
- * Provides AI-like workout assistance through predefined knowledge patterns
- * Designed to work offline with local workout analysis
+ * Provides AI-powered workout assistance through generative AI (online LLM or device-based)
+ * Falls back to pattern matching for offline functionality
  */
 export class AIChatManager {
     constructor(workoutApp) {
         this.workoutApp = workoutApp;
         this.messages = [];
         this.isThinking = false;
+        
+        // AI Provider configuration
+        this.aiConfig = {
+            provider: localStorage.getItem('aiProvider') || 'openai', // openai, gemini, anthropic, offline
+            apiKey: localStorage.getItem('aiApiKey') || '',
+            useOnlineAI: localStorage.getItem('useOnlineAI') !== 'false',
+            model: localStorage.getItem('aiModel') || 'gpt-3.5-turbo'
+        };
+        
+        // Online status tracking
+        this.isOnline = navigator.onLine;
+        window.addEventListener('online', () => { this.isOnline = true; });
+        window.addEventListener('offline', () => { this.isOnline = false; });
         
         // Initialize exercise database for substitutions
         this.exerciseSubstitutions = {
@@ -32,6 +45,29 @@ export class AIChatManager {
         this.initializeElements();
         this.bindEvents();
         this.showSuggestions();
+        this.checkAIConfiguration();
+    }
+
+    /**
+     * Check AI configuration and show settings if needed
+     */
+    checkAIConfiguration() {
+        if (this.aiConfig.useOnlineAI && !this.aiConfig.apiKey && this.isOnline) {
+            const configSuggestion = [{
+                action: 'configure_ai',
+                data: {},
+                icon: 'settings',
+                label: 'Configure AI'
+            }];
+            
+            this.addMessage(
+                '<p>🔧 <strong>AI Configuration Needed</strong></p>' +
+                '<p>To use advanced AI features, please configure your AI provider in settings. ' +
+                'Until then, I\'ll use offline pattern matching to help with your workouts.</p>', 
+                'ai',
+                configSuggestion
+            );
+        }
     }
 
     /**
@@ -87,11 +123,13 @@ export class AIChatManager {
         // Show thinking indicator
         this.showThinking();
 
-        // Simulate AI processing delay
-        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+        // Simulate AI processing delay for offline mode only
+        if (!this.aiConfig.useOnlineAI || !this.aiConfig.apiKey || !this.isOnline) {
+            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+        }
 
         // Generate AI response
-        const response = this.generateResponse(message);
+        const response = await this.generateResponse(message);
         this.hideThinking();
         this.addMessage(response.text, 'ai', response.suggestions);
     }
@@ -165,7 +203,156 @@ export class AIChatManager {
     /**
      * Generate AI response based on user input
      */
-    generateResponse(userMessage) {
+    async generateResponse(userMessage) {
+        // Check if we should use online AI
+        if (this.aiConfig.useOnlineAI && this.aiConfig.apiKey && this.isOnline) {
+            try {
+                return await this.generateAIResponse(userMessage);
+            } catch (error) {
+                console.warn('AI API failed, falling back to offline mode:', error);
+                // Fall back to pattern matching
+                return this.generateOfflineResponse(userMessage);
+            }
+        } else {
+            // Use offline pattern matching
+            return this.generateOfflineResponse(userMessage);
+        }
+    }
+
+    /**
+     * Generate response using online AI service
+     */
+    async generateAIResponse(userMessage) {
+        const workoutContext = this.workoutApp.workout ? this.analyzeWorkout(this.workoutApp.workout) : null;
+        
+        // Build context for AI
+        let systemPrompt = `You are a helpful fitness assistant for a workout timer app. You help users with:
+- Exercise substitutions for injuries or equipment limitations
+- Workout modifications to fit time constraints  
+- Warm-up and cool-down suggestions
+- General fitness advice
+- Making workouts more or less challenging
+
+Keep responses concise, practical, and focused on actionable advice. Use HTML formatting for better readability with <p>, <ul>, <li>, and <strong> tags.`;
+
+        if (workoutContext) {
+            systemPrompt += `\n\nCurrent workout context:
+- Workout type: ${workoutContext.workoutType}
+- Total duration: ~${Math.round(workoutContext.totalDuration / 60)} minutes
+- Exercises: ${workoutContext.exercises.join(', ')}
+- Has cardio: ${workoutContext.hasCardio ? 'Yes' : 'No'}`;
+        }
+
+        let response;
+        switch (this.aiConfig.provider) {
+            case 'openai':
+                response = await this.callOpenAI(systemPrompt, userMessage);
+                break;
+            case 'gemini':
+                response = await this.callGemini(systemPrompt, userMessage);
+                break;
+            case 'anthropic':
+                response = await this.callAnthropic(systemPrompt, userMessage);
+                break;
+            default:
+                throw new Error(`Unsupported AI provider: ${this.aiConfig.provider}`);
+        }
+
+        return { text: response, suggestions: [] };
+    }
+
+    /**
+     * Call OpenAI API
+     */
+    async callOpenAI(systemPrompt, userMessage) {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.aiConfig.apiKey}`
+            },
+            body: JSON.stringify({
+                model: this.aiConfig.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userMessage }
+                ],
+                max_tokens: 500,
+                temperature: 0.7
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`OpenAI API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+    }
+
+    /**
+     * Call Google Gemini API
+     */
+    async callGemini(systemPrompt, userMessage) {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.aiConfig.apiKey}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: `${systemPrompt}\n\nUser: ${userMessage}`
+                    }]
+                }],
+                generationConfig: {
+                    maxOutputTokens: 500,
+                    temperature: 0.7
+                }
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Gemini API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    }
+
+    /**
+     * Call Anthropic Claude API
+     */
+    async callAnthropic(systemPrompt, userMessage) {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': this.aiConfig.apiKey,
+                'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify({
+                model: 'claude-3-haiku-20240307',
+                max_tokens: 500,
+                system: systemPrompt,
+                messages: [
+                    { role: 'user', content: userMessage }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Anthropic API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.content[0].text;
+    }
+
+    /**
+     * Generate response using offline pattern matching (fallback)
+     */
+    generateOfflineResponse(userMessage) {
         const message = userMessage.toLowerCase();
         
         // Analyze current workout if available
@@ -404,6 +591,9 @@ export class AIChatManager {
      */
     executeSuggestion(action, data) {
         switch (action) {
+            case 'configure_ai':
+                this.showAIConfiguration();
+                break;
             case 'substitute_exercise':
                 this.handleExerciseSubstitution(data);
                 break;
@@ -416,6 +606,123 @@ export class AIChatManager {
             case 'increase_difficulty':
                 this.handleIncreaseDifficulty(data);
                 break;
+        }
+    }
+
+    /**
+     * Show AI configuration interface
+     */
+    showAIConfiguration() {
+        const configHtml = `
+            <div class="ai-config-form">
+                <h4 class="md-typescale-title-medium">AI Configuration</h4>
+                
+                <div class="md-form-field">
+                    <label class="md-form-field__label">AI Provider:</label>
+                    <select id="aiProviderSelect" class="md-select">
+                        <option value="openai" ${this.aiConfig.provider === 'openai' ? 'selected' : ''}>OpenAI GPT</option>
+                        <option value="gemini" ${this.aiConfig.provider === 'gemini' ? 'selected' : ''}>Google Gemini</option>
+                        <option value="anthropic" ${this.aiConfig.provider === 'anthropic' ? 'selected' : ''}>Anthropic Claude</option>
+                        <option value="offline" ${this.aiConfig.provider === 'offline' ? 'selected' : ''}>Offline Only</option>
+                    </select>
+                </div>
+
+                <div class="md-form-field" id="apiKeyField" style="${this.aiConfig.provider === 'offline' ? 'display: none' : ''}">
+                    <label class="md-form-field__label">API Key:</label>
+                    <input type="password" id="aiApiKeyInput" class="md-text-field__input" 
+                           value="${this.aiConfig.apiKey}" placeholder="Enter your API key">
+                    <small class="help-text">Your API key is stored locally and never shared</small>
+                </div>
+
+                <div class="ai-config-actions">
+                    <button class="md-button md-button--filled" id="saveAIConfig">
+                        <span class="material-icons md-button__icon">save</span>
+                        <span class="md-button__label">Save Configuration</span>
+                    </button>
+                    <button class="md-button md-button--outlined" id="testAIConfig">
+                        <span class="material-icons md-button__icon">verified</span>
+                        <span class="md-button__label">Test Connection</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        this.addMessage(configHtml, 'ai');
+
+        // Bind configuration events
+        setTimeout(() => {
+            const providerSelect = document.getElementById('aiProviderSelect');
+            const apiKeyField = document.getElementById('apiKeyField');
+            const apiKeyInput = document.getElementById('aiApiKeyInput');
+            const saveBtn = document.getElementById('saveAIConfig');
+            const testBtn = document.getElementById('testAIConfig');
+
+            if (providerSelect) {
+                providerSelect.addEventListener('change', () => {
+                    apiKeyField.style.display = providerSelect.value === 'offline' ? 'none' : 'block';
+                });
+            }
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    this.saveAIConfiguration(providerSelect.value, apiKeyInput.value);
+                });
+            }
+
+            if (testBtn) {
+                testBtn.addEventListener('click', () => {
+                    this.testAIConnection(providerSelect.value, apiKeyInput.value);
+                });
+            }
+        }, 100);
+    }
+
+    /**
+     * Save AI configuration
+     */
+    saveAIConfiguration(provider, apiKey) {
+        this.aiConfig.provider = provider;
+        this.aiConfig.apiKey = apiKey;
+        this.aiConfig.useOnlineAI = provider !== 'offline';
+
+        localStorage.setItem('aiProvider', provider);
+        localStorage.setItem('aiApiKey', apiKey);
+        localStorage.setItem('useOnlineAI', this.aiConfig.useOnlineAI.toString());
+
+        this.addMessage('<p>✅ <strong>Configuration saved!</strong> Your AI settings have been updated.</p>', 'ai');
+    }
+
+    /**
+     * Test AI connection
+     */
+    async testAIConnection(provider, apiKey) {
+        if (provider === 'offline') {
+            this.addMessage('<p>✅ <strong>Offline mode enabled!</strong> Pattern matching is ready to help.</p>', 'ai');
+            return;
+        }
+
+        if (!apiKey) {
+            this.addMessage('<p>❌ <strong>API key required!</strong> Please enter your API key to test the connection.</p>', 'ai');
+            return;
+        }
+
+        this.showThinking();
+        try {
+            // Save temporarily for testing
+            const oldConfig = { ...this.aiConfig };
+            this.aiConfig.provider = provider;
+            this.aiConfig.apiKey = apiKey;
+            this.aiConfig.useOnlineAI = true;
+
+            const response = await this.generateAIResponse('Test connection - respond with "Connection successful!"');
+            this.hideThinking();
+            this.addMessage('<p>✅ <strong>Connection successful!</strong> Your AI provider is working correctly.</p>', 'ai');
+            
+        } catch (error) {
+            this.hideThinking();
+            this.addMessage(`<p>❌ <strong>Connection failed!</strong> ${error.message}</p>`, 'ai');
+            // Restore old config
+            this.aiConfig = oldConfig;
         }
     }
 

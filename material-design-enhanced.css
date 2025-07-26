@@ -1918,4 +1918,70 @@ body {
         width: 48px;
     }
 }
+
+/* AI Configuration Styles */
+.ai-config-form {
+    margin: 16px 0;
+    padding: 16px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 12px;
+    background-color: var(--md-sys-color-surface-container-lowest);
+}
+
+.ai-config-form h4 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: var(--md-sys-color-primary);
+}
+
+.md-form-field {
+    margin-bottom: 16px;
+}
+
+.md-form-field__label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: 8px;
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    font-size: 1rem;
+}
+
+.md-select:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 2px var(--md-sys-color-primary-container);
+}
+
+.help-text {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.ai-config-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.ai-config-actions .md-button {
+    flex: 1;
+}
+
+@media (max-width: 600px) {
+    .ai-config-actions {
+        flex-direction: column;
+    }
+}
 }
