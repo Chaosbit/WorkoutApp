@@ -49,7 +49,7 @@
             "protocol": "https"
         }
     },
-    "postCreateCommand": "npm install && cd backend && dotnet restore && dotnet workload install aspire",
+    "postCreateCommand": "npm install && cd backend && dotnet restore",
     "remoteUser": "vscode",
     "features": {
         "ghcr.io/devcontainers/features/node:1": {

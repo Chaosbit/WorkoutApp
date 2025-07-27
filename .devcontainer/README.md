@@ -143,6 +143,13 @@ If the container fails to build:
 1. Check Docker Desktop is running
 2. Try rebuilding: `Dev Containers: Rebuild Container`
 3. Clear Docker cache if needed
+4. If you see Microsoft repository errors, ensure you're using the latest devcontainer features
+
+**Common Error Fix**: If you encounter the error:
+```
+E: The repository 'https://packages.microsoft.com/repos/microsoft-ubuntu-bookworm-prod bookworm Release' does not have a Release file.
+```
+This has been resolved by using devcontainer features instead of manual package installation.
 
 ### Permission Issues
 If you encounter permission issues:

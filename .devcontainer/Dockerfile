@@ -1,15 +1,10 @@
 FROM mcr.microsoft.com/devcontainers/javascript-node:18
 
-# Install .NET 8 SDK
-RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
-    && echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/repos/microsoft-ubuntu-$(lsb_release -cs)-prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/microsoft-prod.list \
-    && apt-get update \
-    && apt-get install -y dotnet-sdk-8.0
+# Note: .NET 8 SDK is installed via devcontainer features
 
 # Install additional tools for PWA development
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
-        git \
         curl \
         wget \
         vim \
