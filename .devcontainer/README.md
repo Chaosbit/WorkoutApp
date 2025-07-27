@@ -128,8 +128,14 @@ The container automatically forwards these ports:
 ### Post-Create Setup
 The container automatically runs:
 ```bash
-npm install && cd backend && dotnet restore
+bash .devcontainer/post-create.sh
 ```
+
+This script:
+- Installs additional development tools (sqlite3, python3, global npm packages)
+- Installs Playwright dependencies
+- Runs `npm install` and `dotnet restore`
+- Sets up proper file permissions
 
 ### Environment Variables
 - `NODE_ENV=development`
@@ -145,11 +151,11 @@ If the container fails to build:
 3. Clear Docker cache if needed
 4. If you see Microsoft repository errors, ensure you're using the latest devcontainer features
 
-**Common Error Fix**: If you encounter the error:
+**Common Error Fix**: If you encounter user permission errors like:
 ```
-E: The repository 'https://packages.microsoft.com/repos/microsoft-ubuntu-bookworm-prod bookworm Release' does not have a Release file.
+Status 500: {"cause":"no matching entries in passwd file","message":"unable to find user vscode: no matching entries in passwd file","response":500}
 ```
-This has been resolved by using devcontainer features instead of manual package installation.
+This has been resolved by using the proper devcontainer features configuration with `common-utils` feature that ensures the vscode user is created correctly.
 
 ### Permission Issues
 If you encounter permission issues:
