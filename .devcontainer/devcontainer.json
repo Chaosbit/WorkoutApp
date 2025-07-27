@@ -1,0 +1,74 @@
+{
+    "name": "Workout Timer PWA",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.vscode-json",
+                "bradlc.vscode-tailwindcss",
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.vscode-dotnet-runtime",
+                "ms-vscode.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "ms-vscode.test-adapter-converter",
+                "hbenl.vscode-test-explorer",
+                "ms-playwright.playwright",
+                "ms-vscode.vscode-jest",
+                "HashiCorp.terraform",
+                "ms-vscode.azurecli",
+                "ms-azuretools.vscode-azureresourcegroups",
+                "ms-azuretools.vscode-azureappservice"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "javascript.preferences.includePackageJsonAutoImports": "on",
+                "typescript.preferences.includePackageJsonAutoImports": "on",
+                "jest.autoRun": "off",
+                "jest.showCoverageOnLoad": true
+            }
+        }
+    },
+    "forwardPorts": [8000, 5000, 3000, 15888],
+    "portsAttributes": {
+        "8000": {
+            "label": "PWA Development Server",
+            "protocol": "http"
+        },
+        "5000": {
+            "label": ".NET Backend API",
+            "protocol": "http"
+        },
+        "3000": {
+            "label": "Alternative Dev Server",
+            "protocol": "http"
+        },
+        "15888": {
+            "label": "Aspire Dashboard",
+            "protocol": "https"
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "features": {
+        "ghcr.io/devcontainers/features/dotnet:1": {
+            "version": "8.0"
+        },
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/terraform:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/azure-cli:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "installOhMyZsh": true,
+            "upgradePackages": true,
+            "username": "vscode",
+            "uid": "1000",
+            "gid": "1000"
+        }
+    }
+}

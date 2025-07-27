@@ -1,0 +1,42 @@
+# Workout App Terraform Variables - Development Environment
+# Copy this file to terraform.tfvars and modify as needed
+
+# Environment Configuration
+environment = "dev"
+location    = "West Europe"
+
+# Resource Naming
+resource_group_name     = "WorkoutApp-RG"
+app_name               = "workoutapp"
+app_service_plan_name  = "WorkoutApp-Plan"
+
+# App Service Configuration
+app_service_sku     = "B1"  # Basic tier for development
+create_staging_slot = false # No staging slot needed for dev
+
+# Database Configuration
+use_sql_database = false # Use SQLite for development
+# If you want to use SQL Database for dev, uncomment and set:
+# use_sql_database    = true
+# sql_server_name     = "workoutapp-sql"
+# database_name       = "WorkoutAppDB"
+# sql_admin_username  = "workoutadmin"
+# sql_admin_password  = "YourSecurePassword123!"
+# sql_database_sku    = "Basic"
+
+# JWT Configuration
+jwt_issuer         = "WorkoutApp-Dev"
+jwt_audience       = "WorkoutApp-Users"
+jwt_expiry_minutes = 60
+
+# Application Settings
+require_user_approval   = false  # No approval needed for dev
+require_referral_code   = false  # No referral code needed for dev
+
+# CORS Configuration - Add your development URLs
+cors_allowed_origins = [
+  "https://chaosbit.github.io",
+  "https://localhost:8000",
+  "http://localhost:8000",
+  "http://127.0.0.1:8000"
+]

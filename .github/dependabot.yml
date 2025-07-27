@@ -42,3 +42,89 @@ updates:
       separator: "/"
     reviewers:
       - "Chaosbit"
+
+  # Enable version updates for .NET NuGet dependencies
+  - package-ecosystem: "nuget"
+    directory: "/backend/WorkoutApp.Api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "UTC"
+    # Allow both major and minor version updates
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    # Group similar updates together to reduce PR noise
+    groups:
+      aspnetcore:
+        patterns:
+          - "Microsoft.AspNetCore.*"
+          - "Microsoft.Extensions.*"
+      entityframework:
+        patterns:
+          - "Microsoft.EntityFrameworkCore.*"
+      testing:
+        patterns:
+          - "Microsoft.NET.Test.*"
+          - "xunit*"
+          - "Moq*"
+    # Add labels for easy identification
+    labels:
+      - "dependencies"
+      - "backend"
+      - "automated"
+    # Limit open PRs to avoid overwhelming the repository
+    open-pull-requests-limit: 3
+    # Configure commit message
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    # Configure pull request settings
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "Chaosbit"
+
+  # Enable version updates for .NET test project dependencies
+  - package-ecosystem: "nuget"
+    directory: "/backend/WorkoutApp.Tests"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:30"
+      timezone: "UTC"
+    # Allow both major and minor version updates
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    # Group similar updates together to reduce PR noise
+    groups:
+      testing:
+        patterns:
+          - "Microsoft.NET.Test.*"
+          - "xunit*"
+          - "Moq*"
+          - "Microsoft.AspNetCore.Mvc.Testing*"
+      entityframework:
+        patterns:
+          - "Microsoft.EntityFrameworkCore.*"
+    # Add labels for easy identification
+    labels:
+      - "dependencies"
+      - "backend"
+      - "testing"
+      - "automated"
+    # Limit open PRs to avoid overwhelming the repository
+    open-pull-requests-limit: 3
+    # Configure commit message
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    # Configure pull request settings
+    pull-request-branch-name:
+      separator: "/"
+    reviewers:
+      - "Chaosbit"

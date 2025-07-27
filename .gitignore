@@ -14,11 +14,19 @@ coverage/
 cypress/videos/
 cypress/screenshots/
 
+# Test Coverage Reports
+coverage/
+*.lcov
+
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Dev Container
+.devcontainer/.env
+.devcontainer/docker-compose.override.yml
 
 # OS
 .DS_Store
@@ -33,3 +41,33 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+# .NET Backend
+backend/**/*.db
+backend/**/*.db-shm
+backend/**/*.db-wal
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/**/*.userosscache
+backend/**/*.suo
+backend/**/*.cache
+backend/**/.vs/
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+.tmp/
+temp/
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/terraform.tfvars
+terraform/tfplan
+terraform/.terraform.tfstate.lock.info
+*.tfplan
