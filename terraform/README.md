@@ -148,6 +148,29 @@ The App Service uses system-assigned managed identity:
 - CORS configuration for allowed origins
 - SQL Server firewall rules (Azure services only)
 
+## Technical Implementation Details
+
+### Key Vault Access Policy Architecture
+
+To avoid circular dependencies between the Key Vault and Web App resources, the infrastructure uses a two-step approach:
+
+1. **Key Vault Creation**: Created with only the deployment user's access policy
+2. **Separate Access Policy**: Uses `azurerm_key_vault_access_policy` resource to grant Web App managed identity access after both resources exist
+
+This pattern ensures:
+- Key Vault doesn't depend on Web App (no inline access policy for the app)
+- Web App can reference Key Vault in app settings
+- Separate resource grants necessary permissions after both are created
+
+### Managed Identity Integration
+
+The Web App uses system-assigned managed identity to access Key Vault secrets securely:
+```
+@Microsoft.KeyVault(VaultName=${vault_name};SecretName=${secret_name})
+```
+
+This approach eliminates hardcoded connection strings and provides automatic credential rotation.
+
 ## Monitoring and Logging
 
 ### Application Insights
@@ -248,6 +271,8 @@ terraform {
 3. **SQL password requirements**: Azure SQL requires complex passwords (8+ characters, mixed case, numbers, symbols).
 
 4. **Key Vault access**: The deployment process grants access to your user and the App Service managed identity.
+
+5. **Circular dependency error**: Fixed by using separate `azurerm_key_vault_access_policy` resource instead of inline access policies in the Key Vault. This prevents the circular dependency between Key Vault and Web App resources.
 
 ### Debug Commands
 

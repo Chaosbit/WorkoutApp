@@ -85,16 +85,19 @@ resource "azurerm_key_vault" "main" {
     ]
   }
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = azurerm_linux_web_app.main.identity[0].principal_id
-
-    secret_permissions = [
-      "Get", "List"
-    ]
-  }
-
   tags = local.common_tags
+}
+
+# Key Vault access policy for the App Service managed identity
+# This is created separately to avoid circular dependency
+resource "azurerm_key_vault_access_policy" "web_app_policy" {
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_linux_web_app.main.identity[0].principal_id
+
+  secret_permissions = [
+    "Get", "List"
+  ]
 }
 
 # Generate JWT secret
