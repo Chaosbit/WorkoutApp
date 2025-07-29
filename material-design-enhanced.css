@@ -681,6 +681,67 @@ body {
     margin-bottom: 24px;
 }
 
+.progress-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Focused Workout Context */
+.workout-context {
+    margin-bottom: 16px;
+    background-color: var(--md-sys-color-surface-container-low);
+}
+
+.exercise-navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.exercise-nav-item {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: var(--md-sys-shape-corner-small);
+    background-color: var(--md-sys-color-surface-container);
+}
+
+.exercise-nav-item.previous-exercise {
+    border-left: 3px solid var(--md-sys-color-tertiary);
+}
+
+.exercise-nav-item.next-exercise {
+    border-left: 3px solid var(--md-sys-color-secondary);
+}
+
+.exercise-nav-item .exercise-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--md-sys-color-on-surface-variant);
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.exercise-nav-item .exercise-name {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--md-sys-color-on-surface);
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Enhanced current exercise for focused view */
+.current-exercise {
+    text-align: center;
+    margin-bottom: 24px;
+    background-color: var(--md-sys-color-surface-container-highest);
+}
+
 /* Workout List */
 .workout-list {
     margin-top: 24px;
