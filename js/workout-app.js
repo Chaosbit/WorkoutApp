@@ -8,6 +8,7 @@ import { TrainingPlanManager } from './training-plan-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
 import { UIUtils } from './ui-utils.js';
 import { APP_CONFIG, APP_UTILS } from './constants.js';
+import { WorkoutManager } from './components/workout-manager.js';
 
 /**
  * WorkoutApp - Main application coordinator class
@@ -49,7 +50,6 @@ export class WorkoutApp {
         // Initialize UI elements and events
         this.initializeElements();
         this.bindEvents();
-        this.loadWorkoutSelector();
         this.checkForSharedWorkout(); // Check URL for shared workout
         this.cleanupStatisticsElements(); // Ensure no leftover statistics elements
 
@@ -79,11 +79,8 @@ export class WorkoutApp {
         this.progressText = document.getElementById('progressText');
         this.workoutList = document.getElementById('workoutList');
         
-        // Workout library elements
-        this.workoutLibrarySection = document.getElementById('workoutLibrary');
-        this.workoutSelect = document.getElementById('workoutSelect');
-        this.editWorkoutBtn = document.getElementById('editWorkoutBtn');
-        this.deleteWorkoutBtn = document.getElementById('deleteWorkoutBtn');
+        // Workout manager component
+        this.workoutManager = document.getElementById('workoutManager');
         
         // Workout editor elements
         this.workoutEditor = document.getElementById('workoutEditor');
@@ -129,33 +126,25 @@ export class WorkoutApp {
      */
     bindEvents() {
         this.fileInput.addEventListener('change', (e) => this.loadWorkoutFile(e));
-        this.workoutSelect.addEventListener('change', (e) => this.selectWorkout(e));
-        this.editWorkoutBtn.addEventListener('click', () => this.editSelectedWorkout());
-        this.deleteWorkoutBtn.addEventListener('click', () => this.deleteSelectedWorkout());
         
-        // Workout library filtering and sorting events
-        const tagFilterInput = document.getElementById('tagFilterInput');
-        const durationFilter = document.getElementById('durationFilter');
-        const sortBySelect = document.getElementById('sortBySelect');
-        const sortOrderBtn = document.getElementById('sortOrderBtn');
-        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        // Setup workout manager component
+        if (this.workoutManager) {
+            this.workoutManager.setLibrary(this.library);
+            
+            // Listen for events from the workout manager component
+            this.workoutManager.addEventListener('workout-selected', (e) => {
+                this.selectWorkout(e.detail.workoutId);
+            });
+            
+            this.workoutManager.addEventListener('workout-edit', (e) => {
+                this.editWorkout(e.detail.workoutId);
+            });
+            
+            this.workoutManager.addEventListener('workout-delete', (e) => {
+                this.deleteWorkout(e.detail.workoutId);
+            });
+        }
         
-        if (tagFilterInput) {
-            tagFilterInput.addEventListener('input', () => this.updateTagSuggestions());
-            tagFilterInput.addEventListener('keydown', (e) => this.handleTagInput(e));
-        }
-        if (durationFilter) {
-            durationFilter.addEventListener('change', () => this.applyFiltersAndSort());
-        }
-        if (sortBySelect) {
-            sortBySelect.addEventListener('change', () => this.applyFiltersAndSort());
-        }
-        if (sortOrderBtn) {
-            sortOrderBtn.addEventListener('click', () => this.toggleSortOrder());
-        }
-        if (clearFiltersBtn) {
-            clearFiltersBtn.addEventListener('click', () => this.clearAllFilters());
-        }
         this.newWorkoutBtn.addEventListener('click', () => this.createNewWorkout());
         this.saveWorkoutBtn.addEventListener('click', () => this.saveWorkoutChanges());
         this.cancelEditBtn.addEventListener('click', () => this.cancelWorkoutEdit());
@@ -219,13 +208,10 @@ export class WorkoutApp {
             // Set as current workout
             this.workout = workoutData;
             this.displayWorkout();
-            this.loadWorkoutSelector();
+            this.workoutManager?.refresh();
             
             // Select the new workout in the dropdown
-            this.workoutSelect.value = this.currentWorkoutId;
-            
-            // Update button states
-            this.updateDeleteButtonState();
+            this.workoutManager?.setSelectedWorkoutId(this.currentWorkoutId);
             
             // Clear file input
             event.target.value = '';
@@ -240,14 +226,11 @@ export class WorkoutApp {
     /**
      * Select a workout from the dropdown
      */
-    selectWorkout(event) {
-        const workoutId = event.target.value;
+    selectWorkout(workoutId) {
         if (!workoutId) {
             this.workout = null;
             this.currentWorkoutId = null;
             // Don't hide workout display - keep showing last workout for better UX
-            this.updateDeleteButtonState();
-            this.updateWorkoutInfo();
             return;
         }
         
@@ -256,8 +239,6 @@ export class WorkoutApp {
             this.currentWorkoutId = workoutId;
             this.workout = savedWorkout.data;
             this.displayWorkout();
-            this.updateDeleteButtonState();
-            this.updateWorkoutInfo();
 
             // Update workout usage statistics
             this.library.updateWorkoutStats(workoutId, false);
@@ -553,291 +534,6 @@ export class WorkoutApp {
     }
 
     /**
-     * Load workout selector dropdown
-     */
-    loadWorkoutSelector() {
-        const workouts = this.library.getAllWorkouts();
-        this.workoutSelect.innerHTML = '<option value="">Choose a saved workout...</option>';
-        
-        if (workouts.length > 0) {
-            this.workoutLibrarySection.style.display = 'block';
-            // Show library controls for workout management
-            const libraryControls = document.getElementById('libraryControls');
-            if (libraryControls) {
-                libraryControls.style.display = 'block';
-            }
-            
-            workouts.forEach(workout => {
-                const option = document.createElement('option');
-                option.value = workout.id;
-                option.textContent = workout.name;
-                this.workoutSelect.appendChild(option);
-            });
-            
-            // Initialize filtering and sorting
-            this.updateWorkoutInfo();
-        } else {
-            this.workoutLibrarySection.style.display = 'none';
-        }
-        
-        this.updateDeleteButtonState();
-    }
-
-    /**
-     * Update delete button state
-     */
-    updateDeleteButtonState() {
-        const hasSelection = this.workoutSelect.value !== '';
-        this.editWorkoutBtn.disabled = !hasSelection;
-        this.deleteWorkoutBtn.disabled = !hasSelection;
-    }
-
-    /**
-     * Update workout info display when selection changes
-     */
-    updateWorkoutInfo() {
-        const workoutInfo = document.getElementById('workoutInfo');
-        const workoutDuration = document.getElementById('workoutDuration');
-        const workoutExercises = document.getElementById('workoutExercises');
-        const workoutCompletion = document.getElementById('workoutCompletion');
-        const workoutTags = document.getElementById('workoutTags');
-        
-        if (!workoutInfo) return;
-        
-        const selectedId = this.workoutSelect.value;
-        if (selectedId) {
-            const workout = this.library.getWorkout(selectedId);
-            if (workout) {
-                const duration = this.library.calculateWorkoutDuration(workout.data);
-                const exercises = workout.data.exercises ? workout.data.exercises.filter(ex => ex.type !== 'rest').length : 0;
-                
-                workoutDuration.textContent = `Duration: ${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`;
-                workoutExercises.textContent = `${exercises} exercises`;
-                workoutCompletion.textContent = `Completed ${workout.timesCompleted || 0} times`;
-                
-                // Display tags
-                if (workout.tags && workout.tags.length > 0) {
-                    workoutTags.innerHTML = workout.tags.map(tag => 
-                        `<span class="workout-tag">${tag}</span>`
-                    ).join('');
-                } else {
-                    workoutTags.innerHTML = '<span class="no-tags">No tags</span>';
-                }
-                
-                workoutInfo.style.display = 'block';
-            } else {
-                workoutInfo.style.display = 'none';
-            }
-        } else {
-            workoutInfo.style.display = 'none';
-        }
-    }
-
-    /**
-     * Apply current filters and sorting to workout list
-     */
-    applyFiltersAndSort() {
-        const tagFilterInput = document.getElementById('tagFilterInput');
-        const durationFilter = document.getElementById('durationFilter');
-        const sortBySelect = document.getElementById('sortBySelect');
-        const sortOrderIcon = document.getElementById('sortOrderIcon');
-        
-        if (!tagFilterInput || !durationFilter || !sortBySelect) return;
-        
-        // Get current filter values
-        const selectedTags = this.getSelectedTags();
-        const durationRange = durationFilter.value;
-        const sortBy = sortBySelect.value;
-        const sortOrder = sortOrderIcon.textContent === 'arrow_upward' ? 'asc' : 'desc';
-        
-        // Build filter options
-        const filterOptions = { sortBy, sortOrder };
-        
-        if (selectedTags.length > 0) {
-            filterOptions.tags = selectedTags;
-        }
-        
-        if (durationRange) {
-            if (durationRange === '3600+') {
-                filterOptions.minDuration = 3600;
-            } else if (durationRange.includes('-')) {
-                const [min, max] = durationRange.split('-').map(Number);
-                filterOptions.minDuration = min;
-                filterOptions.maxDuration = max;
-            }
-        }
-        
-        // Get filtered workouts
-        const filteredWorkouts = this.library.getFilteredWorkouts(filterOptions);
-        
-        // Update workout selector
-        this.updateWorkoutSelector(filteredWorkouts);
-    }
-
-    /**
-     * Update workout selector with filtered results
-     */
-    updateWorkoutSelector(workouts) {
-        const currentSelection = this.workoutSelect.value;
-        this.workoutSelect.innerHTML = '<option value="">Choose a saved workout...</option>';
-        
-        workouts.forEach(workout => {
-            const option = document.createElement('option');
-            option.value = workout.id;
-            option.textContent = workout.name;
-            this.workoutSelect.appendChild(option);
-        });
-        
-        // Restore selection if it's still in the filtered results
-        if (currentSelection && workouts.some(w => w.id === currentSelection)) {
-            this.workoutSelect.value = currentSelection;
-        }
-        
-        this.updateDeleteButtonState();
-        this.updateWorkoutInfo();
-    }
-
-    /**
-     * Get currently selected tags from the UI
-     */
-    getSelectedTags() {
-        const selectedTags = document.getElementById('selectedTags');
-        if (!selectedTags) return [];
-        
-        const tagElements = selectedTags.querySelectorAll('.selected-tag');
-        return Array.from(tagElements).map(el => el.textContent.replace('×', '').trim());
-    }
-
-    /**
-     * Update tag suggestions based on input
-     */
-    updateTagSuggestions() {
-        const tagFilterInput = document.getElementById('tagFilterInput');
-        const tagSuggestions = document.getElementById('tagSuggestions');
-        
-        if (!tagFilterInput || !tagSuggestions) return;
-        
-        const inputValue = tagFilterInput.value.toLowerCase().trim();
-        if (inputValue.length === 0) {
-            tagSuggestions.style.display = 'none';
-            return;
-        }
-        
-        const allTags = this.library.getAllTags();
-        const selectedTags = this.getSelectedTags().map(tag => tag.toLowerCase());
-        
-        const matchingTags = allTags.filter(tag => 
-            tag.includes(inputValue) && !selectedTags.includes(tag)
-        );
-        
-        if (matchingTags.length > 0) {
-            tagSuggestions.innerHTML = matchingTags.map(tag => 
-                `<div class="tag-suggestion" onclick="window.app.selectTag('${tag}')">${tag}</div>`
-            ).join('');
-            tagSuggestions.style.display = 'block';
-        } else {
-            tagSuggestions.style.display = 'none';
-        }
-    }
-
-    /**
-     * Handle tag input (Enter or comma to add tag)
-     */
-    handleTagInput(event) {
-        const tagFilterInput = document.getElementById('tagFilterInput');
-        if (!tagFilterInput) return;
-        
-        if (event.key === 'Enter' || event.key === ',') {
-            event.preventDefault();
-            const tag = tagFilterInput.value.trim();
-            if (tag) {
-                this.selectTag(tag);
-                tagFilterInput.value = '';
-                this.updateTagSuggestions();
-            }
-        }
-    }
-
-    /**
-     * Select a tag for filtering
-     */
-    selectTag(tag) {
-        const selectedTags = document.getElementById('selectedTags');
-        const tagSuggestions = document.getElementById('tagSuggestions');
-        
-        if (!selectedTags) return;
-        
-        // Check if tag is already selected
-        const existing = selectedTags.querySelector(`[data-tag="${tag}"]`);
-        if (existing) return;
-        
-        // Add tag to selected tags
-        const tagElement = document.createElement('span');
-        tagElement.className = 'selected-tag';
-        tagElement.setAttribute('data-tag', tag);
-        tagElement.innerHTML = `${tag} <span class="remove-tag" onclick="window.app.removeTag('${tag}')">×</span>`;
-        selectedTags.appendChild(tagElement);
-        
-        // Hide suggestions
-        if (tagSuggestions) {
-            tagSuggestions.style.display = 'none';
-        }
-        
-        // Apply filters
-        this.applyFiltersAndSort();
-    }
-
-    /**
-     * Remove a selected tag
-     */
-    removeTag(tag) {
-        const selectedTags = document.getElementById('selectedTags');
-        if (!selectedTags) return;
-        
-        const tagElement = selectedTags.querySelector(`[data-tag="${tag}"]`);
-        if (tagElement) {
-            tagElement.remove();
-            this.applyFiltersAndSort();
-        }
-    }
-
-    /**
-     * Toggle sort order between ascending and descending
-     */
-    toggleSortOrder() {
-        const sortOrderIcon = document.getElementById('sortOrderIcon');
-        if (!sortOrderIcon) return;
-        
-        if (sortOrderIcon.textContent === 'arrow_upward') {
-            sortOrderIcon.textContent = 'arrow_downward';
-        } else {
-            sortOrderIcon.textContent = 'arrow_upward';
-        }
-        
-        this.applyFiltersAndSort();
-    }
-
-    /**
-     * Clear all filters and reset to show all workouts
-     */
-    clearAllFilters() {
-        const tagFilterInput = document.getElementById('tagFilterInput');
-        const selectedTags = document.getElementById('selectedTags');
-        const durationFilter = document.getElementById('durationFilter');
-        const sortBySelect = document.getElementById('sortBySelect');
-        const sortOrderIcon = document.getElementById('sortOrderIcon');
-        
-        if (tagFilterInput) tagFilterInput.value = '';
-        if (selectedTags) selectedTags.innerHTML = '';
-        if (durationFilter) durationFilter.value = '';
-        if (sortBySelect) sortBySelect.value = 'name';
-        if (sortOrderIcon) sortOrderIcon.textContent = 'arrow_upward';
-        
-        // Reset to show all workouts
-        this.loadWorkoutSelector();
-    }
-
-    /**
      * Update workout list display
      */
     updateWorkoutList() {
@@ -907,11 +603,14 @@ export class WorkoutApp {
     }
 
     // Workout editing functionality
-    editSelectedWorkout() {
-        if (!this.currentWorkoutId) return;
+    editWorkout(workoutId) {
+        if (!workoutId) return;
         
-        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        const savedWorkout = this.library.getWorkout(workoutId);
         if (!savedWorkout) return;
+        
+        // Set as current workout for editing
+        this.currentWorkoutId = workoutId;
         
         // Populate the editor with current workout data
         this.workoutNameInput.value = savedWorkout.name;
@@ -922,29 +621,41 @@ export class WorkoutApp {
         this.workoutDisplay.style.display = 'none';
     }
 
-    deleteSelectedWorkout() {
-        if (!this.currentWorkoutId) return;
+    deleteWorkout(workoutId) {
+        if (!workoutId) return;
         
-        const savedWorkout = this.library.getWorkout(this.currentWorkoutId);
+        const savedWorkout = this.library.getWorkout(workoutId);
         if (!savedWorkout) return;
         
         const shouldDelete = window.Cypress ? true : confirm(`Are you sure you want to delete "${savedWorkout.name}"?`);
         if (shouldDelete) {
-            this.library.deleteWorkout(this.currentWorkoutId);
+            this.library.deleteWorkout(workoutId);
             
             // Clear current workout if it was deleted
-            this.currentWorkoutId = null;
-            this.workout = null;
-            this.workoutDisplay.style.display = 'none';
-            
-            // Show sample format again
-            const sampleFormat = document.querySelector('.sample-format');
-            if (sampleFormat) {
-                sampleFormat.style.display = 'block';
+            if (this.currentWorkoutId === workoutId) {
+                this.currentWorkoutId = null;
+                this.workout = null;
+                this.workoutDisplay.style.display = 'none';
+                
+                // Show sample format again
+                const sampleFormat = document.querySelector('.sample-format');
+                if (sampleFormat) {
+                    sampleFormat.style.display = 'block';
+                }
             }
             
-            this.loadWorkoutSelector();
+            // Refresh the workout manager
+            this.workoutManager?.refresh();
         }
+    }
+    
+    // Legacy methods for backward compatibility
+    editSelectedWorkout() {
+        this.editWorkout(this.currentWorkoutId);
+    }
+
+    deleteSelectedWorkout() {
+        this.deleteWorkout(this.currentWorkoutId);
     }
 
     createNewWorkout() {
@@ -969,8 +680,6 @@ Rest - 0:30`;
 
         // Clear current workout selection
         this.currentWorkoutId = null;
-        this.workoutSelect.value = '';
-        this.updateDeleteButtonState();
         
         // Populate the editor with template
         this.workoutNameInput.value = '';
@@ -1065,13 +774,12 @@ Rest - 0:30`;
                     
                     // Hide editor and refresh workout selector
                     this.cancelWorkoutEdit();
-                    this.loadWorkoutSelector();
+                    this.workoutManager?.refresh();
                     
                     // Reselect the updated workout in the dropdown
-                    this.workoutSelect.value = this.currentWorkoutId;
+                    this.workoutManager?.setSelectedWorkoutId(this.currentWorkoutId);
                     
                     // Update button states
-                    this.updateDeleteButtonState();
                     
                     UIUtils.showMessage(APP_CONFIG.SUCCESS_MESSAGES.WORKOUT_UPDATED, APP_CONFIG.MESSAGE_TYPES.SUCCESS);
                 }
@@ -1087,13 +795,10 @@ Rest - 0:30`;
                 
                 // Hide editor and refresh workout selector
                 this.cancelWorkoutEdit();
-                this.loadWorkoutSelector();
+                this.workoutManager?.refresh();
                 
                 // Select the new workout in the dropdown
-                this.workoutSelect.value = this.currentWorkoutId;
-                
-                // Update button states
-                this.updateDeleteButtonState();
+                this.workoutManager?.setSelectedWorkoutId(this.currentWorkoutId);
                 
                 // Clear previous workout memory since we successfully created a new one
                 this.previousWorkoutId = null;
@@ -1112,7 +817,7 @@ Rest - 0:30`;
         // If we were creating a new workout (no currentWorkoutId) and had a previous selection, restore it
         if (!this.currentWorkoutId && this.previousWorkoutId) {
             this.currentWorkoutId = this.previousWorkoutId;
-            this.workoutSelect.value = this.previousWorkoutId;
+            this.workoutManager?.setSelectedWorkoutId(this.previousWorkoutId);
             
             const savedWorkout = this.library.getWorkout(this.previousWorkoutId);
             if (savedWorkout) {
@@ -1120,7 +825,6 @@ Rest - 0:30`;
                 this.displayWorkout();
             }
             
-            this.updateDeleteButtonState();
             this.previousWorkoutId = null;
         } else if (this.workout) {
             this.workoutDisplay.style.display = 'block';
@@ -1212,15 +916,12 @@ Rest - 0:30`;
                 this.workout = workoutData;
                 
                 // Update UI to reflect it's now a saved workout
-                this.loadWorkoutSelector();
-                this.workoutSelect.value = this.currentWorkoutId;
+                this.workoutManager?.refresh();
+                this.workoutManager?.setSelectedWorkoutId(this.currentWorkoutId);
                 this.displayWorkout();
                 
                 // Show a message that the workout was automatically saved
                 this.showSharedWorkoutMessage();
-                
-                // Update button states
-                this.updateDeleteButtonState();
                 
                 // Clear the URL parameter for cleaner sharing
                 const newUrl = window.location.pathname;
