@@ -8,6 +8,7 @@ import { TrainingPlanManager } from './training-plan-manager.js';
 import { registerServiceWorker } from './sw-registration.js';
 import { UIUtils } from './ui-utils.js';
 import { APP_CONFIG, APP_UTILS } from './constants.js';
+import { WorkoutContextComponent } from './workout-context-component.js';
 
 /**
  * WorkoutApp - Main application coordinator class
@@ -40,7 +41,7 @@ export class WorkoutApp {
         this.timerManager.setOnTick(UIUtils.throttle((timeRemaining) => {
             this.updateTimerDisplay();
             this.updateProgressBar();
-            this.updateWorkoutTimeRemaining();
+            this.updateWorkoutContextComponent();
         }, APP_CONFIG.THROTTLE_LIMIT));
         
         this.timerManager.setOnComplete(() => {
@@ -80,11 +81,8 @@ export class WorkoutApp {
         this.progressText = document.getElementById('progressText');
         this.workoutList = document.getElementById('workoutList');
         
-        // Focused workout context elements
+        // Focused workout context web component
         this.workoutContext = document.getElementById('workoutContext');
-        this.previousExerciseName = document.getElementById('previousExerciseName');
-        this.nextExerciseName = document.getElementById('nextExerciseName');
-        this.workoutTimeRemaining = document.getElementById('workoutTimeRemaining');
         
         // Workout library elements
         this.workoutLibrarySection = document.getElementById('workoutLibrary');
@@ -259,6 +257,7 @@ export class WorkoutApp {
         
         this.renderWorkoutList();
         this.resetWorkout();
+        this.updateWorkoutContextComponent();
     }
 
     /**
@@ -396,74 +395,23 @@ export class WorkoutApp {
     updateProgress() {
         if (this.workout && this.workout.exercises.length > 0) {
             this.progressText.textContent = `Exercise ${this.currentExerciseIndex + 1} of ${this.workout.exercises.length}`;
-            
-            // Update total time remaining
-            this.updateWorkoutTimeRemaining();
         }
     }
     
     /**
-     * Update workout time remaining display
+     * Update workout context web component with current state
      */
-    updateWorkoutTimeRemaining() {
-        if (!this.workout || !this.workout.exercises) {
-            this.workoutTimeRemaining.style.display = 'none';
-            return;
-        }
-        
-        let remainingTime = 0;
-        
-        // Add time from current exercise if it's timer-based and running
-        const currentExercise = this.workout.exercises[this.currentExerciseIndex];
-        if (currentExercise && currentExercise.exerciseType !== 'reps' && this.isRunning) {
-            remainingTime += this.timerManager.timeRemaining;
-        } else if (currentExercise && currentExercise.exerciseType !== 'reps' && !this.isRunning) {
-            // If not running, add full duration of current exercise
-            remainingTime += currentExercise.duration || 0;
-        }
-        
-        // Add time from all remaining exercises
-        for (let i = this.currentExerciseIndex + 1; i < this.workout.exercises.length; i++) {
-            const exercise = this.workout.exercises[i];
-            if (exercise.exerciseType !== 'reps') {
-                remainingTime += exercise.duration || 0;
+    updateWorkoutContextComponent() {
+        if (this.workoutContext) {
+            // Update component attributes
+            this.workoutContext.setAttribute('current-exercise-index', this.currentExerciseIndex.toString());
+            this.workoutContext.setAttribute('is-running', this.isRunning.toString());
+            this.workoutContext.setAttribute('time-remaining', this.timerManager.getTimeRemaining().toString());
+            
+            // Set workout data if it has changed
+            if (this.workout) {
+                this.workoutContext.setWorkout(this.workout);
             }
-        }
-        
-        if (remainingTime > 0) {
-            this.workoutTimeRemaining.textContent = `Time remaining: ${this.timerManager.formatTime(remainingTime)}`;
-            this.workoutTimeRemaining.style.display = 'block';
-        } else {
-            this.workoutTimeRemaining.style.display = 'none';
-        }
-    }
-
-    /**
-     * Update workout context showing previous/next exercises
-     */
-    updateWorkoutContext() {
-        if (!this.workout || !this.workout.exercises || this.workout.exercises.length === 0) {
-            this.workoutContext.style.display = 'none';
-            return;
-        }
-        
-        // Show context when workout is loaded
-        this.workoutContext.style.display = 'block';
-        
-        // Update previous exercise
-        if (this.currentExerciseIndex > 0) {
-            const prevExercise = this.workout.exercises[this.currentExerciseIndex - 1];
-            this.previousExerciseName.textContent = prevExercise.name;
-        } else {
-            this.previousExerciseName.textContent = '-';
-        }
-        
-        // Update next exercise
-        if (this.currentExerciseIndex < this.workout.exercises.length - 1) {
-            const nextExercise = this.workout.exercises[this.currentExerciseIndex + 1];
-            this.nextExerciseName.textContent = nextExercise.name;
-        } else {
-            this.nextExerciseName.textContent = '-';
         }
     }
 
@@ -505,7 +453,7 @@ export class WorkoutApp {
         
         this.updateTimerDisplay();
         this.updateProgress();
-        this.updateWorkoutContext();
+        this.updateWorkoutContextComponent();
         this.updateWorkoutList();
         this.updateControls();
     }
@@ -570,6 +518,7 @@ export class WorkoutApp {
         this.progressFill.style.width = '0%';
         this.updateControls();
         this.updateWorkoutList();
+        this.updateWorkoutContextComponent();
     }
 
     /**

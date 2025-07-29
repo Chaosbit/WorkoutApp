@@ -269,21 +269,8 @@ Rest - 0:30</pre>
                     </div>
                     
                     <div class="timer-container">
-                        <!-- Focused Workout Context -->
-                        <div class="workout-context md-card md-card--outlined" id="workoutContext" style="display: none;">
-                            <div class="md-card__content">
-                                <div class="exercise-navigation">
-                                    <div class="exercise-nav-item previous-exercise" id="previousExercise">
-                                        <span class="exercise-label">Previous</span>
-                                        <span class="exercise-name" id="previousExerciseName">-</span>
-                                    </div>
-                                    <div class="exercise-nav-item next-exercise" id="nextExercise">
-                                        <span class="exercise-label">Next</span>
-                                        <span class="exercise-name" id="nextExerciseName">-</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Focused Workout Context Web Component -->
+                        <workout-context id="workoutContext"></workout-context>
                         
                         <div class="current-exercise md-card md-card--elevated">
                             <div class="md-card__content">
@@ -337,7 +324,6 @@ Rest - 0:30</pre>
                         <div class="workout-progress">
                             <div class="progress-info">
                                 <p id="progressText" class="md-typescale-body-large">Exercise 1 of 1</p>
-                                <p id="workoutTimeRemaining" class="md-typescale-body-medium" style="display: none;">Time remaining: 0:00</p>
                             </div>
                         </div>
                     </div>
