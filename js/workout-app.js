@@ -132,6 +132,30 @@ export class WorkoutApp {
         this.workoutSelect.addEventListener('change', (e) => this.selectWorkout(e));
         this.editWorkoutBtn.addEventListener('click', () => this.editSelectedWorkout());
         this.deleteWorkoutBtn.addEventListener('click', () => this.deleteSelectedWorkout());
+        
+        // Workout library filtering and sorting events
+        const tagFilterInput = document.getElementById('tagFilterInput');
+        const durationFilter = document.getElementById('durationFilter');
+        const sortBySelect = document.getElementById('sortBySelect');
+        const sortOrderBtn = document.getElementById('sortOrderBtn');
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        
+        if (tagFilterInput) {
+            tagFilterInput.addEventListener('input', () => this.updateTagSuggestions());
+            tagFilterInput.addEventListener('keydown', (e) => this.handleTagInput(e));
+        }
+        if (durationFilter) {
+            durationFilter.addEventListener('change', () => this.applyFiltersAndSort());
+        }
+        if (sortBySelect) {
+            sortBySelect.addEventListener('change', () => this.applyFiltersAndSort());
+        }
+        if (sortOrderBtn) {
+            sortOrderBtn.addEventListener('click', () => this.toggleSortOrder());
+        }
+        if (clearFiltersBtn) {
+            clearFiltersBtn.addEventListener('click', () => this.clearAllFilters());
+        }
         this.newWorkoutBtn.addEventListener('click', () => this.createNewWorkout());
         this.saveWorkoutBtn.addEventListener('click', () => this.saveWorkoutChanges());
         this.cancelEditBtn.addEventListener('click', () => this.cancelWorkoutEdit());
@@ -223,6 +247,7 @@ export class WorkoutApp {
             this.currentWorkoutId = null;
             // Don't hide workout display - keep showing last workout for better UX
             this.updateDeleteButtonState();
+            this.updateWorkoutInfo();
             return;
         }
         
@@ -232,6 +257,10 @@ export class WorkoutApp {
             this.workout = savedWorkout.data;
             this.displayWorkout();
             this.updateDeleteButtonState();
+            this.updateWorkoutInfo();
+
+            // Update workout usage statistics
+            this.library.updateWorkoutStats(workoutId, false);
         }
     }
 
@@ -532,12 +561,21 @@ export class WorkoutApp {
         
         if (workouts.length > 0) {
             this.workoutLibrarySection.style.display = 'block';
+            // Show library controls for workout management
+            const libraryControls = document.getElementById('libraryControls');
+            if (libraryControls) {
+                libraryControls.style.display = 'block';
+            }
+            
             workouts.forEach(workout => {
                 const option = document.createElement('option');
                 option.value = workout.id;
                 option.textContent = workout.name;
                 this.workoutSelect.appendChild(option);
             });
+            
+            // Initialize filtering and sorting
+            this.updateWorkoutInfo();
         } else {
             this.workoutLibrarySection.style.display = 'none';
         }
@@ -552,6 +590,251 @@ export class WorkoutApp {
         const hasSelection = this.workoutSelect.value !== '';
         this.editWorkoutBtn.disabled = !hasSelection;
         this.deleteWorkoutBtn.disabled = !hasSelection;
+    }
+
+    /**
+     * Update workout info display when selection changes
+     */
+    updateWorkoutInfo() {
+        const workoutInfo = document.getElementById('workoutInfo');
+        const workoutDuration = document.getElementById('workoutDuration');
+        const workoutExercises = document.getElementById('workoutExercises');
+        const workoutCompletion = document.getElementById('workoutCompletion');
+        const workoutTags = document.getElementById('workoutTags');
+        
+        if (!workoutInfo) return;
+        
+        const selectedId = this.workoutSelect.value;
+        if (selectedId) {
+            const workout = this.library.getWorkout(selectedId);
+            if (workout) {
+                const duration = this.library.calculateWorkoutDuration(workout.data);
+                const exercises = workout.data.exercises ? workout.data.exercises.filter(ex => ex.type !== 'rest').length : 0;
+                
+                workoutDuration.textContent = `Duration: ${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`;
+                workoutExercises.textContent = `${exercises} exercises`;
+                workoutCompletion.textContent = `Completed ${workout.timesCompleted || 0} times`;
+                
+                // Display tags
+                if (workout.tags && workout.tags.length > 0) {
+                    workoutTags.innerHTML = workout.tags.map(tag => 
+                        `<span class="workout-tag">${tag}</span>`
+                    ).join('');
+                } else {
+                    workoutTags.innerHTML = '<span class="no-tags">No tags</span>';
+                }
+                
+                workoutInfo.style.display = 'block';
+            } else {
+                workoutInfo.style.display = 'none';
+            }
+        } else {
+            workoutInfo.style.display = 'none';
+        }
+    }
+
+    /**
+     * Apply current filters and sorting to workout list
+     */
+    applyFiltersAndSort() {
+        const tagFilterInput = document.getElementById('tagFilterInput');
+        const durationFilter = document.getElementById('durationFilter');
+        const sortBySelect = document.getElementById('sortBySelect');
+        const sortOrderIcon = document.getElementById('sortOrderIcon');
+        
+        if (!tagFilterInput || !durationFilter || !sortBySelect) return;
+        
+        // Get current filter values
+        const selectedTags = this.getSelectedTags();
+        const durationRange = durationFilter.value;
+        const sortBy = sortBySelect.value;
+        const sortOrder = sortOrderIcon.textContent === 'arrow_upward' ? 'asc' : 'desc';
+        
+        // Build filter options
+        const filterOptions = { sortBy, sortOrder };
+        
+        if (selectedTags.length > 0) {
+            filterOptions.tags = selectedTags;
+        }
+        
+        if (durationRange) {
+            if (durationRange === '3600+') {
+                filterOptions.minDuration = 3600;
+            } else if (durationRange.includes('-')) {
+                const [min, max] = durationRange.split('-').map(Number);
+                filterOptions.minDuration = min;
+                filterOptions.maxDuration = max;
+            }
+        }
+        
+        // Get filtered workouts
+        const filteredWorkouts = this.library.getFilteredWorkouts(filterOptions);
+        
+        // Update workout selector
+        this.updateWorkoutSelector(filteredWorkouts);
+    }
+
+    /**
+     * Update workout selector with filtered results
+     */
+    updateWorkoutSelector(workouts) {
+        const currentSelection = this.workoutSelect.value;
+        this.workoutSelect.innerHTML = '<option value="">Choose a saved workout...</option>';
+        
+        workouts.forEach(workout => {
+            const option = document.createElement('option');
+            option.value = workout.id;
+            option.textContent = workout.name;
+            this.workoutSelect.appendChild(option);
+        });
+        
+        // Restore selection if it's still in the filtered results
+        if (currentSelection && workouts.some(w => w.id === currentSelection)) {
+            this.workoutSelect.value = currentSelection;
+        }
+        
+        this.updateDeleteButtonState();
+        this.updateWorkoutInfo();
+    }
+
+    /**
+     * Get currently selected tags from the UI
+     */
+    getSelectedTags() {
+        const selectedTags = document.getElementById('selectedTags');
+        if (!selectedTags) return [];
+        
+        const tagElements = selectedTags.querySelectorAll('.selected-tag');
+        return Array.from(tagElements).map(el => el.textContent.replace('×', '').trim());
+    }
+
+    /**
+     * Update tag suggestions based on input
+     */
+    updateTagSuggestions() {
+        const tagFilterInput = document.getElementById('tagFilterInput');
+        const tagSuggestions = document.getElementById('tagSuggestions');
+        
+        if (!tagFilterInput || !tagSuggestions) return;
+        
+        const inputValue = tagFilterInput.value.toLowerCase().trim();
+        if (inputValue.length === 0) {
+            tagSuggestions.style.display = 'none';
+            return;
+        }
+        
+        const allTags = this.library.getAllTags();
+        const selectedTags = this.getSelectedTags().map(tag => tag.toLowerCase());
+        
+        const matchingTags = allTags.filter(tag => 
+            tag.includes(inputValue) && !selectedTags.includes(tag)
+        );
+        
+        if (matchingTags.length > 0) {
+            tagSuggestions.innerHTML = matchingTags.map(tag => 
+                `<div class="tag-suggestion" onclick="window.app.selectTag('${tag}')">${tag}</div>`
+            ).join('');
+            tagSuggestions.style.display = 'block';
+        } else {
+            tagSuggestions.style.display = 'none';
+        }
+    }
+
+    /**
+     * Handle tag input (Enter or comma to add tag)
+     */
+    handleTagInput(event) {
+        const tagFilterInput = document.getElementById('tagFilterInput');
+        if (!tagFilterInput) return;
+        
+        if (event.key === 'Enter' || event.key === ',') {
+            event.preventDefault();
+            const tag = tagFilterInput.value.trim();
+            if (tag) {
+                this.selectTag(tag);
+                tagFilterInput.value = '';
+                this.updateTagSuggestions();
+            }
+        }
+    }
+
+    /**
+     * Select a tag for filtering
+     */
+    selectTag(tag) {
+        const selectedTags = document.getElementById('selectedTags');
+        const tagSuggestions = document.getElementById('tagSuggestions');
+        
+        if (!selectedTags) return;
+        
+        // Check if tag is already selected
+        const existing = selectedTags.querySelector(`[data-tag="${tag}"]`);
+        if (existing) return;
+        
+        // Add tag to selected tags
+        const tagElement = document.createElement('span');
+        tagElement.className = 'selected-tag';
+        tagElement.setAttribute('data-tag', tag);
+        tagElement.innerHTML = `${tag} <span class="remove-tag" onclick="window.app.removeTag('${tag}')">×</span>`;
+        selectedTags.appendChild(tagElement);
+        
+        // Hide suggestions
+        if (tagSuggestions) {
+            tagSuggestions.style.display = 'none';
+        }
+        
+        // Apply filters
+        this.applyFiltersAndSort();
+    }
+
+    /**
+     * Remove a selected tag
+     */
+    removeTag(tag) {
+        const selectedTags = document.getElementById('selectedTags');
+        if (!selectedTags) return;
+        
+        const tagElement = selectedTags.querySelector(`[data-tag="${tag}"]`);
+        if (tagElement) {
+            tagElement.remove();
+            this.applyFiltersAndSort();
+        }
+    }
+
+    /**
+     * Toggle sort order between ascending and descending
+     */
+    toggleSortOrder() {
+        const sortOrderIcon = document.getElementById('sortOrderIcon');
+        if (!sortOrderIcon) return;
+        
+        if (sortOrderIcon.textContent === 'arrow_upward') {
+            sortOrderIcon.textContent = 'arrow_downward';
+        } else {
+            sortOrderIcon.textContent = 'arrow_upward';
+        }
+        
+        this.applyFiltersAndSort();
+    }
+
+    /**
+     * Clear all filters and reset to show all workouts
+     */
+    clearAllFilters() {
+        const tagFilterInput = document.getElementById('tagFilterInput');
+        const selectedTags = document.getElementById('selectedTags');
+        const durationFilter = document.getElementById('durationFilter');
+        const sortBySelect = document.getElementById('sortBySelect');
+        const sortOrderIcon = document.getElementById('sortOrderIcon');
+        
+        if (tagFilterInput) tagFilterInput.value = '';
+        if (selectedTags) selectedTags.innerHTML = '';
+        if (durationFilter) durationFilter.value = '';
+        if (sortBySelect) sortBySelect.value = 'name';
+        if (sortOrderIcon) sortOrderIcon.textContent = 'arrow_upward';
+        
+        // Reset to show all workouts
+        this.loadWorkoutSelector();
     }
 
     /**
