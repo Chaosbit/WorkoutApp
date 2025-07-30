@@ -72,7 +72,7 @@
 - **Updated**: `.github/workflows/deploy.yml` (removed duplicate tests)
 - **Updated**: `.github/workflows/security-audit.yml` (optimized triggers)
 - **Enhanced**: `jest.config.js`, `cypress.config.js`, `cypress.mobile.config.js`
-- **Added**: `GITHUB_ACTIONS_OPTIMIZATION.md` (documentation)
+- **Added**: `docs/GITHUB_ACTIONS_OPTIMIZATION.md` (documentation)
 - **Updated**: `package.json`, `.gitignore`
 
 The refactoring successfully addresses all requirements while maintaining the same level of test coverage and quality assurance, but with significantly better efficiency and reporting capabilities.
