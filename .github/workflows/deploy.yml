@@ -20,9 +20,20 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Test job
+  # Test job with Chrome and mobile testing
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [desktop, mobile]
+        include:
+          - test-type: desktop
+            config-file: cypress.config.js
+            test-name: Chrome Desktop
+          - test-type: mobile
+            config-file: cypress.mobile.config.js
+            test-name: Chrome Mobile
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,28 +50,29 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-      - name: Run Cypress tests
+      - name: Run Cypress tests - ${{ matrix.test-name }}
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
           headless: true
           record: false
+          config-file: ${{ matrix.config-file }}
           start: python3 -m http.server 8000
           wait-on: 'http://localhost:8000'
           wait-on-timeout: 120
           
-      - name: Upload cypress screenshots
+      - name: Upload cypress screenshots - ${{ matrix.test-name }}
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-screenshots
+          name: cypress-screenshots-${{ matrix.test-type }}
           path: cypress/screenshots
 
-      - name: Upload cypress videos
+      - name: Upload cypress videos - ${{ matrix.test-name }}
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos
+          name: cypress-videos-${{ matrix.test-type }}
           path: cypress/videos
 
   # Build and deploy job
