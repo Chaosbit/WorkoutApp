@@ -48,12 +48,12 @@ describe('Workout Library', () => {
     // Switch back to first workout
     cy.get('#workoutSelect').select('test-workout')
     cy.get('#workoutTitle').should('contain', 'Test Workout')
-    cy.get('.exercise-item').should('contain', 'Warm-up')
+    cy.getExerciseItems().should('contain', 'Warm-up')
     
     // Switch to second workout
     cy.get('#workoutSelect').select('cardio-workout')
     cy.get('#workoutTitle').should('contain', 'Cardio Workout')
-    cy.get('.exercise-item').should('contain', 'Running')
+    cy.getExerciseItems().should('contain', 'Running')
   })
 
   it('should persist workouts in localStorage across page reloads', () => {
@@ -114,8 +114,8 @@ describe('Workout Library', () => {
       input[0].dispatchEvent(changeEvent)
     })
 
-    cy.get('.exercise-item').should('have.length', 1)
-    cy.get('.exercise-item').should('contain', 'Exercise A')
+    cy.getExerciseItems().should('have.length', 1)
+    cy.getExerciseItems().should('contain', 'Exercise A')
     
     // Load updated version with same filename
     const updatedWorkout = `# Test Workout
@@ -137,9 +137,9 @@ describe('Workout Library', () => {
 
     // Should show updated content, not duplicate
     cy.get('#workoutSelect option').should('have.length', 2) // still just placeholder + 1 workout
-    cy.get('.exercise-item').should('have.length', 2)
-    cy.get('.exercise-item').should('contain', 'Exercise A')
-    cy.get('.exercise-item').should('contain', 'Exercise B')
+    cy.getExerciseItems().should('have.length', 2)
+    cy.getExerciseItems().should('contain', 'Exercise A')
+    cy.getExerciseItems().should('contain', 'Exercise B')
   })
 
   it('should handle workout selection UI states correctly', () => {
@@ -188,9 +188,9 @@ describe('Workout Library', () => {
     cy.loadWorkoutFile('test-workout.md')
     
     // Start workout
-    cy.get('#startBtn').click()
-    cy.get('#startBtn').should('be.disabled')
-    cy.get('#pauseBtn').should('not.be.disabled')
+    cy.clickWorkoutControl('start')
+    cy.getWorkoutControlState('start').should('be.disabled')
+    cy.getWorkoutControlState('pause').should('not.be.disabled')
     
     // Switch to a different workout (if we had one)
     // For now, just verify that library operations don't break timer state
@@ -198,6 +198,6 @@ describe('Workout Library', () => {
     cy.get('#deleteWorkoutBtn').should('not.be.disabled')
     
     // Timer should still be running
-    cy.get('#pauseBtn').should('not.be.disabled')
+    cy.getWorkoutControlState('pause').should('not.be.disabled')
   })
 })

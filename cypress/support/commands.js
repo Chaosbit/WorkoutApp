@@ -113,3 +113,24 @@ Cypress.Commands.add('clickExercise', (exerciseIndex) => {
 Cypress.Commands.add('getExerciseItems', () => {
   return cy.getShadow('exercise-list', '.exercise-item');
 });
+
+/**
+ * Get timer display value
+ */
+Cypress.Commands.add('getTimerDisplay', () => {
+  return cy.getShadow('timer-display', '#timerDisplay');
+});
+
+/**
+ * Get current exercise name
+ */
+Cypress.Commands.add('getCurrentExercise', () => {
+  return cy.getShadow('timer-display', '#exerciseName');
+});
+
+/**
+ * Get progress bar fill element
+ */
+Cypress.Commands.add('getProgressFill', () => {
+  return cy.getShadow('timer-display', '#progressFill');
+});

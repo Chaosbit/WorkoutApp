@@ -26,9 +26,9 @@ describe('UI Behavior', () => {
     cy.get('.sample-format').should('not.be.visible')
     
     // Interact with workout (start, pause, reset)
-    cy.get('#startBtn').click()
-    cy.get('#pauseBtn').click()
-    cy.get('#resetBtn').click()
+    cy.clickWorkoutControl('start')
+    cy.clickWorkoutControl('pause')
+    cy.clickWorkoutControl('reset')
     
     // Sample format should still be hidden
     cy.get('.sample-format').should('not.be.visible')
@@ -89,7 +89,7 @@ describe('UI Behavior', () => {
     // Sample should still be hidden, new workout should be loaded
     cy.get('.sample-format').should('not.be.visible')
     cy.get('#workoutTitle').should('contain', 'Different Workout')
-    cy.get('.exercise-item').should('have.length', 2)
+    cy.getExerciseItems().should('have.length', 2)
   })
 
   it('should maintain responsive behavior after loading workout', () => {
@@ -105,7 +105,7 @@ describe('UI Behavior', () => {
     // Workout display should be visible and properly sized
     cy.get('#workoutDisplay').should('be.visible')
     cy.get('.timer-container').should('be.visible')
-    cy.get('#currentExercise').should('be.visible')
-    cy.get('#timerDisplay').should('be.visible')
+    cy.getCurrentExercise().should('be.visible')
+    cy.getTimerDisplay().should('be.visible')
   })
 })

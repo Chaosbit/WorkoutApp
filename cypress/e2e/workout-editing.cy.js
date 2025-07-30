@@ -131,9 +131,9 @@ Another new exercise`
       cy.get('.app-message__text').should('contain', 'Workout updated successfully!')
       
       // Should display updated content
-      cy.get('.exercise-item').should('contain', 'Modified Exercise')
-      cy.get('.exercise-item').should('contain', 'New Exercise')
-      cy.get('.exercise-item').should('have.length', 2)
+      cy.getExerciseItems().should('contain', 'Modified Exercise')
+      cy.getExerciseItems().should('contain', 'New Exercise')
+      cy.getExerciseItems().should('have.length', 2)
     })
 
     it('should successfully save both name and content changes', () => {
@@ -161,10 +161,10 @@ Another new exercise`
       
       // Check updated content
       cy.get('#workoutTitle').should('contain', 'Completely New Workout')
-      cy.get('.exercise-item').should('contain', 'Push-ups')
-      cy.get('.exercise-item').should('contain', 'Sit-ups')
-      cy.get('.exercise-item').should('contain', 'Jumping Jacks')
-      cy.get('.exercise-item').should('have.length', 3)
+      cy.getExerciseItems().should('contain', 'Push-ups')
+      cy.getExerciseItems().should('contain', 'Sit-ups')
+      cy.getExerciseItems().should('contain', 'Jumping Jacks')
+      cy.getExerciseItems().should('have.length', 3)
     })
 
     it('should persist changes in localStorage', () => {
@@ -190,7 +190,7 @@ Another new exercise`
       // Load the workout
       cy.get('#workoutSelect').select('persistent-workout')
       cy.get('#workoutTitle').should('contain', 'Persistent Workout')
-      cy.get('.exercise-item').should('contain', 'Test Exercise')
+      cy.getExerciseItems().should('contain', 'Test Exercise')
     })
   })
 
@@ -281,14 +281,14 @@ Another new exercise`
       cy.get('.app-message').should('be.visible')
       
       // Timer should still work
-      cy.get('#startBtn').click()
-      cy.get('#startBtn').should('be.disabled')
-      cy.get('#pauseBtn').should('not.be.disabled')
+      cy.clickWorkoutControl('start')
+      cy.getWorkoutControlState('start').should('be.disabled')
+      cy.getWorkoutControlState('pause').should('not.be.disabled')
       
       // Pause should work
-      cy.get('#pauseBtn').click()
-      cy.get('#startBtn').should('not.be.disabled')
-      cy.get('#pauseBtn').should('be.disabled')
+      cy.clickWorkoutControl('pause')
+      cy.getWorkoutControlState('start').should('not.be.disabled')
+      cy.getWorkoutControlState('pause').should('be.disabled')
     })
 
     it('should not interfere with delete functionality', () => {

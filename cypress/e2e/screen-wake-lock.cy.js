@@ -47,7 +47,7 @@ Another short exercise.`;
     it('should attempt to request wake lock when workout starts', () => {
         cy.window().then((win) => {
             // Start the workout
-            cy.get('#startBtn').click();
+            cy.clickWorkoutControl('start');
             
             // Wait a moment for the wake lock to be potentially requested
             cy.wait(100);
@@ -68,13 +68,13 @@ Another short exercise.`;
 
     it('should release wake lock when workout is paused', () => {
         // Start the workout first
-        cy.get('#startBtn').click();
+        cy.clickWorkoutControl('start');
         
         // Wait a moment for the wake lock to be requested
         cy.wait(100);
         
         // Pause the workout
-        cy.get('#pauseBtn').click();
+        cy.clickWorkoutControl('pause');
         
         // Wait a moment for the wake lock to be released
         cy.wait(100);
@@ -88,13 +88,13 @@ Another short exercise.`;
 
     it('should release wake lock when workout is reset', () => {
         // Start the workout first
-        cy.get('#startBtn').click();
+        cy.clickWorkoutControl('start');
         
         // Wait a moment for the wake lock to be requested
         cy.wait(100);
         
         // Reset the workout
-        cy.get('#resetBtn').click();
+        cy.clickWorkoutControl('reset');
         
         // Wait a moment for the wake lock to be released
         cy.wait(100);

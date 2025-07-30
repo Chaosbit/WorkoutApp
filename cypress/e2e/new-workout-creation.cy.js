@@ -77,9 +77,9 @@ Rest - 0:30`
       
       // Workout should be displayed
       cy.get('#workoutTitle').should('contain', 'My Test Workout')
-      cy.get('.exercise-item').should('contain', 'Jumping Jacks')
-      cy.get('.exercise-item').should('contain', 'Push-ups')
-      cy.get('.exercise-item').should('have.length', 3) // 2 exercises + 1 rest
+      cy.getExerciseItems().should('contain', 'Jumping Jacks')
+      cy.getExerciseItems().should('contain', 'Push-ups')
+      cy.getExerciseItems().should('have.length', 3) // 2 exercises + 1 rest
     })
 
     it('should persist new workout in localStorage', () => {
@@ -315,14 +315,14 @@ Rest - 0:30`
       cy.get('#saveWorkoutBtn').click()
       
       // Timer should work
-      cy.get('#startBtn').click()
-      cy.get('#startBtn').should('be.disabled')
-      cy.get('#pauseBtn').should('not.be.disabled')
+      cy.clickWorkoutControl('start')
+      cy.getWorkoutControlState('start').should('be.disabled')
+      cy.getWorkoutControlState('pause').should('not.be.disabled')
       
       // Pause should work
-      cy.get('#pauseBtn').click()
-      cy.get('#startBtn').should('not.be.disabled')
-      cy.get('#pauseBtn').should('be.disabled')
+      cy.clickWorkoutControl('pause')
+      cy.getWorkoutControlState('start').should('not.be.disabled')
+      cy.getWorkoutControlState('pause').should('be.disabled')
     })
   })
 

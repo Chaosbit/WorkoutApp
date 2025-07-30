@@ -23,97 +23,97 @@ describe('Timer Functionality', () => {
 
   it('should pause and resume the timer', () => {
     // Start the timer
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
     // Let timer run for a bit and verify it's counting down
     cy.wait(500)
     
     // Pause the timer
-    cy.get('#pauseBtn').click()
+    cy.clickWorkoutControl('pause')
     
     // Check button states after pause
-    cy.get('#startBtn').should('be.enabled')
-    cy.get('#pauseBtn').should('be.disabled')
-    cy.get('#skipBtn').should('be.enabled')
+    cy.getWorkoutControlState('start').should('be.enabled')
+    cy.getWorkoutControlState('pause').should('be.disabled')
+    cy.getWorkoutControlState('skip').should('be.enabled')
     
     // Store current timer value
-    cy.get('#timerDisplay').invoke('text').then((pausedTime) => {
+    cy.getTimerDisplay().invoke('text').then((pausedTime) => {
       // Wait a bit while paused
       cy.wait(1000)
       
       // Timer should not have changed while paused
-      cy.get('#timerDisplay').should('contain', pausedTime)
+      cy.getTimerDisplay().should('contain', pausedTime)
       
       // Resume timer
-      cy.get('#startBtn').click()
-      cy.get('#startBtn').should('be.disabled')
-      cy.get('#pauseBtn').should('be.enabled')
+      cy.clickWorkoutControl('start')
+      cy.getWorkoutControlState('start').should('be.disabled')
+      cy.getWorkoutControlState('pause').should('be.enabled')
     })
   })
 
   it('should skip to next exercise', () => {
-    cy.get('#startBtn').click()
-    cy.get('#skipBtn').click()
+    cy.clickWorkoutControl('start')
+    cy.clickWorkoutControl('skip')
     
-    cy.get('#currentExercise').should('contain', 'Push-ups')
-    cy.get('#timerDisplay').should('contain', '0:02')
+    cy.getCurrentExercise().should('contain', 'Push-ups')
+    cy.getTimerDisplay().should('contain', '0:02')
     cy.get('#progressText').should('contain', 'Exercise 2 of 6')
     
-    cy.get('.exercise-item').first().should('have.class', 'completed')
-    cy.get('.exercise-item').eq(1).should('have.class', 'current')
+    cy.getExerciseItems().first().should('have.class', 'completed')
+    cy.getExerciseItems().eq(1).should('have.class', 'current')
   })
 
   it('should reset the workout', () => {
-    cy.get('#startBtn').click()
-    cy.get('#skipBtn').click()
-    cy.get('#resetBtn').click()
+    cy.clickWorkoutControl('start')
+    cy.clickWorkoutControl('skip')
+    cy.clickWorkoutControl('reset')
     
-    cy.get('#currentExercise').should('contain', 'Warm-up')
-    cy.get('#timerDisplay').should('contain', '0:03')
+    cy.getCurrentExercise().should('contain', 'Warm-up')
+    cy.getTimerDisplay().should('contain', '0:03')
     cy.get('#progressText').should('contain', 'Exercise 1 of 6')
     
-    cy.get('#startBtn').should('be.enabled')
-    cy.get('#pauseBtn').should('be.disabled')
-    cy.get('#skipBtn').should('be.disabled')
+    cy.getWorkoutControlState('start').should('be.enabled')
+    cy.getWorkoutControlState('pause').should('be.disabled')
+    cy.getWorkoutControlState('skip').should('be.disabled')
     
-    cy.get('.exercise-item').first().should('have.class', 'current')
+    cy.getExerciseItems().first().should('have.class', 'current')
   })
 
   it('should automatically advance through exercises', () => {
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
     cy.wait(3500)
-    cy.get('#currentExercise').should('contain', 'Push-ups')
-    cy.get('#timerDisplay').should('contain', '0:02')
+    cy.getCurrentExercise().should('contain', 'Push-ups')
+    cy.getTimerDisplay().should('contain', '0:02')
     
     cy.wait(2500)
-    cy.get('#currentExercise').should('contain', 'Rest')
-    cy.get('#timerDisplay').should('contain', '0:01')
+    cy.getCurrentExercise().should('contain', 'Rest')
+    cy.getTimerDisplay().should('contain', '0:01')
   })
 
   it('should update progress bar during exercise', () => {
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
-    cy.get('#progressFill').should('have.css', 'width', '0px')
+    cy.getProgressFill().should('have.css', 'width', '0px')
     
     cy.wait(1000)
-    cy.get('#progressFill').should('not.have.css', 'width', '0px')
+    cy.getProgressFill().should('not.have.css', 'width', '0px')
     
     cy.wait(2500)
-    cy.get('#progressFill').should('have.css', 'width').and('match', /\d+px/)
+    cy.getProgressFill().should('have.css', 'width').and('match', /\d+px/)
   })
 
   it('should complete the workout and show completion message', () => {
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
     for (let i = 0; i < 6; i++) {
-      cy.get('#skipBtn').click()
+      cy.clickWorkoutControl('skip')
       cy.wait(100)
     }
     
-    cy.get('#currentExercise').should('contain', 'Workout Complete! 🎉')
-    cy.get('#timerDisplay').should('contain', '0:00')
-    cy.get('#progressFill').should('have.css', 'width').and('not.equal', '0px')
+    cy.getCurrentExercise().should('contain', 'Workout Complete! 🎉')
+    cy.getTimerDisplay().should('contain', '0:00')
+    cy.getProgressFill().should('have.css', 'width').and('not.equal', '0px')
     
     // Should show completion message instead of alert
     cy.get('.app-message--success').should('be.visible')
@@ -121,31 +121,31 @@ describe('Timer Functionality', () => {
   })
 
   it('should mark exercises as completed during workout progression', () => {
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
-    cy.get('#skipBtn').click()
-    cy.get('.exercise-item').first().should('have.class', 'completed')
+    cy.clickWorkoutControl('skip')
+    cy.getExerciseItems().first().should('have.class', 'completed')
     
-    cy.get('#skipBtn').click()
-    cy.get('.exercise-item').eq(1).should('have.class', 'completed')
+    cy.clickWorkoutControl('skip')
+    cy.getExerciseItems().eq(1).should('have.class', 'completed')
     
-    cy.get('#skipBtn').click()
-    cy.get('.exercise-item').eq(2).should('have.class', 'completed')
-    cy.get('.exercise-item').eq(3).should('have.class', 'current')
+    cy.clickWorkoutControl('skip')
+    cy.getExerciseItems().eq(2).should('have.class', 'completed')
+    cy.getExerciseItems().eq(3).should('have.class', 'current')
   })
 
   it('should handle timer countdown accuracy', () => {
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
-    cy.get('#timerDisplay').should('contain', '0:03')
-    
-    cy.wait(1000)
-    cy.get('#timerDisplay').should('contain', '0:02')
+    cy.getTimerDisplay().should('contain', '0:03')
     
     cy.wait(1000)
-    cy.get('#timerDisplay').should('contain', '0:01')
+    cy.getTimerDisplay().should('contain', '0:02')
     
     cy.wait(1000)
-    cy.get('#currentExercise').should('contain', 'Push-ups')
+    cy.getTimerDisplay().should('contain', '0:01')
+    
+    cy.wait(1000)
+    cy.getCurrentExercise().should('contain', 'Push-ups')
   })
 })
