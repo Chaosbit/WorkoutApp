@@ -10,6 +10,9 @@ import { UIUtils } from './ui-utils.js';
 import { APP_CONFIG, APP_UTILS } from './constants.js';
 import { WorkoutContextComponent } from './workout-context-component.js';
 import { WorkoutManager } from './components/workout-manager.js';
+import { TimerDisplayComponent } from './components/timer-display.js';
+import { WorkoutControlsComponent } from './components/workout-controls.js';
+import { ExerciseListComponent } from './components/exercise-list.js';
 
 /**
  * WorkoutApp - Main application coordinator class
@@ -68,24 +71,15 @@ export class WorkoutApp {
         this.workoutDisplay = document.getElementById('workoutDisplay');
         this.workoutTitle = document.getElementById('workoutTitle');
         
-        // Exercise display elements
-        this.currentExercise = document.getElementById('currentExercise');
-        this.currentDescription = document.getElementById('currentDescription');
-        this.descriptionContent = document.getElementById('descriptionContent');
-        this.timerDisplay = document.getElementById('timerDisplay');
-        this.repsDisplay = document.getElementById('repsDisplay');
-        this.repsCount = document.getElementById('repsCount');
-        this.repCompletion = document.getElementById('repCompletion');
-        this.completeRepBtn = document.getElementById('completeRepBtn');
-        this.progressFill = document.getElementById('progressFill');
-        this.progressText = document.getElementById('progressText');
-        this.workoutList = document.getElementById('workoutList');
-        
-        // Focused workout context web component
+        // Web Components
+        this.timerDisplayComponent = document.getElementById('timerDisplay');
+        this.workoutControlsComponent = document.getElementById('workoutControls');
+        this.exerciseListComponent = document.getElementById('exerciseList');
         this.workoutContext = document.getElementById('workoutContext');
-        
-        // Workout manager component
         this.workoutManager = document.getElementById('workoutManager');
+        
+        // Legacy elements for backward compatibility (may be removed in future)
+        this.progressText = document.getElementById('progressText');
         
         // Workout editor elements
         this.workoutEditor = document.getElementById('workoutEditor');
@@ -94,12 +88,8 @@ export class WorkoutApp {
         this.saveWorkoutBtn = document.getElementById('saveWorkoutBtn');
         this.cancelEditBtn = document.getElementById('cancelEditBtn');
         
-        // Control elements
+        // Control elements (for backward compatibility)
         this.newWorkoutBtn = document.getElementById('newWorkoutBtn');
-        this.startBtn = document.getElementById('startBtn');
-        this.pauseBtn = document.getElementById('pauseBtn');
-        this.skipBtn = document.getElementById('skipBtn');
-        this.resetBtn = document.getElementById('resetBtn');
         this.shareWorkoutBtn = document.getElementById('shareWorkoutBtn');
         
         // View navigation elements
@@ -150,14 +140,29 @@ export class WorkoutApp {
             });
         }
         
+        // Setup web component event listeners
+        if (this.workoutControlsComponent) {
+            this.workoutControlsComponent.addEventListener('workout-start', () => this.startWorkout());
+            this.workoutControlsComponent.addEventListener('workout-pause', () => this.pauseWorkout());
+            this.workoutControlsComponent.addEventListener('workout-skip', () => this.skipExercise());
+            this.workoutControlsComponent.addEventListener('workout-reset', () => this.resetWorkout());
+        }
+        
+        if (this.timerDisplayComponent) {
+            this.timerDisplayComponent.addEventListener('rep-completed', () => this.completeRepExercise());
+        }
+        
+        if (this.exerciseListComponent) {
+            this.exerciseListComponent.addEventListener('exercise-selected', (e) => {
+                // Allow user to jump to specific exercise
+                this.jumpToExercise(e.detail.exerciseIndex);
+            });
+        }
+        
+        // Legacy event listeners for backward compatibility (can be removed when all functionality is migrated)
         this.newWorkoutBtn.addEventListener('click', () => this.createNewWorkout());
         this.saveWorkoutBtn.addEventListener('click', () => this.saveWorkoutChanges());
         this.cancelEditBtn.addEventListener('click', () => this.cancelWorkoutEdit());
-        this.startBtn.addEventListener('click', () => this.startWorkout());
-        this.pauseBtn.addEventListener('click', () => this.pauseWorkout());
-        this.skipBtn.addEventListener('click', () => this.skipExercise());
-        this.resetBtn.addEventListener('click', () => this.resetWorkout());
-        this.completeRepBtn.addEventListener('click', () => this.completeRepExercise());
         this.shareWorkoutBtn.addEventListener('click', () => this.shareWorkout());
         
         // View navigation events
@@ -265,9 +270,14 @@ export class WorkoutApp {
             sampleFormat.style.display = 'none';
         }
         
-        this.renderWorkoutList();
+        // Update web components with workout data
+        if (this.exerciseListComponent) {
+            this.exerciseListComponent.setWorkout(this.workout);
+        }
+        
         this.resetWorkout();
         this.updateWorkoutContextComponent();
+        this.updateComponentStates();
     }
 
     /**
@@ -387,7 +397,13 @@ export class WorkoutApp {
      * Update timer display
      */
     updateTimerDisplay() {
-        this.timerDisplay.textContent = this.timerManager.getFormattedTime();
+        // Update web component
+        if (this.timerDisplayComponent) {
+            this.timerDisplayComponent.setAttribute('time-remaining', this.timerManager.getTimeRemaining().toString());
+            this.timerDisplayComponent.setAttribute('total-time', this.timerManager.getTotalTime().toString());
+            this.timerDisplayComponent.setAttribute('is-running', this.isRunning.toString());
+        }
+        
         this.updateProgress();
     }
 
@@ -395,17 +411,88 @@ export class WorkoutApp {
      * Update progress bar
      */
     updateProgressBar() {
-        const progress = this.timerManager.getProgress();
-        this.progressFill.style.width = `${progress}%`;
+        // Legacy progress bar update (if still needed)
+        if (this.progressFill) {
+            const progress = this.timerManager.getProgress();
+            this.progressFill.style.width = `${progress}%`;
+        }
     }
 
     /**
      * Update progress text with enhanced information
      */
     updateProgress() {
-        if (this.workout && this.workout.exercises.length > 0) {
+        if (this.progressText && this.workout && this.workout.exercises.length > 0) {
             this.progressText.textContent = `Exercise ${this.currentExerciseIndex + 1} of ${this.workout.exercises.length}`;
         }
+    }
+    
+    /**
+     * Update all web component states
+     */
+    updateComponentStates() {
+        this.updateWorkoutControlsState();
+        this.updateTimerDisplayState();
+        this.updateExerciseListState();
+    }
+    
+    /**
+     * Update workout controls component state
+     */
+    updateWorkoutControlsState() {
+        if (this.workoutControlsComponent) {
+            const canStart = this.workout && this.workout.exercises && this.workout.exercises.length > 0;
+            const canSkip = this.isRunning || this.isPaused;
+            
+            this.workoutControlsComponent.setAttribute('is-running', this.isRunning.toString());
+            this.workoutControlsComponent.setAttribute('is-paused', this.isPaused.toString());
+            this.workoutControlsComponent.setAttribute('can-start', canStart.toString());
+            this.workoutControlsComponent.setAttribute('can-skip', canSkip.toString());
+        }
+    }
+    
+    /**
+     * Update timer display component state
+     */
+    updateTimerDisplayState() {
+        if (this.timerDisplayComponent && this.workout && this.workout.exercises) {
+            const currentExercise = this.workout.exercises[this.currentExerciseIndex];
+            if (currentExercise) {
+                this.timerDisplayComponent.setExercise(currentExercise);
+                this.timerDisplayComponent.setAttribute('is-running', this.isRunning.toString());
+            }
+        }
+    }
+    
+    /**
+     * Update exercise list component state
+     */
+    updateExerciseListState() {
+        if (this.exerciseListComponent) {
+            this.exerciseListComponent.setAttribute('current-exercise-index', this.currentExerciseIndex.toString());
+        }
+    }
+    
+    /**
+     * Jump to a specific exercise (used by exercise list component)
+     */
+    jumpToExercise(exerciseIndex) {
+        if (!this.workout || !this.workout.exercises || exerciseIndex < 0 || exerciseIndex >= this.workout.exercises.length) {
+            return;
+        }
+        
+        // Stop current timer if running
+        if (this.isRunning) {
+            this.timerManager.stop();
+            this.isRunning = false;
+            this.isPaused = false;
+        }
+        
+        // Jump to the selected exercise
+        this.currentExerciseIndex = exerciseIndex;
+        this.setCurrentExercise();
+        this.updateComponentStates();
+        this.updateWorkoutContextComponent();
     }
     
     /**
@@ -432,40 +519,32 @@ export class WorkoutApp {
         if (!this.workout || this.currentExerciseIndex >= this.workout.exercises.length) return;
         
         const exercise = this.workout.exercises[this.currentExerciseIndex];
-        this.currentExercise.textContent = exercise.name;
         
-        if (exercise.exerciseType === 'reps') {
-            // Rep-based exercise
-            this.timerManager.stop();
-            this.timerDisplay.style.display = 'none';
-            this.repsDisplay.style.display = 'block';
-            this.repCompletion.style.display = 'block';
-            this.repsCount.textContent = exercise.reps;
-            exercise.completed = false;
-            this.progressFill.style.width = '0%';
-        } else {
-            // Timer-based exercise
-            this.timerManager.setExercise(exercise);
-            this.timerDisplay.style.display = 'block';
-            this.repsDisplay.style.display = 'none';
-            this.repCompletion.style.display = 'none';
-            this.progressFill.style.width = '0%';
-        }
-        
-        // Handle exercise description
-        if (exercise.description && exercise.description.trim().length > 0) {
-            this.descriptionContent.innerHTML = exercise.description.split('\n').map(line => `<p>${line}</p>`).join('');
-            this.currentDescription.style.display = 'block';
-            this.currentDescription.classList.remove('expanded');
-        } else {
-            this.currentDescription.style.display = 'none';
+        // Update timer display component
+        if (this.timerDisplayComponent) {
+            this.timerDisplayComponent.setExercise(exercise);
+            
+            if (exercise.exerciseType === 'reps') {
+                this.timerManager.stop();
+                exercise.completed = false;
+            } else {
+                // Timer-based exercise
+                this.timerManager.setExercise(exercise);
+            }
         }
         
         this.updateTimerDisplay();
         this.updateProgress();
         this.updateWorkoutContextComponent();
         this.updateWorkoutList();
-        this.updateControls();
+        this.updateComponentStates();
+    }
+    
+    /**
+     * Set current exercise (used by jumpToExercise)
+     */
+    setCurrentExercise() {
+        this.loadCurrentExercise();
     }
 
     /**
@@ -478,24 +557,25 @@ export class WorkoutApp {
             : null;
         const isRepBased = currentExercise && currentExercise.exerciseType === 'reps';
         
-        this.startBtn.disabled = !hasWorkout || this.isRunning;
-        this.pauseBtn.disabled = !hasWorkout || !this.isRunning || isRepBased;
-        this.skipBtn.disabled = !hasWorkout || (!this.isRunning && !this.isPaused);
-        this.resetBtn.disabled = !hasWorkout;
+        // Update web component state
+        this.updateWorkoutControlsState();
         
-        // For rep-based exercises, enable skip when workout is running
-        if (isRepBased && this.isRunning) {
-            this.skipBtn.disabled = false;
+        // Legacy button updates (for backward compatibility)
+        if (this.startBtn) {
+            this.startBtn.disabled = !hasWorkout || this.isRunning;
         }
-        
-        // Enable complete rep button for rep exercises when not completed
-        if (this.completeRepBtn) {
-            if (isRepBased) {
-                this.completeRepBtn.disabled = (currentExercise && currentExercise.completed);
-            } else {
-                // For timer exercises, button should not be visible anyway
-                this.completeRepBtn.disabled = true;
+        if (this.pauseBtn) {
+            this.pauseBtn.disabled = !hasWorkout || !this.isRunning || isRepBased;
+        }
+        if (this.skipBtn) {
+            this.skipBtn.disabled = !hasWorkout || (!this.isRunning && !this.isPaused);
+            // For rep-based exercises, enable skip when workout is running
+            if (isRepBased && this.isRunning) {
+                this.skipBtn.disabled = false;
             }
+        }
+        if (this.resetBtn) {
+            this.resetBtn.disabled = !hasWorkout;
         }
     }
 
@@ -517,18 +597,24 @@ export class WorkoutApp {
         // Release screen wake lock when workout is reset
         this.screenWakeManager.releaseWakeLock();
         
-        if (this.workout && this.workout.exercises.length > 0) {
-            this.loadCurrentExercise();
-        } else {
-            // Only set to 00:00 if no workout is loaded
-            this.timerDisplay.textContent = '00:00';
-            this.timerDisplay.style.display = 'block';
+        // Reset exercise list component
+        if (this.exerciseListComponent) {
+            this.exerciseListComponent.resetExerciseStates();
         }
         
-        this.progressFill.style.width = '0%';
+        if (this.workout && this.workout.exercises.length > 0) {
+            this.loadCurrentExercise();
+        }
+        
+        // Update legacy elements if they exist
+        if (this.progressFill) {
+            this.progressFill.style.width = '0%';
+        }
+        
         this.updateControls();
         this.updateWorkoutList();
         this.updateWorkoutContextComponent();
+        this.updateComponentStates();
     }
 
     /**
@@ -562,28 +648,13 @@ export class WorkoutApp {
      * Update workout list display
      */
     updateWorkoutList() {
-        if (!this.workout) {
-            this.workoutList.innerHTML = '';
-            return;
-        }
-        
-        // Only update classes if the list structure already exists
-        const items = this.workoutList.querySelectorAll('.exercise-item');
-        if (items.length === this.workout.exercises.length) {
-            // Update existing items
-            items.forEach((item, index) => {
-                item.className = 'exercise-item';
-                if (index < this.currentExerciseIndex) {
-                    item.classList.add('completed');
-                } else if (index === this.currentExerciseIndex) {
-                    item.classList.add('current');
-                } else {
-                    item.classList.add('pending');
-                }
-            });
-        } else {
-            // Re-render the entire list
-            this.renderWorkoutList();
+        // Update exercise list web component
+        if (this.exerciseListComponent) {
+            this.exerciseListComponent.setAttribute('current-exercise-index', this.currentExerciseIndex.toString());
+            // Mark completed exercises
+            for (let i = 0; i < this.currentExerciseIndex; i++) {
+                this.exerciseListComponent.markExerciseCompleted(i);
+            }
         }
     }
 

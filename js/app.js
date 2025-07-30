@@ -11,6 +11,13 @@ import { SyncManager } from './sync-manager.js';
 import { UIUtils } from './ui-utils.js';
 import { APP_CONFIG, APP_UTILS } from './constants.js';
 
+// Import web components
+import './workout-context-component.js';
+import './components/workout-manager.js';
+import './components/timer-display.js';
+import './components/workout-controls.js';
+import './components/exercise-list.js';
+
 /**
  * Application initialization
  * Initialize the WorkoutApp when the DOM is loaded
