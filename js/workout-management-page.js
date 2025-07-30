@@ -77,10 +77,16 @@ class WorkoutManagementPage {
             });
         }
 
-        // New workout button
+        // New workout button (both header and old location)
         const newWorkoutBtn = document.getElementById('newWorkoutBtn');
+        const newWorkoutHeaderBtn = document.getElementById('newWorkoutHeaderBtn');
+        
         if (newWorkoutBtn) {
             newWorkoutBtn.addEventListener('click', () => this.createNewWorkout());
+        }
+        
+        if (newWorkoutHeaderBtn) {
+            newWorkoutHeaderBtn.addEventListener('click', () => this.createNewWorkout());
         }
 
         // Editor buttons
@@ -98,6 +104,24 @@ class WorkoutManagementPage {
         // Listen for workout selection from workout manager component
         document.addEventListener('workout-selected', (e) => {
             this.handleWorkoutSelected(e.detail);
+        });
+
+        // Listen for workout editing requests
+        document.addEventListener('workout-edit', (e) => {
+            const workout = this.workoutLibrary.getWorkout(e.detail.workoutId);
+            if (workout) {
+                this.editWorkout(workout);
+            }
+        });
+
+        // Listen for workout deletion requests
+        document.addEventListener('workout-delete', (e) => {
+            this.handleWorkoutDelete(e.detail.workoutId);
+        });
+
+        // Listen for workout sharing requests
+        document.addEventListener('workout-share', (e) => {
+            this.handleWorkoutShare(e.detail.workoutId);
         });
 
         // Listen for start training requests
@@ -295,6 +319,58 @@ class WorkoutManagementPage {
     startTraining(workoutId) {
         sessionStorage.setItem('activeWorkoutId', workoutId);
         window.location.href = 'training.html';
+    }
+
+    /**
+     * Handle workout deletion
+     */
+    handleWorkoutDelete(workoutId) {
+        try {
+            const workout = this.workoutLibrary.getWorkout(workoutId);
+            if (workout) {
+                this.workoutLibrary.deleteWorkout(workoutId);
+                UIUtils.showMessage(`Workout "${workout.name}" deleted successfully!`, 'success');
+                this.initializeWorkoutManager();
+            }
+        } catch (error) {
+            console.error('Error deleting workout:', error);
+            UIUtils.showMessage('Failed to delete workout', 'error');
+        }
+    }
+
+    /**
+     * Handle workout sharing
+     */
+    handleWorkoutShare(workoutId) {
+        try {
+            const workout = this.workoutLibrary.getWorkout(workoutId);
+            if (workout) {
+                const shareText = `Check out this workout: ${workout.name}\n\n${workout.content}`;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: `Workout: ${workout.name}`,
+                        text: shareText
+                    });
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(shareText);
+                    UIUtils.showMessage('Workout copied to clipboard!', 'success');
+                } else {
+                    // Fallback - show workout content in a modal or new window
+                    const blob = new Blob([workout.content], { type: 'text/markdown' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${workout.name}.md`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    UIUtils.showMessage('Workout downloaded as file!', 'success');
+                }
+            }
+        } catch (error) {
+            console.error('Error sharing workout:', error);
+            UIUtils.showMessage('Failed to share workout', 'error');
+        }
     }
 }
 

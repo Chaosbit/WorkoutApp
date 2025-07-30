@@ -18,6 +18,7 @@ export class NavigationManager {
         this.navHome = document.getElementById('navHome');
         this.navWorkoutManagement = document.getElementById('navWorkoutManagement');
         this.navTrainingPlan = document.getElementById('navTrainingPlan');
+        this.navTraining = document.getElementById('navTraining');
         this.navStatistics = document.getElementById('navStatistics');
     }
 
@@ -40,6 +41,10 @@ export class NavigationManager {
         
         if (this.navTrainingPlan) {
             this.navTrainingPlan.addEventListener('click', () => this.navigateToTrainingPlan());
+        }
+        
+        if (this.navTraining) {
+            this.navTraining.addEventListener('click', () => this.navigateToTraining());
         }
         
         if (this.navStatistics) {
@@ -123,6 +128,18 @@ export class NavigationManager {
             this.closeNavigation();
         } else {
             window.location.href = 'training-plan.html';
+        }
+    }
+
+    /**
+     * Navigate to training page
+     */
+    navigateToTraining() {
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('training.html')) {
+            this.closeNavigation();
+        } else {
+            window.location.href = 'training.html';
         }
     }
 

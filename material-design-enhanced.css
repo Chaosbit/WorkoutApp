@@ -255,6 +255,10 @@ body {
     width: 100%;
 }
 
+.md-top-app-bar__actions {
+    margin-left: auto;
+}
+
 .md-top-app-bar__leading-icon {
     font-size: 32px;
     color: white;
@@ -266,6 +270,19 @@ body {
     font-weight: var(--md-sys-typescale-headline-large-weight);
     line-height: var(--md-sys-typescale-headline-large-line-height);
     color: white;
+}
+
+.md-top-app-bar__title-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+}
+
+.md-top-app-bar__title-link:hover {
+    opacity: 0.8;
 }
 
 /* Typography Classes - Material Web Aligned */
@@ -1015,6 +1032,137 @@ body {
     color: rgb(var(--md-sys-color-on-surface-variant));
     text-align: center;
     margin-top: auto;
+}
+
+/* Workout Table Styles */
+.workout-table-container {
+    margin-top: 1rem;
+    overflow-x: auto;
+}
+
+.workout-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.workout-table th,
+.workout-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid rgba(var(--md-sys-color-outline), 0.2);
+}
+
+.workout-table thead {
+    background: rgba(var(--md-sys-color-secondary-container), 0.3);
+}
+
+.workout-table th {
+    font-weight: 600;
+    color: rgb(var(--md-sys-color-on-surface));
+    font-size: 14px;
+}
+
+.workout-table tbody tr:hover {
+    background: rgba(var(--md-sys-color-secondary-container), 0.1);
+}
+
+.workout-name-text {
+    font-weight: 500;
+    color: rgb(var(--md-sys-color-on-surface));
+    margin-bottom: 2px;
+}
+
+.workout-name-meta {
+    font-size: 12px;
+    color: rgb(var(--md-sys-color-on-surface-variant));
+}
+
+.workout-actions {
+    display: flex;
+    gap: 4px;
+    min-width: 180px;
+}
+
+.workout-actions .md-icon-button {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: rgb(var(--md-sys-color-on-surface));
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+}
+
+.workout-actions .md-icon-button:hover {
+    background: rgba(var(--md-sys-color-secondary), 0.1);
+}
+
+.workout-actions .md-icon-button .material-icons {
+    font-size: 18px;
+}
+
+.workout-actions .share-workout-btn:hover {
+    background: rgba(var(--md-sys-color-primary), 0.1);
+    color: rgb(var(--md-sys-color-primary));
+}
+
+.workout-actions .edit-workout-btn:hover {
+    background: rgba(var(--md-sys-color-tertiary), 0.1);
+    color: rgb(var(--md-sys-color-tertiary));
+}
+
+.workout-actions .start-workout-btn:hover {
+    background: rgba(var(--md-sys-color-secondary), 0.1);
+    color: rgb(var(--md-sys-color-secondary));
+}
+
+.workout-actions .delete-workout-btn:hover {
+    background: rgba(var(--md-sys-color-error), 0.1);
+    color: rgb(var(--md-sys-color-error));
+}
+
+.no-workouts {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: rgb(var(--md-sys-color-on-surface-variant));
+}
+
+/* Mobile responsive table */
+@media (max-width: 768px) {
+    .workout-table-container {
+        margin: 1rem -1rem;
+    }
+    
+    .workout-table {
+        font-size: 14px;
+    }
+    
+    .workout-table th,
+    .workout-table td {
+        padding: 8px 12px;
+    }
+    
+    .workout-actions {
+        min-width: 140px;
+        gap: 2px;
+    }
+    
+    .workout-actions .md-icon-button {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .workout-actions .md-icon-button .material-icons {
+        font-size: 16px;
+    }
 }
 
 /* Modal Styles */
