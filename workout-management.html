@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Management - Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1C1B1F" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Material Design 3 Enhanced System with Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="material-design-enhanced.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Scrim -->
+        <div class="md-scrim" id="navigationScrim"></div>
+        
+        <!-- Navigation Drawer -->
+        <nav class="md-navigation-drawer" id="navigationDrawer">
+            <div class="md-navigation-drawer__header">
+                <h2 class="md-navigation-drawer__title">
+                    <span class="material-icons">fitness_center</span>
+                    Workout Timer
+                </h2>
+            </div>
+            <ul class="md-navigation-drawer__list">
+                <li>
+                    <button class="md-navigation-drawer__item" id="navHome">
+                        <span class="material-icons md-navigation-drawer__item-icon">home</span>
+                        <span class="md-navigation-drawer__item-text">Home</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item active" id="navWorkoutManagement">
+                        <span class="material-icons md-navigation-drawer__item-icon">edit</span>
+                        <span class="md-navigation-drawer__item-text">Workout Management</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item" id="navTrainingPlan">
+                        <span class="material-icons md-navigation-drawer__item-icon">calendar_month</span>
+                        <span class="md-navigation-drawer__item-text">Training Plan</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item" id="navStatistics">
+                        <span class="material-icons md-navigation-drawer__item-icon">analytics</span>
+                        <span class="md-navigation-drawer__item-text">Statistics</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item" id="navSync">
+                        <span class="material-icons md-navigation-drawer__item-icon">sync</span>
+                        <span class="md-navigation-drawer__item-text">Sync</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="md-navigation-drawer__item" id="navSettings">
+                        <span class="material-icons md-navigation-drawer__item-icon">settings</span>
+                        <span class="md-navigation-drawer__item-text">Settings</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <header class="md-top-app-bar">
+            <div class="md-top-app-bar__content">
+                <button class="md-icon-button--menu" id="menuButton">
+                    <span class="material-icons">menu</span>
+                </button>
+                <span class="material-icons md-top-app-bar__leading-icon">edit</span>
+                <span class="md-top-app-bar__title">Workout Management</span>
+            </div>
+        </header>
+        
+        <main>
+            <!-- Workout Library Section -->
+            <section class="workout-library-section md-card">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-large">💪 Manage Your Workouts</h2>
+                    <p class="md-typescale-body-large">Create, edit, and organize your workout library</p>
+                    
+                    <workout-manager id="workoutManager"></workout-manager>
+                </div>
+            </section>
+
+            <!-- Create New Workout Section -->
+            <section class="create-workout-section md-card">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Create New Workout</h3>
+                    
+                    <div class="new-workout-options">
+                        <button id="newWorkoutBtn" class="md-button md-button--filled md-button--large">
+                            <span class="material-icons md-button__icon">add</span>
+                            <span class="md-button__label">Create New Workout</span>
+                        </button>
+                        
+                        <div class="file-input-area">
+                            <div class="md-file-input">
+                                <input type="file" id="workoutFile" accept=".md" class="md-file-input__field" />
+                                <div class="md-file-input__surface">
+                                    <span class="material-icons md-file-input__icon">folder_open</span>
+                                    <p class="md-file-input__text">Import workout file (.md)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Workout Editor Section -->
+            <section class="workout-editor md-card md-card--outlined" id="workoutEditor" style="display: none;">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Edit Workout</h3>
+                    <div class="editor-controls">
+                        <div class="md-text-field md-text-field--outlined">
+                            <input type="text" id="workoutNameInput" class="md-text-field__input" placeholder="Workout name">
+                        </div>
+                        <div class="tag-editor">
+                            <label class="md-typescale-body-medium">Tags:</label>
+                            <div class="tag-input-container">
+                                <div class="workout-tags-display" id="workoutTagsEditor"></div>
+                                <input type="text" id="newTagInput" class="md-text-field__input" placeholder="Add tags (press Enter or comma to add)">
+                            </div>
+                            <div class="tag-suggestions" id="tagSuggestionsEditor"></div>
+                        </div>
+                    </div>
+                    <div class="md-text-field md-text-field--outlined md-text-field--textarea">
+                        <textarea id="workoutMarkdownEditor" class="md-text-field__input" rows="15" placeholder="Enter workout markdown here..."></textarea>
+                    </div>
+                    <div class="editor-actions">
+                        <button id="saveWorkoutBtn" class="md-button md-button--filled">
+                            <span class="material-icons md-button__icon">save</span>
+                            <span class="md-button__label">Save Changes</span>
+                        </button>
+                        <button id="cancelEditBtn" class="md-button md-button--outlined">
+                            <span class="md-button__label">Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sample Format Section -->
+            <section class="sample-format md-card md-card--outlined">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Sample Workout Format:</h3>
+                    <pre class="sample-code"># Push Day Workout
+
+## Warm-up - 5:00
+Light cardio and dynamic stretching to prepare your body.
+Start with arm circles, shoulder rolls, and light jumping jacks.
+
+## Push-ups - 0:45
+Classic bodyweight exercise targeting chest, shoulders, and triceps.
+Keep your body in a straight line from head to heels.
+Lower your chest to just above the ground, then push back up.
+
+Rest - 0:15
+
+## Bench Press - 1:00
+Compound movement for chest, shoulders, and triceps development.
+Lie flat on the bench with feet firmly planted on the ground.
+
+Rest - 0:30</pre>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script type="module" src="js/workout-management-page.js"></script>
+</body>
+</html>

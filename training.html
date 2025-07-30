@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training - Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1C1B1F" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Material Design 3 Enhanced System with Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="material-design-enhanced.css">
+    
+    <!-- Training page specific styles for distraction-free experience -->
+    <style>
+        /* Hide navigation drawer on training page for distraction-free experience */
+        .md-navigation-drawer { display: none; }
+        .md-scrim { display: none; }
+        
+        /* Simplify header for training */
+        .md-top-app-bar {
+            background: var(--md-sys-color-surface);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        }
+        
+        /* Focus on workout content */
+        .training-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* Make timer more prominent */
+        .timer-display {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        /* Emphasize workout controls */
+        .workout-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        /* Minimize distractions */
+        .workout-meta {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="md-top-app-bar">
+            <div class="md-top-app-bar__content">
+                <button class="md-icon-button--back" id="backButton">
+                    <span class="material-icons">arrow_back</span>
+                </button>
+                <span class="material-icons md-top-app-bar__leading-icon">fitness_center</span>
+                <span class="md-top-app-bar__title" id="workoutTitle">Training Session</span>
+            </div>
+        </header>
+        
+        <main class="training-container">
+            <!-- Workout Status -->
+            <div class="workout-status md-card">
+                <div class="md-card__content">
+                    <div class="workout-meta" id="workoutMeta">
+                        <p class="md-typescale-body-medium">No workout loaded</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer and Controls -->
+            <div class="workout-active-section">
+                <!-- Focused Workout Context Web Component -->
+                <workout-context id="workoutContext"></workout-context>
+                
+                <!-- Timer Display Web Component -->
+                <div class="timer-display">
+                    <timer-display id="timerDisplay"></timer-display>
+                </div>
+                
+                <!-- Workout Controls Web Component -->
+                <div class="workout-controls">
+                    <workout-controls id="workoutControls"></workout-controls>
+                </div>
+                
+                <div class="workout-progress">
+                    <div class="progress-info">
+                        <p id="progressText" class="md-typescale-body-large">Exercise 1 of 1</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Exercise List Web Component -->
+            <exercise-list id="exerciseList"></exercise-list>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions md-card" style="margin-top: 2rem;">
+                <div class="md-card__content">
+                    <div class="quick-actions-buttons">
+                        <button id="exitTrainingBtn" class="md-button md-button--outlined">
+                            <span class="material-icons md-button__icon">exit_to_app</span>
+                            <span class="md-button__label">Exit Training</span>
+                        </button>
+                        <button id="shareWorkoutBtn" class="md-button md-button--text">
+                            <span class="material-icons md-button__icon">share</span>
+                            <span class="md-button__label">Share Workout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script type="module" src="js/training-page.js"></script>
+</body>
+</html>

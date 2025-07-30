@@ -16,6 +16,8 @@ export class NavigationManager {
         this.navigationDrawer = document.getElementById('navigationDrawer');
         this.navigationScrim = document.getElementById('navigationScrim');
         this.navHome = document.getElementById('navHome');
+        this.navWorkoutManagement = document.getElementById('navWorkoutManagement');
+        this.navTrainingPlan = document.getElementById('navTrainingPlan');
         this.navStatistics = document.getElementById('navStatistics');
     }
 
@@ -27,8 +29,22 @@ export class NavigationManager {
         
         this.menuButton.addEventListener('click', () => this.toggleNavigation());
         this.navigationScrim.addEventListener('click', () => this.closeNavigation());
-        this.navHome.addEventListener('click', () => this.navigateToHome());
-        this.navStatistics.addEventListener('click', () => this.navigateToStatistics());
+        
+        if (this.navHome) {
+            this.navHome.addEventListener('click', () => this.navigateToHome());
+        }
+        
+        if (this.navWorkoutManagement) {
+            this.navWorkoutManagement.addEventListener('click', () => this.navigateToWorkoutManagement());
+        }
+        
+        if (this.navTrainingPlan) {
+            this.navTrainingPlan.addEventListener('click', () => this.navigateToTrainingPlan());
+        }
+        
+        if (this.navStatistics) {
+            this.navStatistics.addEventListener('click', () => this.navigateToStatistics());
+        }
         
         // Close navigation on escape key
         document.addEventListener('keydown', (e) => {
@@ -78,10 +94,35 @@ export class NavigationManager {
      * Navigate to home page
      */
     navigateToHome() {
-        if (window.location.pathname.includes('statistics.html')) {
-            window.location.href = 'index.html';
-        } else {
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('index.html') || currentPath === '/') {
             this.closeNavigation();
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+
+    /**
+     * Navigate to workout management page
+     */
+    navigateToWorkoutManagement() {
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('workout-management.html')) {
+            this.closeNavigation();
+        } else {
+            window.location.href = 'workout-management.html';
+        }
+    }
+
+    /**
+     * Navigate to training plan page
+     */
+    navigateToTrainingPlan() {
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('training-plan.html')) {
+            this.closeNavigation();
+        } else {
+            window.location.href = 'training-plan.html';
         }
     }
 
@@ -89,10 +130,11 @@ export class NavigationManager {
      * Navigate to statistics page
      */
     navigateToStatistics() {
-        if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
-            window.location.href = 'statistics.html';
-        } else {
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('statistics.html')) {
             this.closeNavigation();
+        } else {
+            window.location.href = 'statistics.html';
         }
     }
 }

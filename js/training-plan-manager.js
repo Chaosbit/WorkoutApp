@@ -41,6 +41,10 @@ export class TrainingPlanManager {
      * @returns {string} Date key in YYYY-MM-DD format
      */
     getDateKey(date) {
+        if (!date || typeof date.toISOString !== 'function') {
+            console.warn('Invalid date passed to getDateKey:', date);
+            return new Date().toISOString().split('T')[0]; // fallback to today
+        }
         return date.toISOString().split('T')[0];
     }
 
@@ -80,12 +84,26 @@ export class TrainingPlanManager {
 
     /**
      * Get workouts assigned to a specific date
-     * @param {Date} date - The date
+     * @param {string|Date} dateOrKey - The date or date key
+     * @returns {Array} Array of workout IDs
+     */
+    getWorkoutsForDate(dateOrKey) {
+        let dateKey;
+        if (typeof dateOrKey === 'string') {
+            dateKey = dateOrKey;
+        } else {
+            dateKey = this.getDateKey(dateOrKey);
+        }
+        return this.trainingPlans[dateKey] || [];
+    }
+
+    /**
+     * Get workout objects for a specific date
+     * @param {string|Date} dateOrKey - The date or date key
      * @returns {Array} Array of workout objects
      */
-    getWorkoutsForDate(date) {
-        const dateKey = this.getDateKey(date);
-        const workoutIds = this.trainingPlans[dateKey] || [];
+    getWorkoutObjectsForDate(dateOrKey) {
+        const workoutIds = this.getWorkoutsForDate(dateOrKey);
         return workoutIds.map(id => this.workoutLibrary.getWorkout(id)).filter(workout => workout);
     }
 
