@@ -111,7 +111,38 @@ Cypress.Commands.add('clickExercise', (exerciseIndex) => {
  * Get exercise items from the exercise list component
  */
 Cypress.Commands.add('getExerciseItems', () => {
-  return cy.getShadow('exercise-list', '.exercise-item');
+  return cy.get('exercise-list').then(($component) => {
+    const component = $component[0];
+    if (!component.shadowRoot) {
+      throw new Error('ExerciseList component does not have shadow DOM');
+    }
+    const exerciseItems = component.shadowRoot.querySelectorAll('.exercise-item');
+    return cy.wrap(exerciseItems);
+  });
+});
+
+/**
+ * Get a specific exercise item by index
+ */
+Cypress.Commands.add('getExerciseItem', (index) => {
+  return cy.get('exercise-list').then(($component) => {
+    const component = $component[0];
+    if (!component.shadowRoot) {
+      throw new Error('ExerciseList component does not have shadow DOM');
+    }
+    const exerciseItems = component.shadowRoot.querySelectorAll('.exercise-item');
+    if (index >= exerciseItems.length) {
+      throw new Error(`Exercise index ${index} out of range. Found ${exerciseItems.length} exercises.`);
+    }
+    return cy.wrap(exerciseItems[index]);
+  });
+});
+
+/**
+ * Get the first exercise item
+ */
+Cypress.Commands.add('getFirstExerciseItem', () => {
+  return cy.getExerciseItem(0);
 });
 
 /**

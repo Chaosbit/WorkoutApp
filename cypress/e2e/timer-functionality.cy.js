@@ -18,7 +18,7 @@ describe('Timer Functionality', () => {
     cy.getWorkoutControlState('pause').should('be.enabled')
     cy.getWorkoutControlState('skip').should('be.enabled')
     
-    cy.getExerciseItems().first().should('have.class', 'current')
+    cy.getExerciseItem(0).should('have.class', 'current')
   })
 
   it('should pause and resume the timer', () => {
@@ -59,8 +59,8 @@ describe('Timer Functionality', () => {
     cy.getTimerDisplay().should('contain', '0:02')
     cy.get('#progressText').should('contain', 'Exercise 2 of 6')
     
-    cy.getExerciseItems().first().should('have.class', 'completed')
-    cy.getExerciseItems().eq(1).should('have.class', 'current')
+    cy.getExerciseItem(0).should('have.class', 'completed')
+    cy.getExerciseItem(1).should('have.class', 'current')
   })
 
   it('should reset the workout', () => {
@@ -76,7 +76,7 @@ describe('Timer Functionality', () => {
     cy.getWorkoutControlState('pause').should('be.disabled')
     cy.getWorkoutControlState('skip').should('be.disabled')
     
-    cy.getExerciseItems().first().should('have.class', 'current')
+    cy.getExerciseItem(0).should('have.class', 'current')
   })
 
   it('should automatically advance through exercises', () => {
@@ -124,14 +124,14 @@ describe('Timer Functionality', () => {
     cy.clickWorkoutControl('start')
     
     cy.clickWorkoutControl('skip')
-    cy.getExerciseItems().first().should('have.class', 'completed')
+    cy.getExerciseItem(0).should('have.class', 'completed')
     
     cy.clickWorkoutControl('skip')
-    cy.getExerciseItems().eq(1).should('have.class', 'completed')
+    cy.getExerciseItem(1).should('have.class', 'completed')
     
     cy.clickWorkoutControl('skip')
-    cy.getExerciseItems().eq(2).should('have.class', 'completed')
-    cy.getExerciseItems().eq(3).should('have.class', 'current')
+    cy.getExerciseItem(2).should('have.class', 'completed')
+    cy.getExerciseItem(3).should('have.class', 'current')
   })
 
   it('should handle timer countdown accuracy', () => {

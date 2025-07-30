@@ -376,12 +376,18 @@ export class WorkoutApp {
         // Release screen wake lock when workout completes
         this.screenWakeManager.releaseWakeLock();
         
-        this.currentExercise.textContent = 'Workout Complete! 🎉';
-        this.timerDisplay.textContent = '00:00';
-        this.timerDisplay.style.display = 'block';
-        this.repsDisplay.style.display = 'none';
-        this.repCompletion.style.display = 'none';
-        this.progressFill.style.width = '100%';
+        // Update timer display component to show completion
+        if (this.timerDisplayComponent) {
+            const completionExercise = {
+                name: 'Workout Complete! 🎉',
+                duration: 0,
+                exerciseType: 'timer'
+            };
+            this.timerDisplayComponent.setExercise(completionExercise);
+            this.timerDisplayComponent.setAttribute('time-remaining', '0');
+            this.timerDisplayComponent.setAttribute('is-running', 'false');
+        }
+        
         this.updateControls();
         this.updateWorkoutList();
         
@@ -411,11 +417,8 @@ export class WorkoutApp {
      * Update progress bar
      */
     updateProgressBar() {
-        // Legacy progress bar update (if still needed)
-        if (this.progressFill) {
-            const progress = this.timerManager.getProgress();
-            this.progressFill.style.width = `${progress}%`;
-        }
+        // Progress bar is now handled by the timer display web component
+        // This method is kept for backward compatibility but no longer needed
     }
 
     /**
@@ -606,11 +609,6 @@ export class WorkoutApp {
             this.loadCurrentExercise();
         }
         
-        // Update legacy elements if they exist
-        if (this.progressFill) {
-            this.progressFill.style.width = '0%';
-        }
-        
         this.updateControls();
         this.updateWorkoutList();
         this.updateWorkoutContextComponent();
@@ -635,7 +633,6 @@ export class WorkoutApp {
         const exercise = this.workout.exercises[this.currentExerciseIndex];
         if (exercise && exercise.exerciseType === 'reps' && !exercise.completed) {
             exercise.completed = true;
-            this.progressFill.style.width = '100%';
             
             // Give enough delay to ensure UI updates properly but allow faster test execution
             setTimeout(() => {

@@ -20,8 +20,8 @@ describe('Description Visibility and Layout', () => {
 
   it('should keep workout list descriptions within bounds', () => {
     // Expand first exercise in workout list
-    cy.getExerciseItems().first().find('.exercise-header').click()
-    cy.getExerciseItems().first().should('have.class', 'expanded')
+    cy.getFirstExerciseItem().find('.exercise-header').click()
+    cy.getFirstExerciseItem().should('have.class', 'expanded')
     
     // Check visibility and bounds (allow margin for padding and mobile rendering)
     cy.get('.exercise-item.expanded .exercise-description').should('be.visible')
@@ -43,7 +43,7 @@ describe('Description Visibility and Layout', () => {
     cy.get('.description-content').should('have.css', 'text-align').and('match', /left|start/)
     
     // Workout list descriptions should be readable
-    cy.getExerciseItems().first().find('.exercise-header').click()
+    cy.getFirstExerciseItem().find('.exercise-header').click()
     cy.get('.exercise-item.expanded .exercise-description p').should('be.visible')
   })
 
@@ -60,7 +60,7 @@ describe('Description Visibility and Layout', () => {
     })
     
     // Test workout list on mobile
-    cy.getExerciseItems().first().find('.exercise-header').click()
+    cy.getFirstExerciseItem().find('.exercise-header').click()
     cy.get('.exercise-item.expanded .exercise-description').should('be.visible')
     cy.get('.exercise-item.expanded .exercise-description').then($desc => {
       const rect = $desc[0].getBoundingClientRect()
@@ -114,7 +114,7 @@ Rest - 0:02`
     cy.get('.description-content p').should('have.length', 2)
     
     // Test workout list with long text
-    cy.getExerciseItems().first().find('.exercise-header').click()
+    cy.getFirstExerciseItem().find('.exercise-header').click()
     cy.get('.exercise-item.expanded .exercise-description').should('be.visible')
     cy.get('.exercise-item.expanded .exercise-description p').should('have.length', 2)
     
