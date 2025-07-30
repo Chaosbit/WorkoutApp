@@ -186,6 +186,9 @@ Rest - 0:30</pre>
                     </div>
                     
                     <div class="timer-container">
+                        <!-- Focused Workout Context Web Component -->
+                        <workout-context id="workoutContext"></workout-context>
+                        
                         <div class="current-exercise md-card md-card--elevated">
                             <div class="md-card__content">
                                 <h3 id="currentExercise" class="md-typescale-headline-large">Exercise</h3>
@@ -236,7 +239,9 @@ Rest - 0:30</pre>
                         </div>
                         
                         <div class="workout-progress">
-                            <p id="progressText" class="md-typescale-body-large">Exercise 1 of 1</p>
+                            <div class="progress-info">
+                                <p id="progressText" class="md-typescale-body-large">Exercise 1 of 1</p>
+                            </div>
                         </div>
                     </div>
                     
