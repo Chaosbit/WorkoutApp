@@ -33,7 +33,7 @@ A Progressive Web App for running markdown-based workouts with timers, designed 
 
 ## Workout Format
 
-Create `.md` files using the supported markdown syntax. For the complete format specification, see **[WORKOUT_FORMAT_SPEC.md](WORKOUT_FORMAT_SPEC.md)**.
+Create `.md` files using the supported markdown syntax. For the complete format specification, see **[WORKOUT_FORMAT_SPEC.md](docs/WORKOUT_FORMAT_SPEC.md)**.
 
 ### Quick Reference
 
@@ -61,7 +61,7 @@ Complete at your own pace
 - **Sets notation**: `Exercise Name - N sets x MM:SS / MM:SS`
 - **Rest periods**: `Rest - MM:SS`
 
-For detailed syntax rules, validation requirements, examples, and best practices, see the full **[Workout Format Specification](WORKOUT_FORMAT_SPEC.md)**.
+For detailed syntax rules, validation requirements, examples, and best practices, see the full **[Workout Format Specification](docs/WORKOUT_FORMAT_SPEC.md)**.
 
 ## Usage
 
@@ -118,8 +118,8 @@ This project uses automated dependency management to ensure security and keep pa
 
 ## Development & Roadmap
 
-- **[ROADMAP.md](ROADMAP.md)** - Comprehensive development roadmap with prioritized features
-- **[FEATURE_IDEAS.md](FEATURE_IDEAS.md)** - Categorized list of potential features and improvements
+- **[ROADMAP.md](docs/ROADMAP.md)** - Comprehensive development roadmap with prioritized features
+- **[FEATURE_IDEAS.md](docs/FEATURE_IDEAS.md)** - Categorized list of potential features and improvements
 - **Contributing**: See roadmap documents for feature requests and contribution opportunities
 
 ## Files
