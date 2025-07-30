@@ -39,6 +39,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add custom services
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Add HttpClient for AI proxy
+builder.Services.AddHttpClient();
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
