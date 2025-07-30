@@ -76,7 +76,16 @@ class TrainingPlanPage {
         const firstDay = new Date(this.trainingPlanManager.currentYear, this.trainingPlanManager.currentMonth, 1);
         const lastDay = new Date(this.trainingPlanManager.currentYear, this.trainingPlanManager.currentMonth + 1, 0);
         const daysInMonth = lastDay.getDate();
-        const startingDayOfWeek = firstDay.getDay();
+        
+        // Get locale-based week start (0 = Sunday, 1 = Monday)
+        const localeWeekStart = this.getLocaleWeekStart();
+        let startingDayOfWeek = firstDay.getDay();
+        
+        // Adjust for locale week start
+        startingDayOfWeek = (startingDayOfWeek - localeWeekStart + 7) % 7;
+        
+        // Update calendar headers based on locale
+        this.updateCalendarHeaders(localeWeekStart);
         
         // Add empty cells for days before month starts
         for (let i = 0; i < startingDayOfWeek; i++) {
@@ -91,6 +100,56 @@ class TrainingPlanPage {
             const dayElement = this.createCalendarDay(day, today);
             calendarDays.appendChild(dayElement);
         }
+    }
+    
+    /**
+     * Get locale-based week start (0=Sunday, 1=Monday)
+     */
+    getLocaleWeekStart() {
+        // Try to determine from user's locale
+        try {
+            const locale = navigator.language || 'en-US';
+            const date = new Date(2023, 0, 1); // A Sunday
+            const weekStart = new Intl.DateTimeFormat(locale, { weekday: 'short' }).formatToParts(date);
+            
+            // For most European locales, week starts on Monday
+            if (locale.startsWith('en-GB') || locale.startsWith('de') || locale.startsWith('fr') || 
+                locale.startsWith('es') || locale.startsWith('it') || locale.startsWith('nl') ||
+                locale.startsWith('pt') || locale.startsWith('pl') || locale.startsWith('ru') ||
+                locale.startsWith('sv') || locale.startsWith('no') || locale.startsWith('da') ||
+                locale.startsWith('fi')) {
+                return 1; // Monday
+            }
+            
+            // For US, Canada, Japan, most others use Sunday
+            return 0; // Sunday
+        } catch (error) {
+            console.warn('Could not determine locale week start, defaulting to Sunday');
+            return 0; // Sunday as default
+        }
+    }
+    
+    /**
+     * Update calendar headers based on locale week start
+     */
+    updateCalendarHeaders(weekStart) {
+        const calendarGrid = document.querySelector('.calendar-grid');
+        if (!calendarGrid) return;
+        
+        const headerContainer = calendarGrid.querySelector('.calendar-header');
+        if (!headerContainer) return;
+        
+        const dayNames = weekStart === 1 
+            ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']  // Monday start
+            : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; // Sunday start
+        
+        // Update header content
+        const headers = headerContainer.querySelectorAll('.calendar-day-header');
+        headers.forEach((header, index) => {
+            if (dayNames[index]) {
+                header.textContent = dayNames[index];
+            }
+        });
     }
 
     /**
