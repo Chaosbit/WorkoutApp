@@ -51,8 +51,9 @@ public class AuthService : IAuthService
         };
 
         _context.Users.Add(user);
+        await _context.SaveChangesAsync(); // Save user first to get the ID
 
-        // Create initial statistics
+        // Create initial statistics with the saved user's ID
         var statistics = new UserStatistics
         {
             UserId = user.Id,
