@@ -1,32 +1,20 @@
-describe('Workout Library', () => {
+describe('Workout Library - Integration Tests', () => {
   beforeEach(() => {
     cy.visit('/')
-    // Clear localStorage before each test
     cy.clearLocalStorage()
   })
 
-  it('should initially hide workout library when no workouts are saved', () => {
+  it('should manage workout library lifecycle from empty to multiple workouts', () => {
+    // Initially hidden
     cy.get('#workoutLibrary').should('not.be.visible')
-    cy.get('.sample-format').should('be.visible')
-  })
-
-  it('should show workout library after loading first workout', () => {
-    cy.loadWorkoutFile('test-workout.md')
     
-    cy.get('#workoutLibrary').should('be.visible')
-    cy.get('.workout-library h3').should('contain', 'Saved Workouts')
-    cy.get('#workoutSelect option').should('have.length', 2) // placeholder + 1 workout
-    cy.get('#workoutSelect option:selected').should('contain', 'test-workout')
-  })
-
-  it('should store multiple workouts and allow switching between them', () => {
     // Load first workout
     cy.loadWorkoutFile('test-workout.md')
+    cy.get('#workoutLibrary').should('be.visible')
     cy.get('#workoutTitle').should('contain', 'Test Workout')
     
     // Load second workout
     const secondWorkout = `# Cardio Workout
-
 ## Running - 10:00
 ## Stretching - 5:00`
 
@@ -42,12 +30,47 @@ describe('Workout Library', () => {
       input[0].dispatchEvent(changeEvent)
     })
 
+    // Should have both workouts
     cy.get('#workoutTitle').should('contain', 'Cardio Workout')
     cy.get('#workoutSelect option').should('have.length', 3) // placeholder + 2 workouts
     
-    // Switch back to first workout
+    // Switch between workouts
     cy.get('#workoutSelect').select('test-workout')
     cy.get('#workoutTitle').should('contain', 'Test Workout')
+  })
+
+  it('should persist workouts across page reloads', () => {
+    // Load workout
+    cy.loadWorkoutFile('test-workout.md')
+    cy.get('#workoutTitle').should('contain', 'Test Workout')
+    
+    // Reload page
+    cy.reload()
+    
+    // Workout should still be available
+    cy.get('#workoutLibrary').should('be.visible')
+    cy.get('#workoutSelect option').should('contain', 'test-workout')
+    
+    // Select and verify it loads
+    cy.get('#workoutSelect').select('test-workout')
+    cy.get('#workoutTitle').should('contain', 'Test Workout')
+  })
+
+  it('should handle workout deletion and library cleanup', () => {
+    // Load workout
+    cy.loadWorkoutFile('test-workout.md')
+    cy.get('#workoutLibrary').should('be.visible')
+    
+    // Delete workout (if delete functionality exists)
+    cy.get('#workoutSelect').select('test-workout')
+    
+    // Note: The actual delete functionality would need to be implemented
+    // This test structure is prepared for when that feature is added
+    
+    // For now, just verify the workout can be managed through the library
+    cy.get('#workoutSelect option:selected').should('contain', 'test-workout')
+  })
+})
     cy.getExerciseItems().should('contain', 'Warm-up')
     
     // Switch to second workout

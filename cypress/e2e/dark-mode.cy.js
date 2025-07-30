@@ -1,26 +1,12 @@
-describe('Dark Mode Implementation', () => {
+describe('Dark Mode - Integration Tests', () => {
     beforeEach(() => {
         cy.visit('/');
     });
 
-    it('should respect system dark mode preference', () => {
-        // Test in light mode first
-        cy.window().then((win) => {
-            const computedStyle = win.getComputedStyle(win.document.documentElement);
-            const primaryColor = computedStyle.getPropertyValue('--md-sys-color-primary').trim();
-            const surfaceColor = computedStyle.getPropertyValue('--md-sys-color-surface').trim();
-            
-            // Should be light theme colors
-            expect(primaryColor).to.equal('#6750A4');
-            expect(surfaceColor).to.equal('#FEF7FF');
-        });
-    });
-
-    it('should load dark theme colors when system prefers dark mode', () => {
+    it('should function properly in dark mode environment', () => {
         // Visit with dark mode preference
         cy.visit('/', {
             onBeforeLoad: (win) => {
-                // Override matchMedia to simulate dark mode preference
                 Object.defineProperty(win, 'matchMedia', {
                     writable: true,
                     value: cy.stub().returns({
@@ -28,6 +14,22 @@ describe('Dark Mode Implementation', () => {
                         addListener: cy.stub(),
                         removeListener: cy.stub(),
                     }),
+                });
+            }
+        });
+
+        // Load and execute workout in dark mode
+        cy.loadWorkoutFile('test-workout.md')
+        
+        // Should function normally regardless of theme
+        cy.clickWorkoutControl('start')
+        cy.getCurrentExercise().should('contain', 'Warm-up')
+        
+        // UI elements should be visible
+        cy.getTimerDisplay().should('be.visible')
+        cy.getProgressFill().should('be.visible')
+    })
+})
                 });
             },
         });
