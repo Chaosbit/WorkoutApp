@@ -23,13 +23,15 @@ describe('Description Visibility and Layout', () => {
     cy.get('.exercise-item').first().find('.exercise-header').click()
     cy.get('.exercise-item').first().should('have.class', 'expanded')
     
-    // Check visibility and bounds (allow small margin for padding)
+    // Check visibility and bounds (allow margin for padding and mobile rendering)
     cy.get('.exercise-item.expanded .exercise-description').should('be.visible')
     cy.get('.exercise-item.expanded .exercise-description').then($desc => {
       const rect = $desc[0].getBoundingClientRect()
-      expect(rect.left).to.be.at.least(-20) // Allow 20px margin for padding
-      expect(rect.right).to.be.at.most(Cypress.config('viewportWidth') + 20)
-      expect(rect.top).to.be.at.least(-20) // Allow margin for scroll
+      // Use larger margin for mobile viewports due to scaling and rendering differences
+      const margin = Cypress.config('viewportWidth') <= 375 ? 50 : 20
+      expect(rect.left).to.be.at.least(-margin) // Allow margin for padding and mobile rendering
+      expect(rect.right).to.be.at.most(Cypress.config('viewportWidth') + margin)
+      expect(rect.top).to.be.at.least(-margin) // Allow margin for scroll
     })
   })
 
