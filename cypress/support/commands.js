@@ -165,3 +165,91 @@ Cypress.Commands.add('getCurrentExercise', () => {
 Cypress.Commands.add('getProgressFill', () => {
   return cy.getShadow('timer-display', '#progressFill');
 });
+
+/**
+ * Click description toggle in timer display
+ */
+Cypress.Commands.add('clickDescriptionToggle', () => {
+  return cy.clickShadow('timer-display', '.description-toggle');
+});
+
+/**
+ * Get description content from timer display
+ */
+Cypress.Commands.add('getDescriptionContent', () => {
+  return cy.getShadow('timer-display', '.description-content');
+});
+
+/**
+ * Get exercise description element from timer display
+ */
+Cypress.Commands.add('getExerciseDescription', () => {
+  return cy.getShadow('timer-display', '#exerciseDescription');
+});
+
+/**
+ * Check if exercise description is expanded
+ */
+Cypress.Commands.add('isDescriptionExpanded', () => {
+  return cy.get('timer-display').then(($component) => {
+    const component = $component[0];
+    if (!component.shadowRoot) {
+      return false;
+    }
+    const exerciseDesc = component.shadowRoot.querySelector('#exerciseDescription');
+    return exerciseDesc && exerciseDesc.classList.contains('expanded');
+  });
+});
+
+/**
+ * Get timer display container
+ */
+Cypress.Commands.add('getTimerDisplayContainer', () => {
+  return cy.getShadow('timer-display', '.timer-display-container');
+});
+
+/**
+ * Click exercise header in exercise list (for expanding/collapsing)
+ */
+Cypress.Commands.add('clickExerciseHeader', (exerciseIndex) => {
+  return cy.get('exercise-list').should('exist').then(($component) => {
+    const component = $component[0];
+    if (!component.shadowRoot) {
+      throw new Error('ExerciseList component does not have shadow DOM');
+    }
+    const exerciseItems = component.shadowRoot.querySelectorAll('.exercise-item');
+    if (exerciseIndex >= exerciseItems.length) {
+      throw new Error(`Exercise index ${exerciseIndex} out of range. Found ${exerciseItems.length} exercises.`);
+    }
+    const exerciseItem = exerciseItems[exerciseIndex];
+    const exerciseHeader = exerciseItem.querySelector('.exercise-header');
+    if (exerciseHeader) {
+      return cy.wrap(exerciseHeader).click();
+    } else {
+      // If no specific header, click the item itself
+      return cy.wrap(exerciseItem).click();
+    }
+  });
+});
+
+/**
+ * Get exercise description from exercise list
+ */
+Cypress.Commands.add('getExerciseListDescription', (exerciseIndex) => {
+  return cy.get('exercise-list').should('exist').then(($component) => {
+    const component = $component[0];
+    if (!component.shadowRoot) {
+      throw new Error('ExerciseList component does not have shadow DOM');
+    }
+    const exerciseItems = component.shadowRoot.querySelectorAll('.exercise-item');
+    if (exerciseIndex >= exerciseItems.length) {
+      throw new Error(`Exercise index ${exerciseIndex} out of range. Found ${exerciseItems.length} exercises.`);
+    }
+    const exerciseItem = exerciseItems[exerciseIndex];
+    const exerciseDescription = exerciseItem.querySelector('.exercise-description');
+    if (!exerciseDescription) {
+      throw new Error(`Exercise description not found for exercise ${exerciseIndex}`);
+    }
+    return cy.wrap(exerciseDescription);
+  });
+});

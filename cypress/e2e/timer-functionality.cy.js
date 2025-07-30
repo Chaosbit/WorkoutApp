@@ -2,6 +2,7 @@ describe('Timer Functionality', () => {
   beforeEach(() => {
     cy.visit('/')
     cy.loadWorkoutFile('test-workout.md')
+    cy.waitForWorkoutLoad()
   })
 
   it('should have correct initial button states', () => {
@@ -106,17 +107,31 @@ describe('Timer Functionality', () => {
   it('should complete the workout and show completion message', () => {
     cy.clickWorkoutControl('start')
     
-    for (let i = 0; i < 6; i++) {
-      cy.clickWorkoutControl('skip')
-      cy.wait(100)
-    }
+    // Skip through all exercises until workout is complete
+    // Test workout has: Warm-up, Push-ups, Rest, Jumping Jacks, Rest, Cool Down
+    cy.clickWorkoutControl('skip') // Skip Warm-up
+    cy.wait(100)
+    cy.clickWorkoutControl('skip') // Skip Push-ups  
+    cy.wait(100)
+    cy.clickWorkoutControl('skip') // Skip Rest
+    cy.wait(100)
+    cy.clickWorkoutControl('skip') // Skip Jumping Jacks
+    cy.wait(100)
+    cy.clickWorkoutControl('skip') // Skip Rest
+    cy.wait(100)
+    cy.clickWorkoutControl('skip') // Skip Cool Down - should complete workout
+    cy.wait(100)
     
+    // Verify workout completion
     cy.getCurrentExercise().should('contain', 'Workout Complete! 🎉')
     cy.getTimerDisplay().should('contain', '0:00')
     cy.getProgressFill().should('have.css', 'width').and('not.equal', '0px')
     
-    // Should show completion message instead of alert
-    cy.get('.app-message--success').should('be.visible')
+    // Wait for the completion message to appear (it has a 500ms delay)
+    cy.wait(700)
+    
+    // Should show completion message
+    cy.get('.app-message--success', { timeout: 10000 }).should('be.visible')
     cy.get('.app-message--success').should('contain', 'Workout completed! Great job! 💪')
   })
 
