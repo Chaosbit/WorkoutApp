@@ -18,6 +18,12 @@ on:
           - quick
           - full
 
+# Permissions needed for test reporting
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 # Allow cancellation of previous runs on the same PR/branch
 concurrency:
   group: ci-${{ github.ref }}
@@ -211,26 +217,9 @@ jobs:
       - name: Validate HTML, CSS, and JS syntax
         run: |
           echo "Running basic syntax validation..."
-          # Check HTML files
-          for file in *.html; do
-            if [ -f "$file" ]; then
-              echo "Validating $file"
-              python3 -c "
-              import sys
-              try:
-                  with open('$file', 'r') as f:
-                      content = f.read()
-                  # Basic HTML validation - check for unclosed tags
-                  if '<html' in content and '</html>' not in content:
-                      print('ERROR: Missing closing </html> tag in $file')
-                      sys.exit(1)
-                  print('✓ $file syntax OK')
-              except Exception as e:
-                  print(f'ERROR: Failed to validate $file: {e}')
-                  sys.exit(1)
-              "
-            fi
-          done
+          
+          # Check HTML files using Python script
+          python3 .github/scripts/validate-html.py
           
           # Check JS files
           for file in *.js js/*.js; do
