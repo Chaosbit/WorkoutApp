@@ -13,6 +13,7 @@ coverage/
 # Cypress
 cypress/videos/
 cypress/screenshots/
+cypress/reports/
 
 # Test Coverage Reports
 coverage/

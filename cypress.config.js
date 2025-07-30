@@ -10,6 +10,11 @@ module.exports = defineConfig({
     video: true,
     screenshotOnRunFailure: true,
     chromeWebSecurity: false,
+    reporter: 'junit',
+    reporterOptions: {
+      mochaFile: 'cypress/reports/junit.xml',
+      toConsole: true,
+    },
     setupNodeEvents(on, config) {
       // Mobile viewport configurations
       const mobileViewports = {

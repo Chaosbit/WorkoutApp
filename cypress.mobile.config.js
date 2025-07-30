@@ -11,6 +11,11 @@ module.exports = defineConfig({
     screenshotOnRunFailure: true,
     chromeWebSecurity: false,
     userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+    reporter: 'junit',
+    reporterOptions: {
+      mochaFile: 'cypress/reports/junit-mobile.xml',
+      toConsole: true,
+    },
     setupNodeEvents(on, config) {
       // Mobile-specific configurations
       config.defaultCommandTimeout = 8000; // Mobile devices might be slower
