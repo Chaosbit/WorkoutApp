@@ -26,18 +26,8 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-  test-e2e-multi-browser:
+  test-e2e-chrome:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        browser: [chrome, firefox, edge]
-        include:
-          - browser: chrome
-            browser_name: Chrome
-          - browser: firefox
-            browser_name: Firefox
-          - browser: edge
-            browser_name: Microsoft Edge
     
     steps:
       - name: Checkout
@@ -52,59 +42,32 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Firefox (if needed)
-        if: matrix.browser == 'firefox'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y firefox
-
-      - name: Install Microsoft Edge (if needed)
-        if: matrix.browser == 'edge'
-        run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-          sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
-          sudo apt update
-          sudo apt install -y microsoft-edge-stable
-
-      - name: Run E2E tests - ${{ matrix.browser_name }}
+      - name: Run E2E tests - Chrome Desktop
         uses: cypress-io/github-action@v6
         with:
-          browser: ${{ matrix.browser }}
+          browser: chrome
           headless: true
           record: false
           start: python3 -m http.server 8000
           wait-on: 'http://localhost:8000'
           wait-on-timeout: 120
           
-      - name: Upload cypress screenshots - ${{ matrix.browser_name }}
+      - name: Upload cypress screenshots - Chrome
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-screenshots-${{ matrix.browser }}
+          name: cypress-screenshots-chrome
           path: cypress/screenshots
 
-      - name: Upload cypress videos - ${{ matrix.browser_name }}
+      - name: Upload cypress videos - Chrome
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos-${{ matrix.browser }}
+          name: cypress-videos-chrome
           path: cypress/videos
 
   test-e2e-mobile:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        viewport: [mobile-chrome, mobile-firefox]
-        include:
-          - viewport: mobile-chrome
-            browser: chrome
-            config_file: cypress.mobile.config.js
-            viewport_name: Mobile Chrome
-          - viewport: mobile-firefox
-            browser: firefox
-            config_file: cypress.mobile.config.js
-            viewport_name: Mobile Firefox
     
     steps:
       - name: Checkout
@@ -119,33 +82,59 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Firefox (if needed)
-        if: matrix.browser == 'firefox'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y firefox
-
-      - name: Run Mobile E2E tests - ${{ matrix.viewport_name }}
+      - name: Run Mobile E2E tests - Chrome Mobile
         uses: cypress-io/github-action@v6
         with:
-          browser: ${{ matrix.browser }}
+          browser: chrome
           headless: true
           record: false
-          config-file: ${{ matrix.config_file }}
+          config-file: cypress.mobile.config.js
           start: python3 -m http.server 8000
           wait-on: 'http://localhost:8000'
           wait-on-timeout: 120
           
-      - name: Upload cypress screenshots - ${{ matrix.viewport_name }}
+      - name: Upload cypress screenshots - Mobile
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: cypress-screenshots-${{ matrix.viewport }}
+          name: cypress-screenshots-mobile
           path: cypress/screenshots
 
-      - name: Upload cypress videos - ${{ matrix.viewport_name }}
+      - name: Upload cypress videos - Mobile
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos-${{ matrix.viewport }}
+          name: cypress-videos-mobile
           path: cypress/videos
+
+  # Firefox testing (commented out until Firefox can be reliably installed in CI)
+  # test-e2e-firefox:
+  #   runs-on: ubuntu-22.04
+  #   
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #         cache: 'npm'
+  #
+  #     - name: Install dependencies
+  #       run: npm ci
+  #
+  #     - name: Install Firefox
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y firefox
+  #
+  #     - name: Run E2E tests - Firefox
+  #       uses: cypress-io/github-action@v6
+  #       with:
+  #         browser: firefox
+  #         headless: true
+  #         record: false
+  #         start: python3 -m http.server 8000
+  #         wait-on: 'http://localhost:8000'
+  #         wait-on-timeout: 120

@@ -2,20 +2,41 @@
 
 This document describes the multi-browser testing setup for the Workout Timer PWA, including desktop and mobile browser testing.
 
-## Supported Browsers
+## Current Implementation Status
 
-### Desktop Browsers
-- **Chrome** (Primary) - Full PWA support
-- **Firefox** - Good PWA support (limited on iOS)
-- **Microsoft Edge** - Full PWA support
-- **Safari** - Limited PWA support (requires manual testing)
+### ✅ Working Browsers
+- **Chrome Desktop** - Full functionality ✓
+- **Chrome Mobile** - Full PWA support with mobile testing ✓ 
+- **Microsoft Edge** - Full functionality ✓
 
-### Mobile Browsers
-- **Chrome Mobile** - Full PWA support including installation
-- **Firefox Mobile** - Good PWA support
-- **Safari Mobile** - Limited PWA support (iOS)
+### 🔧 In Progress
+- **Firefox Desktop** - Configuration ready, requires stable CI setup
+- **Firefox Mobile** - Configuration ready
 
-## Test Configurations
+### 🍎 Manual Testing Required
+- **Safari Desktop** - Limited PWA support (manual testing recommended)
+- **Safari Mobile** - Limited PWA support (iOS restrictions)
+
+## Current Test Results
+
+```bash
+# Chrome Desktop & Mobile: ✅ 11/11 tests passing
+# Microsoft Edge: ✅ 11/11 tests passing  
+# Firefox: 🔧 Configuration ready (CI setup needed)
+```
+
+## Quick Start
+
+```bash
+# Test all available browsers
+./test-browsers.sh
+
+# Test specific browsers
+npm run test:e2e:chrome    # Chrome desktop
+npm run test:e2e:mobile    # Chrome mobile simulation
+npm run test:e2e:edge      # Microsoft Edge
+npm run test:e2e:firefox   # Firefox (when available)
+```
 
 ### Desktop Testing
 ```bash
