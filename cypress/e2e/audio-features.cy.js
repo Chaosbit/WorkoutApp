@@ -27,8 +27,8 @@ describe('Audio Features', () => {
       cy.spy(win.AudioContext.prototype, 'createGain').as('createGain')
     })
     
-    cy.get('#startBtn').click()
-    cy.get('#skipBtn').click()
+    cy.clickWorkoutControl('start')
+    cy.clickWorkoutControl('skip')
     
     cy.get('@createOscillator').should('have.been.called')
     cy.get('@createGain').should('have.been.called')
@@ -39,10 +39,10 @@ describe('Audio Features', () => {
       cy.spy(win.AudioContext.prototype, 'createOscillator').as('createOscillator')
     })
     
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
     for (let i = 0; i < 6; i++) {
-      cy.get('#skipBtn').click()
+      cy.clickWorkoutControl('skip')
       cy.wait(100)
     }
     
@@ -55,8 +55,8 @@ describe('Audio Features', () => {
       cy.spy(win.console, 'warn').as('consoleWarn')
     })
     
-    cy.get('#startBtn').click()
-    cy.get('#skipBtn').click()
+    cy.clickWorkoutControl('start')
+    cy.clickWorkoutControl('skip')
     
     cy.get('@consoleWarn').should('have.been.calledWith', 'Error playing sound:', Cypress.sinon.match.instanceOf(Error))
   })

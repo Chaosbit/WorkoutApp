@@ -5,20 +5,20 @@ describe('Timer Functionality', () => {
   })
 
   it('should have correct initial button states', () => {
-    cy.get('#startBtn').should('be.enabled')
-    cy.get('#pauseBtn').should('be.disabled')
-    cy.get('#skipBtn').should('be.disabled')
-    cy.get('#resetBtn').should('be.enabled')
+    cy.getWorkoutControlState('start').should('be.enabled')
+    cy.getWorkoutControlState('pause').should('be.disabled')
+    cy.getWorkoutControlState('skip').should('be.disabled')
+    cy.getWorkoutControlState('reset').should('be.enabled')
   })
 
   it('should start the timer when Start button is clicked', () => {
-    cy.get('#startBtn').click()
+    cy.clickWorkoutControl('start')
     
-    cy.get('#startBtn').should('be.disabled')
-    cy.get('#pauseBtn').should('be.enabled')
-    cy.get('#skipBtn').should('be.enabled')
+    cy.getWorkoutControlState('start').should('be.disabled')
+    cy.getWorkoutControlState('pause').should('be.enabled')
+    cy.getWorkoutControlState('skip').should('be.enabled')
     
-    cy.get('.exercise-item').first().should('have.class', 'current')
+    cy.getExerciseItems().first().should('have.class', 'current')
   })
 
   it('should pause and resume the timer', () => {
