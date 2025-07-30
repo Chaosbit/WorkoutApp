@@ -103,20 +103,28 @@ class HomePage {
      * Load recent activity
      */
     loadRecentActivity() {
-        const recentStats = this.statisticsManager.getRecentWorkouts(5);
-        const recentActivitySection = document.getElementById('recentActivity');
-        const recentActivityList = document.getElementById('recentActivityList');
-        
-        if (recentStats && recentStats.length > 0) {
-            recentActivitySection.style.display = 'block';
-            recentActivityList.innerHTML = '';
+        try {
+            const recentStats = this.statisticsManager.getRecentWorkouts(5);
+            const recentActivitySection = document.getElementById('recentActivity');
+            const recentActivityList = document.getElementById('recentActivityList');
             
-            recentStats.forEach(stat => {
-                const activityElement = this.createRecentActivityElement(stat);
-                recentActivityList.appendChild(activityElement);
-            });
-        } else {
-            recentActivitySection.style.display = 'none';
+            if (recentStats && recentStats.length > 0) {
+                recentActivitySection.style.display = 'block';
+                recentActivityList.innerHTML = '';
+                
+                recentStats.forEach(stat => {
+                    const activityElement = this.createRecentActivityElement(stat);
+                    recentActivityList.appendChild(activityElement);
+                });
+            } else {
+                recentActivitySection.style.display = 'none';
+            }
+        } catch (error) {
+            console.warn('Error loading recent activity:', error);
+            const recentActivitySection = document.getElementById('recentActivity');
+            if (recentActivitySection) {
+                recentActivitySection.style.display = 'none';
+            }
         }
     }
 
