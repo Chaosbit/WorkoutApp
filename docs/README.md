@@ -1,6 +1,6 @@
 # Documentation
 
-This folder contains all the project documentation for the Workout Timer PWA.
+This directory contains all the consolidated documentation for the Workout Timer PWA project.
 
 ## Documentation Files
 
@@ -24,6 +24,13 @@ This folder contains all the project documentation for the Workout Timer PWA.
 - **[FEATURE_IDEAS.md](FEATURE_IDEAS.md)** - Feature ideas and enhancement proposals
 - **[WORKOUT_FORMAT_SPEC.md](WORKOUT_FORMAT_SPEC.md)** - Complete workout file format specification
 
----
+## Other Documentation Locations
 
-For the main project README, see [../README.md](../README.md).
+### Component-Specific Documentation
+- **[Main README](../README.md)** - Project overview and getting started guide
+- **[Backend Documentation](../backend/README.md)** - Backend API documentation
+- **[DevContainer Setup](../.devcontainer/README.md)** - Development container configuration
+- **[GitHub Workflows](../.github/README.md)** - CI/CD and GitHub Actions documentation
+
+### Sample Files
+- **[Sample Workout](../sample-workout.md)** - Example workout file format
