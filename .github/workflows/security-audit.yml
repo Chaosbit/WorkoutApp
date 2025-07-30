@@ -6,9 +6,6 @@ name: Security Audit
     - cron: '0 7 * * 1'
   # Allow manual triggering
   workflow_dispatch: {}
-  # Run on pushes to main/master branches
-  push:
-    branches: [ main, master ]
 
 jobs:
   audit:
