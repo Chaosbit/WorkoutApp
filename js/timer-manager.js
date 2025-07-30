@@ -142,6 +142,14 @@ export class TimerManager {
     }
 
     /**
+     * Get total time for current exercise
+     * @returns {number} Total time in seconds
+     */
+    getTotalTime() {
+        return this.currentExercise ? (this.currentExercise.duration || 0) : 0;
+    }
+
+    /**
      * Get formatted time remaining
      * @returns {string} Formatted time string
      */

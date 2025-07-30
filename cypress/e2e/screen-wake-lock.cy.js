@@ -1,33 +1,35 @@
-describe('Screen Wake Lock Functionality', () => {
+describe('Screen Wake Lock - Integration Tests', () => {
     beforeEach(() => {
         cy.visit('/');
+        cy.loadWorkoutFile('test-workout.md');
+    });
+
+    it('should handle wake lock during workout execution', () => {
+        cy.window().then((win) => {
+            // Mock wake lock API if not available
+            if (!win.navigator.wakeLock) {
+                win.navigator.wakeLock = {
+                    request: cy.stub().resolves({
+                        release: cy.stub().resolves()
+                    })
+                }
+            }
+            
+            cy.spy(win.navigator.wakeLock, 'request').as('wakeLockRequest')
+        })
+
+        // Start workout (should attempt to acquire wake lock)
+        cy.clickWorkoutControl('start')
         
-        // Load a sample workout for testing
-        const workoutContent = `# Test Workout
-
-## Exercise 1 - 0:10
-Short exercise for testing.
-
-Rest - 0:05
-
-## Exercise 2 - 0:05
-Another short exercise.`;
-
-        cy.window().then((win) => {
-            const workoutData = win.WorkoutParser.parseMarkdown(workoutContent);
-            win.workoutApp.workout = workoutData;
-            win.workoutApp.displayWorkout();
-        });
-    });
-
-    it('should have screen wake manager initialized', () => {
-        cy.window().then((win) => {
-            expect(win.workoutApp.screenWakeManager).to.exist;
-            expect(win.workoutApp.screenWakeManager).to.be.an.instanceOf(win.ScreenWakeManager);
-        });
-    });
-
-    it('should detect wake lock API support', () => {
+        // Pause workout (should release wake lock)
+        cy.wait(100)
+        cy.clickWorkoutControl('pause')
+        
+        // Wake lock functionality should not interfere with workout execution
+        cy.getCurrentExercise().should('contain', 'Warm-up')
+        cy.getWorkoutControlState('start').should('be.enabled')
+    })
+})
         cy.window().then((win) => {
             const isSupported = win.workoutApp.screenWakeManager.isWakeLockSupported();
             // In the test environment, this may or may not be supported
@@ -47,7 +49,7 @@ Another short exercise.`;
     it('should attempt to request wake lock when workout starts', () => {
         cy.window().then((win) => {
             // Start the workout
-            cy.get('#startBtn').click();
+            cy.clickWorkoutControl('start');
             
             // Wait a moment for the wake lock to be potentially requested
             cy.wait(100);
@@ -68,13 +70,13 @@ Another short exercise.`;
 
     it('should release wake lock when workout is paused', () => {
         // Start the workout first
-        cy.get('#startBtn').click();
+        cy.clickWorkoutControl('start');
         
         // Wait a moment for the wake lock to be requested
         cy.wait(100);
         
         // Pause the workout
-        cy.get('#pauseBtn').click();
+        cy.clickWorkoutControl('pause');
         
         // Wait a moment for the wake lock to be released
         cy.wait(100);
@@ -88,13 +90,13 @@ Another short exercise.`;
 
     it('should release wake lock when workout is reset', () => {
         // Start the workout first
-        cy.get('#startBtn').click();
+        cy.clickWorkoutControl('start');
         
         // Wait a moment for the wake lock to be requested
         cy.wait(100);
         
         // Reset the workout
-        cy.get('#resetBtn').click();
+        cy.clickWorkoutControl('reset');
         
         // Wait a moment for the wake lock to be released
         cy.wait(100);

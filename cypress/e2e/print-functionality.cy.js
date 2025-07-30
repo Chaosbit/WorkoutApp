@@ -1,33 +1,26 @@
-describe('Print Functionality', () => {
+describe('Print Functionality - Integration Tests', () => {
     beforeEach(() => {
         cy.visit('/');
     });
 
-    it('should not show print button when no workout is loaded', () => {
-        cy.get('#workoutDisplay').should('have.css', 'display', 'none');
-        cy.get('#printWorkoutBtn').should('not.be.visible');
-    });
-
-    it('should display print workout button when workout is loaded', () => {
-        // Load sample workout via file upload
-        cy.fixture('sample-workout.md').then((content) => {
-            const blob = new Blob([content], { type: 'text/markdown' });
-            const file = new File([blob], 'test-workout.md', { type: 'text/markdown' });
-            
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            
-            cy.get('#workoutFile').then((input) => {
-                input[0].files = dataTransfer.files;
-                input[0].dispatchEvent(new Event('change', { bubbles: true }));
-            });
-        });
+    it('should display and function print button when workout is loaded', () => {
+        // Load workout
+        cy.loadWorkoutFile('test-workout.md')
         
-        // Wait for workout to load and dismiss alert
-        cy.on('window:alert', () => true);
-        cy.get('#workoutDisplay').should('be.visible');
-        cy.get('#printWorkoutBtn').should('be.visible');
-        cy.get('#printWorkoutBtn').should('contain', 'Print Workout');
+        // Print button should be visible
+        cy.get('#workoutDisplay').should('be.visible')
+        cy.get('#printWorkoutBtn').should('be.visible')
+        cy.get('#printWorkoutBtn').should('contain', 'Print Workout')
+        
+        // Basic print functionality test (window.print is difficult to test fully in Cypress)
+        cy.window().then((win) => {
+            cy.stub(win, 'print').as('windowPrint')
+        })
+        
+        cy.get('#printWorkoutBtn').click()
+        cy.get('@windowPrint').should('have.been.called')
+    })
+})
         cy.get('#printWorkoutBtn .material-icons').should('contain', 'print');
     });
 

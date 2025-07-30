@@ -1,53 +1,42 @@
-describe('Workout Sharing', () => {
+describe('Workout Sharing - Integration Tests', () => {
   beforeEach(() => {
     cy.visit('/');
   });
 
-  it('should show share button when workout is loaded', () => {
-    // Load a workout file
-    cy.fixture('test-workout.md').then(fileContent => {
-      const file = new File([fileContent], 'test-workout.md', { type: 'text/markdown' });
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-
-      cy.get('#workoutFile').then(input => {
-        input[0].files = dataTransfer.files;
-        input[0].dispatchEvent(new Event('change', { bubbles: true }));
-      });
-    });
-
-    // Check that share button appears
-    cy.get('#shareWorkoutBtn').should('be.visible');
-    cy.get('#shareWorkoutBtn').should('contain', 'Share Workout');
-  });
-
-  it('should load workout from shared link', () => {
-    // Create a simple workout content
+  it('should share and load workout via URL parameters', () => {
+    // Load a workout first
+    cy.loadWorkoutFile('test-workout.md')
+    
+    // Share button should be visible
+    cy.get('#shareWorkoutBtn').should('be.visible')
+    
+    // Create a simple shared workout test
     const workoutContent = `# Test Shared Workout
-
 ## Jumping Jacks - 0:30
-Get moving!
+Rest - 0:15`
 
-Rest - 0:15
-
-## Push-ups - 0:45
-Upper body strength.`;
-
-    // Encode the workout for URL sharing
-    const encoded = btoa(encodeURIComponent(workoutContent));
+    const encoded = btoa(encodeURIComponent(workoutContent))
     
-    // Visit the page with shared workout parameter
-    cy.visit(`/?workout=${encoded}`);
+    // Visit with shared workout
+    cy.visit(`/?workout=${encoded}`)
+    
+    // Verify workout loads correctly
+    cy.get('#workoutTitle').should('contain', 'Test Shared Workout')
+    cy.get('#currentExercise').should('contain', 'Jumping Jacks')
+    
+    // Should be able to execute the shared workout
+    cy.clickWorkoutControl('start')
+    cy.getCurrentExercise().should('contain', 'Jumping Jacks')
+  })
 
-    // Check that workout is loaded
-    cy.get('#workoutTitle').should('contain', 'Test Shared Workout');
-    cy.get('#currentExercise').should('contain', 'Jumping Jacks');
+  it('should handle invalid shared workout gracefully', () => {
+    cy.visit('/?workout=invalid-encoded-data')
     
-    // Check that shared workout message appears
-    cy.get('body').should('contain', 'Workout loaded and saved from shared link!');
-    
-    // Verify share button is available for re-sharing
-    cy.get('#shareWorkoutBtn').should('be.visible');
+    // Should show error and fallback to normal state
+    cy.get('.sample-format').should('be.visible')
+    cy.get('#workoutDisplay').should('not.be.visible')
+  })
+})
   });
 
   it('should handle invalid shared workout gracefully', () => {

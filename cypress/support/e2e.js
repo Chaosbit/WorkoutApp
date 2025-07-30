@@ -55,3 +55,20 @@ Cypress.Commands.add('loadWorkoutFile', (filename) => {
 Cypress.Commands.add('waitForTimer', (seconds) => {
   cy.wait(seconds * 1000)
 })
+
+/**
+ * Wait for workout to load and exercises to be populated
+ */
+Cypress.Commands.add('waitForWorkoutLoad', () => {
+  // Wait for workout display to be visible
+  cy.get('#workoutDisplay').should('be.visible')
+  // Wait for exercise list to have exercises
+  cy.get('exercise-list').should('exist').then(($component) => {
+    const component = $component[0];
+    cy.wrap(component).should(() => {
+      expect(component.shadowRoot).to.exist;
+      const exerciseItems = component.shadowRoot.querySelectorAll('.exercise-item');
+      expect(exerciseItems.length).to.be.greaterThan(0);
+    });
+  });
+})

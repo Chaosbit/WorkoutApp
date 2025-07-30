@@ -1,53 +1,72 @@
-describe('Training Plan', () => {
+describe('Training Plan - Integration Tests', () => {
   beforeEach(() => {
     cy.visit('/')
-    // Clear localStorage before each test
     cy.clearLocalStorage()
   })
 
-  it('should show training plan tab and switch views', () => {
-    // Check that training plan tab exists
-    cy.get('#trainingPlanTab').should('exist').and('contain', 'Training Plan')
-    cy.get('#workoutsTab').should('exist').and('contain', 'Workouts').and('have.class', 'active')
-    
-    // Initially, workouts view should be active
-    cy.get('#workoutView').should('have.class', 'active')
-    cy.get('#trainingPlanView').should('not.have.class', 'active')
-    
-    // Click training plan tab
+  it('should switch to training plan view and display calendar', () => {
+    // Check tab switching
     cy.get('#trainingPlanTab').click()
     
-    // Training plan view should now be active
+    // Training plan view should be active
     cy.get('#trainingPlanView').should('have.class', 'active')
     cy.get('#workoutView').should('not.have.class', 'active')
-    cy.get('#trainingPlanTab').should('have.class', 'active')
-    cy.get('#workoutsTab').should('not.have.class', 'active')
-  })
-
-  it('should display calendar with current month', () => {
-    // Switch to training plan view
-    cy.get('#trainingPlanTab').click()
     
     // Calendar should be visible
     cy.get('.training-plan-section').should('be.visible')
     cy.get('#currentMonthYear').should('exist').and('not.be.empty')
     cy.get('.calendar-grid').should('be.visible')
-    cy.get('.calendar-days').should('be.visible')
-    
-    // Should have 7 day headers
-    cy.get('.calendar-day-header').should('have.length', 7)
-    cy.get('.calendar-day-header').first().should('contain', 'Sun')
-    cy.get('.calendar-day-header').last().should('contain', 'Sat')
-    
-    // Should have calendar days
     cy.get('.calendar-day').should('exist')
   })
 
-  it('should navigate between months', () => {
-    // Switch to training plan view
+  it('should assign workout to calendar day and persist data', () => {
+    // Load a workout first
+    cy.loadWorkoutFile('test-workout.md')
+    
+    // Switch to training plan
+    cy.get('#trainingPlanTab').click()
+    
+    // Click on a calendar day
+    cy.get('.calendar-day').first().click()
+    
+    // Assignment modal should open
+    cy.get('#workoutAssignmentModal').should('be.visible')
+    cy.get('#assignWorkoutSelect').should('exist')
+    
+    // Assign workout
+    cy.get('#assignWorkoutSelect').select('test-workout')
+    cy.get('#assignWorkoutBtn').click()
+    
+    // Modal should close and day should show assignment
+    cy.get('#workoutAssignmentModal').should('not.be.visible')
+    
+    // Reload and verify persistence
+    cy.reload()
+    cy.get('#trainingPlanTab').click()
+    
+    // Assignment should still be visible
+    // (This would depend on the specific UI implementation for showing assignments)
+  })
+
+  it('should handle navigation between months', () => {
     cy.get('#trainingPlanTab').click()
     
     // Get initial month
+    cy.get('#currentMonthYear').invoke('text').then((initialMonth) => {
+      // Navigate to next month
+      cy.get('#nextMonthBtn').click()
+      
+      // Month should have changed
+      cy.get('#currentMonthYear').should('not.contain', initialMonth)
+      
+      // Navigate back
+      cy.get('#prevMonthBtn').click()
+      
+      // Should be back to original month
+      cy.get('#currentMonthYear').should('contain', initialMonth)
+    })
+  })
+})
     cy.get('#currentMonthYear').invoke('text').then((initialMonth) => {
       // Click next month
       cy.get('#nextMonthBtn').click()

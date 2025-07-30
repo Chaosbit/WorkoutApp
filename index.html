@@ -189,54 +189,11 @@ Rest - 0:30</pre>
                         <!-- Focused Workout Context Web Component -->
                         <workout-context id="workoutContext"></workout-context>
                         
-                        <div class="current-exercise md-card md-card--elevated">
-                            <div class="md-card__content">
-                                <h3 id="currentExercise" class="md-typescale-headline-large">Exercise</h3>
-                                <div class="exercise-description" id="currentDescription" style="display: none;">
-                                    <div class="description-toggle" onclick="this.parentElement.classList.toggle('expanded')">
-                                        <span class="md-typescale-body-large">Show Instructions</span>
-                                        <span class="material-icons expand-icon">expand_more</span>
-                                    </div>
-                                    <div class="description-content" id="descriptionContent"></div>
-                                </div>
-                                
-                                <div class="timer-display" id="timerDisplay">00:00</div>
-                                <div class="reps-display" id="repsDisplay" style="display: none;">
-                                    <span class="material-icons">fitness_center</span>
-                                    <span id="repsCount">0</span> reps
-                                </div>
-                                
-                                <div class="md-linear-progress" role="progressbar" aria-label="Exercise Progress" aria-valuemin="0" aria-valuemax="1">
-                                    <div class="md-linear-progress__bar" id="progressFill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Timer Display Web Component -->
+                        <timer-display id="timerDisplay"></timer-display>
                         
-                        <div class="rep-completion" id="repCompletion" style="display: none;">
-                            <button id="completeRepBtn" class="md-button md-button--filled md-button--large">
-                                <span class="material-icons md-button__icon">check</span>
-                                <span class="md-button__label">Complete Exercise</span>
-                            </button>
-                        </div>
-                        
-                        <div class="workout-controls">
-                            <button id="startBtn" class="md-button md-button--filled">
-                                <span class="material-icons md-button__icon">play_arrow</span>
-                                <span class="md-button__label">Start</span>
-                            </button>
-                            <button id="pauseBtn" class="md-button md-button--outlined" disabled>
-                                <span class="material-icons md-button__icon">pause</span>
-                                <span class="md-button__label">Pause</span>
-                            </button>
-                            <button id="skipBtn" class="md-button md-button--outlined" disabled>
-                                <span class="material-icons md-button__icon">skip_next</span>
-                                <span class="md-button__label">Skip</span>
-                            </button>
-                            <button id="resetBtn" class="md-button md-button--outlined">
-                                <span class="material-icons md-button__icon">refresh</span>
-                                <span class="md-button__label">Reset</span>
-                            </button>
-                        </div>
+                        <!-- Workout Controls Web Component -->
+                        <workout-controls id="workoutControls"></workout-controls>
                         
                         <div class="workout-progress">
                             <div class="progress-info">
@@ -245,8 +202,8 @@ Rest - 0:30</pre>
                         </div>
                     </div>
                     
-                    <div class="workout-list md-card md-card--outlined" id="workoutList">
-                    </div>
+                    <!-- Exercise List Web Component -->
+                    <exercise-list id="exerciseList"></exercise-list>
                 </div>
             </section>
             </div>
