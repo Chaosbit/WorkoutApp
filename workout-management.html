@@ -108,16 +108,6 @@
                             <span class="material-icons md-button__icon">add</span>
                             <span class="md-button__label">Create New Workout</span>
                         </button>
-                        
-                        <div class="file-input-area">
-                            <div class="md-file-input">
-                                <input type="file" id="workoutFile" accept=".md" class="md-file-input__field" />
-                                <div class="md-file-input__surface">
-                                    <span class="material-icons md-file-input__icon">folder_open</span>
-                                    <p class="md-file-input__text">Import workout file (.md)</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -142,6 +132,16 @@
                     <div class="md-text-field md-text-field--outlined md-text-field--textarea">
                         <textarea id="workoutMarkdownEditor" class="md-text-field__input" rows="15" placeholder="Enter workout markdown here..."></textarea>
                     </div>
+                    
+                    <!-- Import/Export Actions -->
+                    <div class="import-export-actions">
+                        <button id="importWorkoutBtn" class="md-button md-button--outlined">
+                            <span class="material-icons md-button__icon">upload</span>
+                            <span class="md-button__label">Import from File</span>
+                        </button>
+                        <input type="file" id="workoutFile" accept=".md" style="display: none;" />
+                    </div>
+                    
                     <div class="editor-actions">
                         <button id="saveWorkoutBtn" class="md-button md-button--filled">
                             <span class="material-icons md-button__icon">save</span>

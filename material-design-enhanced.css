@@ -561,6 +561,15 @@ body {
     margin-bottom: 16px;
 }
 
+.import-export-actions {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    padding: 12px 0;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
 .editor-actions {
     display: flex;
     gap: 8px;

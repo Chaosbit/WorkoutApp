@@ -66,6 +66,17 @@ class WorkoutManagementPage {
             workoutFileInput.addEventListener('change', (e) => this.handleFileUpload(e));
         }
 
+        // Import workout button (triggers file input)
+        const importWorkoutBtn = document.getElementById('importWorkoutBtn');
+        if (importWorkoutBtn) {
+            importWorkoutBtn.addEventListener('click', () => {
+                const fileInput = document.getElementById('workoutFile');
+                if (fileInput) {
+                    fileInput.click();
+                }
+            });
+        }
+
         // New workout button
         const newWorkoutBtn = document.getElementById('newWorkoutBtn');
         if (newWorkoutBtn) {
@@ -106,7 +117,7 @@ class WorkoutManagementPage {
         reader.onload = (e) => {
             try {
                 const content = e.target.result;
-                this.loadWorkoutFromContent(file.name, content);
+                this.loadWorkoutIntoEditor(file.name, content);
             } catch (error) {
                 console.error('Error reading file:', error);
                 UIUtils.showMessage('Error reading workout file', 'error');
@@ -116,25 +127,33 @@ class WorkoutManagementPage {
     }
 
     /**
-     * Load workout from content
+     * Load workout content into the editor
      */
-    loadWorkoutFromContent(filename, content) {
+    loadWorkoutIntoEditor(filename, content) {
         try {
-            // Parse the workout content (this would use WorkoutParser)
-            const workoutData = {
-                title: filename.replace('.md', ''),
-                exercises: [] // Would be populated by WorkoutParser
-            };
+            // Show the editor if it's not already visible
+            this.showWorkoutEditor();
             
-            const workout = this.workoutLibrary.addWorkout(filename, content, workoutData);
-            UIUtils.showMessage(`Workout "${workout.name}" imported successfully!`, 'success');
+            // Extract workout name from filename
+            const workoutName = filename.replace('.md', '').replace(/[-_]/g, ' ');
             
-            // Refresh the workout manager
-            this.initializeWorkoutManager();
+            // Populate editor fields
+            const workoutNameInput = document.getElementById('workoutNameInput');
+            const workoutMarkdownEditor = document.getElementById('workoutMarkdownEditor');
+            
+            if (workoutNameInput) {
+                workoutNameInput.value = workoutName;
+            }
+            
+            if (workoutMarkdownEditor) {
+                workoutMarkdownEditor.value = content;
+            }
+            
+            UIUtils.showMessage(`Workout content from "${filename}" loaded into editor`, 'success');
             
         } catch (error) {
-            console.error('Error importing workout:', error);
-            UIUtils.showMessage('Failed to import workout', 'error');
+            console.error('Error loading workout into editor:', error);
+            UIUtils.showMessage('Failed to load workout content', 'error');
         }
     }
 
