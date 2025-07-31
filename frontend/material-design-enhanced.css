@@ -2486,3 +2486,123 @@ body {
     margin-right: 12px;
     vertical-align: middle;
 }
+
+/* ========== MATERIAL WEB COMPONENT INTEGRATION ========== */
+
+/* Material Web Button Theming */
+md-filled-button {
+    --md-filled-button-container-color: var(--md-sys-color-primary);
+    --md-filled-button-label-text-color: var(--md-sys-color-on-primary);
+    --md-filled-button-icon-color: var(--md-sys-color-on-primary);
+}
+
+md-outlined-button {
+    --md-outlined-button-outline-color: var(--md-sys-color-outline);
+    --md-outlined-button-label-text-color: var(--md-sys-color-primary);
+    --md-outlined-button-icon-color: var(--md-sys-color-primary);
+}
+
+md-text-button {
+    --md-text-button-label-text-color: var(--md-sys-color-primary);
+    --md-text-button-icon-color: var(--md-sys-color-primary);
+}
+
+/* Material Web Text Field Theming */
+md-outlined-text-field {
+    --md-outlined-text-field-outline-color: var(--md-sys-color-outline);
+    --md-outlined-text-field-focus-outline-color: var(--md-sys-color-primary);
+    --md-outlined-text-field-label-text-color: var(--md-sys-color-on-surface-variant);
+    --md-outlined-text-field-input-text-color: var(--md-sys-color-on-surface);
+    --md-outlined-text-field-supporting-text-color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Material Web Select Theming */
+md-outlined-select {
+    --md-outlined-select-text-field-outline-color: var(--md-sys-color-outline);
+    --md-outlined-select-text-field-focus-outline-color: var(--md-sys-color-primary);
+    --md-outlined-select-text-field-label-text-color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Material Web Switch Theming */
+md-switch {
+    --md-switch-selected-track-color: var(--md-sys-color-primary);
+    --md-switch-selected-handle-color: var(--md-sys-color-on-primary);
+    --md-switch-unselected-track-color: var(--md-sys-color-surface-variant);
+    --md-switch-unselected-handle-color: var(--md-sys-color-outline);
+}
+
+/* Material Web Icon Theming */
+md-icon {
+    --md-icon-color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Feature card icons */
+.feature-icon md-icon {
+    --md-icon-color: var(--md-sys-color-primary);
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+}
+
+/* Statistics icons */
+.stat-icon md-icon {
+    --md-icon-color: var(--md-sys-color-primary);
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+}
+
+/* Sync status icon */
+#syncStatusIcon {
+    --md-icon-color: var(--md-sys-color-on-surface-variant);
+    margin-right: 8px;
+}
+
+/* Setting items with switch */
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.setting-text {
+    flex: 1;
+}
+
+/* Large buttons for quick actions */
+.large-button {
+    min-width: 280px;
+    height: 56px;
+}
+
+/* Modal actions styling */
+.modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Editor actions styling */
+.editor-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+/* Import/export actions */
+.import-export-actions {
+    margin: 1rem 0;
+}
+
+/* Quick actions buttons */
+.quick-actions-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}

@@ -45,20 +45,31 @@
                 <div class="md-card__content">
                     <h3 class="md-typescale-title-large">Edit Workout</h3>
                     <div class="editor-controls">
-                        <div class="md-text-field md-text-field--outlined">
-                            <input type="text" id="workoutNameInput" class="md-text-field__input" placeholder="Workout name">
-                        </div>
+                        <md-outlined-text-field 
+                            id="workoutNameInput" 
+                            label="Workout name"
+                            type="text">
+                        </md-outlined-text-field>
                         <div class="tag-editor">
                             <label class="md-typescale-body-medium">Tags:</label>
                             <div class="tag-input-container">
                                 <div class="workout-tags-display" id="workoutTagsEditor"></div>
-                                <input type="text" id="newTagInput" class="md-text-field__input" placeholder="Add tags (press Enter or comma to add)">
+                                <md-outlined-text-field 
+                                    id="newTagInput" 
+                                    label="Add tags" 
+                                    supporting-text="Press Enter or comma to add"
+                                    type="text">
+                                </md-outlined-text-field>
                             </div>
                             <div class="tag-suggestions" id="tagSuggestionsEditor"></div>
                         </div>
                     </div>
-                    <div class="md-text-field md-text-field--outlined md-text-field--textarea">
-                        <textarea id="workoutMarkdownEditor" class="md-text-field__input" rows="15" placeholder="Enter workout markdown here...
+                    <md-outlined-text-field 
+                        id="workoutMarkdownEditor" 
+                        type="textarea"
+                        rows="15"
+                        label="Workout markdown"
+                        supporting-text="Enter workout markdown here...">
 
 # Push Day Workout
 
@@ -80,26 +91,27 @@ Lie flat on the bench with feet firmly planted on the ground.
 Rest - 0:30
 
 ## Cool Down - 3:00
-Static stretching to help muscles recover and prevent soreness."></textarea>
-                    </div>
+Static stretching to help muscles recover and prevent soreness."
+                        >
+                    </md-outlined-text-field>
                     
                     <!-- Import/Export Actions -->
                     <div class="import-export-actions">
-                        <button id="importWorkoutBtn" class="md-button md-button--outlined">
-                            <span class="material-icons md-button__icon">upload</span>
-                            <span class="md-button__label">Import from File</span>
-                        </button>
+                        <md-outlined-button id="importWorkoutBtn">
+                            <md-icon slot="icon">upload</md-icon>
+                            Import from File
+                        </md-outlined-button>
                         <input type="file" id="workoutFile" accept=".md" style="display: none;" />
                     </div>
                     
                     <div class="editor-actions">
-                        <button id="saveWorkoutBtn" class="md-button md-button--filled">
-                            <span class="material-icons md-button__icon">save</span>
-                            <span class="md-button__label">Save Changes</span>
-                        </button>
-                        <button id="cancelEditBtn" class="md-button md-button--outlined">
-                            <span class="md-button__label">Cancel</span>
-                        </button>
+                        <md-filled-button id="saveWorkoutBtn">
+                            <md-icon slot="icon">save</md-icon>
+                            Save Changes
+                        </md-filled-button>
+                        <md-outlined-button id="cancelEditBtn">
+                            Cancel
+                        </md-outlined-button>
                     </div>
                 </div>
             </section>

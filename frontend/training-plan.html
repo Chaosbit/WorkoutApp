@@ -44,16 +44,16 @@
                     <div class="training-plan-header">
                         <h3 class="md-typescale-title-large">Monthly Calendar</h3>
                         <div class="calendar-controls">
-                            <button id="prevMonthBtn" class="md-button md-button--text">
-                                <span class="material-icons md-button__icon">chevron_left</span>
-                            </button>
+                            <md-text-button id="prevMonthBtn">
+                                <md-icon slot="icon">chevron_left</md-icon>
+                            </md-text-button>
                             <h3 id="currentMonthYear" class="md-typescale-title-large">January 2024</h3>
-                            <button id="nextMonthBtn" class="md-button md-button--text">
-                                <span class="material-icons md-button__icon">chevron_right</span>
-                            </button>
-                            <button id="todayBtn" class="md-button md-button--outlined">
-                                <span class="md-button__label">Today</span>
-                            </button>
+                            <md-text-button id="nextMonthBtn">
+                                <md-icon slot="icon">chevron_right</md-icon>
+                            </md-text-button>
+                            <md-outlined-button id="todayBtn">
+                                Today
+                            </md-outlined-button>
                         </div>
                     </div>
 
@@ -81,18 +81,18 @@
                 <div class="md-card__content">
                     <h3 class="md-typescale-title-large">Quick Actions</h3>
                     <div class="quick-actions-grid">
-                        <button id="addTodayWorkoutBtn" class="md-button md-button--filled">
-                            <span class="material-icons md-button__icon">today</span>
-                            <span class="md-button__label">Add Workout Today</span>
-                        </button>
-                        <button id="viewWeekBtn" class="md-button md-button--outlined">
-                            <span class="material-icons md-button__icon">view_week</span>
-                            <span class="md-button__label">This Week</span>
-                        </button>
-                        <button id="manageTemplatesBtn" class="md-button md-button--outlined">
-                            <span class="material-icons md-button__icon">schedule</span>
-                            <span class="md-button__label">Workout Templates</span>
-                        </button>
+                        <md-filled-button id="addTodayWorkoutBtn">
+                            <md-icon slot="icon">today</md-icon>
+                            Add Workout Today
+                        </md-filled-button>
+                        <md-outlined-button id="viewWeekBtn">
+                            <md-icon slot="icon">view_week</md-icon>
+                            This Week
+                        </md-outlined-button>
+                        <md-outlined-button id="manageTemplatesBtn">
+                            <md-icon slot="icon">schedule</md-icon>
+                            Workout Templates
+                        </md-outlined-button>
                     </div>
                 </div>
             </section>
@@ -106,12 +106,11 @@
                     <p id="selectedDateText" class="md-typescale-body-large"></p>
                     
                     <div class="workout-selection">
-                        <div class="md-select">
-                            <select id="workoutAssignmentSelect" class="md-select__field">
-                                <option value="">Choose a workout...</option>
-                            </select>
-                            <span class="material-icons md-select__dropdown-icon">▼</span>
-                        </div>
+                        <md-outlined-select id="workoutAssignmentSelect" label="Choose a workout">
+                            <md-select-option value="">
+                                <div slot="headline">Choose a workout...</div>
+                            </md-select-option>
+                        </md-outlined-select>
                     </div>
 
                     <div class="assigned-workouts" id="assignedWorkouts">
@@ -120,13 +119,13 @@
                     </div>
 
                     <div class="modal-actions">
-                        <button id="assignWorkoutBtn" class="md-button md-button--filled" disabled>
-                            <span class="material-icons md-button__icon">add</span>
-                            <span class="md-button__label">Assign</span>
-                        </button>
-                        <button id="closeModalBtn" class="md-button md-button--outlined">
-                            <span class="md-button__label">Close</span>
-                        </button>
+                        <md-filled-button id="assignWorkoutBtn" disabled>
+                            <md-icon slot="icon">add</md-icon>
+                            Assign
+                        </md-filled-button>
+                        <md-outlined-button id="closeModalBtn">
+                            Close
+                        </md-outlined-button>
                     </div>
                 </div>
             </div>

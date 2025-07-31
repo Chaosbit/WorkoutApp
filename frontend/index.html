@@ -64,52 +64,52 @@
                         <div class="feature-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="feature-icon">
-                                    <span class="material-icons">edit</span>
+                                    <md-icon>edit</md-icon>
                                 </div>
                                 <h3 class="md-typescale-title-medium">Manage Workouts</h3>
                                 <p class="md-typescale-body-medium">Create, edit, and organize your workout library with markdown-based exercises</p>
-                                <button class="md-button md-button--filled" onclick="window.location.href='workout-management.html'">
-                                    <span class="md-button__label">Manage Workouts</span>
-                                </button>
+                                <md-filled-button onclick="window.location.href='workout-management.html'">
+                                    Manage Workouts
+                                </md-filled-button>
                             </div>
                         </div>
 
                         <div class="feature-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="feature-icon">
-                                    <span class="material-icons">calendar_month</span>
+                                    <md-icon>calendar_month</md-icon>
                                 </div>
                                 <h3 class="md-typescale-title-medium">Plan Training</h3>
                                 <p class="md-typescale-body-medium">Schedule workouts on a calendar and build consistent training routines</p>
-                                <button class="md-button md-button--filled" onclick="window.location.href='training-plan.html'">
-                                    <span class="md-button__label">Training Plan</span>
-                                </button>
+                                <md-filled-button onclick="window.location.href='training-plan.html'">
+                                    Training Plan
+                                </md-filled-button>
                             </div>
                         </div>
 
                         <div class="feature-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="feature-icon">
-                                    <span class="material-icons">fitness_center</span>
+                                    <md-icon>fitness_center</md-icon>
                                 </div>
                                 <h3 class="md-typescale-title-medium">Train Focused</h3>
                                 <p class="md-typescale-body-medium">Experience distraction-free workout sessions with precise timers</p>
-                                <button class="md-button md-button--filled" id="startTrainingBtn">
-                                    <span class="md-button__label">Start Training</span>
-                                </button>
+                                <md-filled-button id="startTrainingBtn">
+                                    Start Training
+                                </md-filled-button>
                             </div>
                         </div>
 
                         <div class="feature-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="feature-icon">
-                                    <span class="material-icons">analytics</span>
+                                    <md-icon>analytics</md-icon>
                                 </div>
                                 <h3 class="md-typescale-title-medium">Track Progress</h3>
                                 <p class="md-typescale-body-medium">Monitor your fitness journey with detailed statistics and insights</p>
-                                <button class="md-button md-button--filled" onclick="window.location.href='statistics.html'">
-                                    <span class="md-button__label">View Statistics</span>
-                                </button>
+                                <md-filled-button onclick="window.location.href='statistics.html'">
+                                    View Statistics
+                                </md-filled-button>
                             </div>
                         </div>
                     </div>
@@ -121,14 +121,14 @@
                 <div class="md-card__content">
                     <h2 class="md-typescale-headline-medium">🚀 Quick Start</h2>
                     <div class="quick-start-options">
-                        <button id="quickCreateWorkoutBtn" class="md-button md-button--filled md-button--large">
-                            <span class="material-icons md-button__icon">add</span>
-                            <span class="md-button__label">Create Your First Workout</span>
-                        </button>
-                        <button id="quickLoadWorkoutBtn" class="md-button md-button--outlined md-button--large">
-                            <span class="material-icons md-button__icon">folder_open</span>
-                            <span class="md-button__label">Load Sample Workout</span>
-                        </button>
+                        <md-filled-button id="quickCreateWorkoutBtn" class="large-button">
+                            <md-icon slot="icon">add</md-icon>
+                            Create Your First Workout
+                        </md-filled-button>
+                        <md-outlined-button id="quickLoadWorkoutBtn" class="large-button">
+                            <md-icon slot="icon">folder_open</md-icon>
+                            Load Sample Workout
+                        </md-outlined-button>
                     </div>
                 </div>
             </section>
@@ -152,12 +152,11 @@
                     <p id="selectedDateText" class="md-typescale-body-large"></p>
                     
                     <div class="workout-selection">
-                        <div class="md-select">
-                            <select id="workoutAssignmentSelect" class="md-select__field">
-                                <option value="">Choose a workout...</option>
-                            </select>
-                            <span class="material-icons md-select__dropdown-icon">▼</span>
-                        </div>
+                        <md-outlined-select id="workoutAssignmentSelect" label="Choose a workout">
+                            <md-select-option value="">
+                                <div slot="headline">Choose a workout...</div>
+                            </md-select-option>
+                        </md-outlined-select>
                     </div>
 
                     <div class="assigned-workouts" id="assignedWorkouts">
@@ -166,13 +165,13 @@
                     </div>
 
                     <div class="modal-actions">
-                        <button id="assignWorkoutBtn" class="md-button md-button--filled" disabled>
-                            <span class="material-icons md-button__icon">add</span>
-                            <span class="md-button__label">Assign</span>
-                        </button>
-                        <button id="closeModalBtn" class="md-button md-button--outlined">
-                            <span class="md-button__label">Close</span>
-                        </button>
+                        <md-filled-button id="assignWorkoutBtn" disabled>
+                            <md-icon slot="icon">add</md-icon>
+                            Assign
+                        </md-filled-button>
+                        <md-outlined-button id="closeModalBtn">
+                            Close
+                        </md-outlined-button>
                     </div>
                 </div>
             </div>
@@ -187,21 +186,14 @@
                 
                 <div class="sync-status" id="syncStatus">
                     <div class="status-indicator">
-                        <span class="material-icons" id="syncStatusIcon">sync_disabled</span>
+                        <md-icon id="syncStatusIcon">sync_disabled</md-icon>
                         <span id="syncStatusText">Sync disabled</span>
                     </div>
                 </div>
 
                 <div class="sync-settings">
                     <div class="setting-item">
-                        <label class="md-switch">
-                            <input type="checkbox" id="syncEnabledToggle">
-                            <div class="md-switch__track"></div>
-                            <div class="md-switch__handle">
-                                <div class="md-switch__shadow"></div>
-                                <div class="md-switch__ripple"></div>
-                            </div>
-                        </label>
+                        <md-switch id="syncEnabledToggle"></md-switch>
                         <div class="setting-text">
                             <span class="md-typescale-body-large">Enable Sync</span>
                             <span class="md-typescale-body-medium">Sync your workouts and statistics with the server</span>
@@ -210,27 +202,27 @@
 
                     <div class="setting-item" id="authSection" style="display: none;">
                         <div class="auth-status" id="authStatus">
-                            <span class="material-icons">account_circle</span>
+                            <md-icon>account_circle</md-icon>
                             <span id="authStatusText">Not logged in</span>
                         </div>
                         <div class="auth-actions">
-                            <button id="loginBtn" class="md-button md-button--filled">
-                                <span class="md-button__label">Login</span>
-                            </button>
-                            <button id="registerBtn" class="md-button md-button--outlined">
-                                <span class="md-button__label">Register</span>
-                            </button>
-                            <button id="logoutBtn" class="md-button md-button--outlined" style="display: none;">
-                                <span class="md-button__label">Logout</span>
-                            </button>
+                            <md-filled-button id="loginBtn">
+                                Login
+                            </md-filled-button>
+                            <md-outlined-button id="registerBtn">
+                                Register
+                            </md-outlined-button>
+                            <md-outlined-button id="logoutBtn" style="display: none;">
+                                Logout
+                            </md-outlined-button>
                         </div>
                     </div>
 
                     <div class="setting-item" id="syncActions" style="display: none;">
-                        <button id="syncNowBtn" class="md-button md-button--filled">
-                            <span class="material-icons md-button__icon">sync</span>
-                            <span class="md-button__label">Sync Now</span>
-                        </button>
+                        <md-filled-button id="syncNowBtn">
+                            <md-icon slot="icon">sync</md-icon>
+                            Sync Now
+                        </md-filled-button>
                         <div class="sync-info">
                             <span class="md-typescale-body-small" id="lastSyncTime">Never synced</span>
                         </div>
@@ -238,9 +230,9 @@
                 </div>
 
                 <div class="modal-actions">
-                    <button id="closeSyncBtn" class="md-button md-button--outlined">
-                        <span class="md-button__label">Close</span>
-                    </button>
+                    <md-outlined-button id="closeSyncBtn">
+                        Close
+                    </md-outlined-button>
                 </div>
             </div>
         </div>
@@ -254,46 +246,58 @@
                 
                 <form id="authForm">
                     <div class="auth-tabs">
-                        <button type="button" id="loginTab" class="md-button md-button--text auth-tab active">Login</button>
-                        <button type="button" id="registerTab" class="md-button md-button--text auth-tab">Register</button>
+                        <md-text-button type="button" id="loginTab" class="auth-tab active">Login</md-text-button>
+                        <md-text-button type="button" id="registerTab" class="auth-tab">Register</md-text-button>
                     </div>
 
                     <div class="auth-fields">
-                        <div class="md-text-field md-text-field--outlined" id="usernameField" style="display: none;">
-                            <input type="text" id="username" class="md-text-field__input" placeholder="Username" required>
-                            <label class="md-text-field__label">Username</label>
-                        </div>
+                        <md-outlined-text-field 
+                            id="username" 
+                            label="Username" 
+                            type="text"
+                            required
+                            style="display: none;">
+                        </md-outlined-text-field>
                         
-                        <div class="md-text-field md-text-field--outlined">
-                            <input type="email" id="usernameOrEmail" class="md-text-field__input" placeholder="Username or Email" required>
-                            <label class="md-text-field__label" id="usernameOrEmailLabel">Username or Email</label>
-                        </div>
+                        <md-outlined-text-field 
+                            id="usernameOrEmail" 
+                            label="Username or Email" 
+                            type="email"
+                            required>
+                        </md-outlined-text-field>
                         
-                        <div class="md-text-field md-text-field--outlined" id="emailField" style="display: none;">
-                            <input type="email" id="email" class="md-text-field__input" placeholder="Email" required>
-                            <label class="md-text-field__label">Email</label>
-                        </div>
+                        <md-outlined-text-field 
+                            id="email" 
+                            label="Email" 
+                            type="email"
+                            required
+                            style="display: none;">
+                        </md-outlined-text-field>
                         
-                        <div class="md-text-field md-text-field--outlined">
-                            <input type="password" id="password" class="md-text-field__input" placeholder="Password" required>
-                            <label class="md-text-field__label">Password</label>
-                        </div>
+                        <md-outlined-text-field 
+                            id="password" 
+                            label="Password" 
+                            type="password"
+                            required>
+                        </md-outlined-text-field>
                         
-                        <div class="md-text-field md-text-field--outlined" id="referredByField" style="display: none;">
-                            <input type="text" id="referredBy" class="md-text-field__input" placeholder="Referral Code (optional)">
-                            <label class="md-text-field__label">Referred By</label>
-                        </div>
+                        <md-outlined-text-field 
+                            id="referredBy" 
+                            label="Referred By (optional)" 
+                            type="text"
+                            style="display: none;">
+                        </md-outlined-text-field>
                     </div>
 
                     <div class="auth-message" id="authMessage" style="display: none;"></div>
 
                     <div class="modal-actions">
-                        <button type="submit" id="authSubmitBtn" class="md-button md-button--filled">
-                            <span class="md-button__label">Login</span>
-                        </button>
-                        <button type="button" id="cancelAuthBtn" class="md-button md-button--outlined">
-                            <span class="md-button__label">Cancel</span>
-                        </button>
+                        <md-filled-button type="submit" id="authSubmitBtn">
+                            Login
+                        </md-filled-button>
+                        <md-outlined-button type="button" id="cancelAuthBtn">
+                            Cancel
+                        </md-outlined-button>
                     </div>
                 </form>
             </div>

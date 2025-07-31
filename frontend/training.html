@@ -106,20 +106,21 @@
             <div class="quick-actions md-card" style="margin-top: 2rem;">
                 <div class="md-card__content">
                     <div class="quick-actions-buttons">
-                        <button id="exitTrainingBtn" class="md-button md-button--outlined">
-                            <span class="material-icons md-button__icon">exit_to_app</span>
-                            <span class="md-button__label">Exit Training</span>
-                        </button>
-                        <button id="shareWorkoutBtn" class="md-button md-button--text">
-                            <span class="material-icons md-button__icon">share</span>
-                            <span class="md-button__label">Share Workout</span>
-                        </button>
+                        <md-outlined-button id="exitTrainingBtn">
+                            <md-icon slot="icon">exit_to_app</md-icon>
+                            Exit Training
+                        </md-outlined-button>
+                        <md-text-button id="shareWorkoutBtn">
+                            <md-icon slot="icon">share</md-icon>
+                            Share Workout
+                        </md-text-button>
                     </div>
                 </div>
             </div>
         </main>
     </div>
     
+    <script type="module" src="js/material-web-imports.js"></script>
     <script type="module" src="js/components/page-header.js"></script>
     <script type="module" src="js/training-page.js"></script>
 </body>
