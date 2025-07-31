@@ -206,6 +206,54 @@ md-switch {
     --md-switch-unselected-handle-color: var(--md-sys-color-outline);
 }
 
+/* Material Web Icon Theming - Enhanced for better compatibility */
+md-icon {
+    --md-icon-color: var(--md-sys-color-on-surface-variant);
+    --md-icon-font: 'Material Icons', 'Material Symbols Outlined', sans-serif;
+    --md-icon-size: 24px;
+    font-family: var(--md-icon-font) !important;
+    font-feature-settings: 'liga' 1;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fallback for when Material Icons font fails to load */
+md-icon:empty::before {
+    content: attr(data-icon-fallback);
+    font-family: sans-serif;
+    font-size: 0.75em;
+    color: var(--md-sys-color-error);
+}
+
+/* Debug mode - shows icon names when font fails */
+.debug-icons md-icon {
+    position: relative;
+}
+
+.debug-icons md-icon::after {
+    content: attr(title);  
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: monospace;
+    font-size: 10px;
+    color: var(--md-sys-color-error);
+    white-space: nowrap;
+    pointer-events: none;
+}
+
 /* ========== TYPOGRAPHY SCALE ========== */
 .md-typescale-display-small {
     font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
