@@ -1751,12 +1751,6 @@ body {
     border-radius: 50%;
 }
 
-.workout-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
 .workout-tag {
     background-color: var(--md-sys-color-tertiary-container);
     color: var(--md-sys-color-on-tertiary-container);

@@ -90,18 +90,9 @@ jobs:
         run: |
           mkdir -p ./dist
           
-      - name: Copy application files
+      - name: Copy frontend files
         run: |
-          cp index.html ./dist/
-          cp material-design-enhanced.css ./dist/
-          cp script.js ./dist/
-          cp statistics.html ./dist/
-          cp manifest.json ./dist/
-          cp sw.js ./dist/
-          cp *.png ./dist/ 2>/dev/null || true
-          cp *.svg ./dist/ 2>/dev/null || true
-          cp sample-workout.md ./dist/
-          cp -r js/ ./dist/ 2>/dev/null || true
+          cp -r frontend/* ./dist/
           
       - name: Create 404.html for SPA routing
         run: |

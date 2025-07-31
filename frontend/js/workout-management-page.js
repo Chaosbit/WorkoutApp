@@ -1,6 +1,6 @@
 import { WorkoutApp } from './workout-app.js';
 import { WorkoutLibrary } from './workout-library.js';
-import { NavigationManager } from './navigation-manager.js';
+import { ComponentManager } from './components/component-manager.js';
 import { UIUtils } from './ui-utils.js';
 
 // Import web components
@@ -12,7 +12,7 @@ import './components/workout-manager.js';
 class WorkoutManagementPage {
     constructor() {
         this.workoutLibrary = new WorkoutLibrary();
-        this.navigationManager = new NavigationManager();
+        this.componentManager = new ComponentManager();
         
         this.initializeNavigation();
         this.initializeWorkoutManager();

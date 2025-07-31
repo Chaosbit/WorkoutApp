@@ -36,30 +36,13 @@ echo -e "${GREEN}📁 Creating deployment directory...${NC}"
 rm -rf "$DEPLOY_DIR"
 mkdir -p "$DEPLOY_DIR"
 
-# Copy application files
-echo -e "${GREEN}📋 Copying application files...${NC}"
-cp index.html "$DEPLOY_DIR/"
-cp material-design-enhanced.css "$DEPLOY_DIR/"
-cp script.js "$DEPLOY_DIR/"
-cp statistics.html "$DEPLOY_DIR/"
-cp manifest.json "$DEPLOY_DIR/"
-cp sw.js "$DEPLOY_DIR/"
-cp sample-workout.md "$DEPLOY_DIR/"
-
-# Copy js directory
-if [ -d "js" ]; then
-    cp -r js/ "$DEPLOY_DIR/"
-fi
-
-# Copy icon files if they exist
-if [ -f "icon-192.png" ]; then
-    cp icon-192.png "$DEPLOY_DIR/"
-fi
-if [ -f "icon-512.png" ]; then
-    cp icon-512.png "$DEPLOY_DIR/"
-fi
-if [ -f "icon.svg" ]; then
-    cp icon.svg "$DEPLOY_DIR/"
+# Copy frontend files
+echo -e "${GREEN}📋 Copying frontend files...${NC}"
+if [ -d "frontend" ]; then
+    cp -r frontend/* "$DEPLOY_DIR/"
+else
+    echo -e "${RED}❌ Frontend directory not found. Please make sure you're running this from the project root.${NC}"
+    exit 1
 fi
 
 # Create 404.html for SPA routing

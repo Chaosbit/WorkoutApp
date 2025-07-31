@@ -26,74 +26,8 @@
 </head>
 <body>
     <div class="container">
-        <!-- Navigation Scrim -->
-        <div class="md-scrim" id="navigationScrim"></div>
-        
-        <!-- Navigation Drawer -->
-        <nav class="md-navigation-drawer" id="navigationDrawer">
-            <div class="md-navigation-drawer__header">
-                <h2 class="md-navigation-drawer__title">
-                    <span class="material-icons">fitness_center</span>
-                    Workout Timer
-                </h2>
-            </div>
-            <ul class="md-navigation-drawer__list">
-                <li>
-                    <button class="md-navigation-drawer__item" id="navHome">
-                        <span class="material-icons md-navigation-drawer__item-icon">home</span>
-                        <span class="md-navigation-drawer__item-text">Home</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="md-navigation-drawer__item" id="navWorkoutManagement">
-                        <span class="material-icons md-navigation-drawer__item-icon">edit</span>
-                        <span class="md-navigation-drawer__item-text">Workout Management</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="md-navigation-drawer__item active" id="navTrainingPlan">
-                        <span class="material-icons md-navigation-drawer__item-icon">calendar_month</span>
-                        <span class="md-navigation-drawer__item-text">Training Plan</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="md-navigation-drawer__item" id="navTraining">
-                        <span class="material-icons md-navigation-drawer__item-icon">fitness_center</span>
-                        <span class="md-navigation-drawer__item-text">Training</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="md-navigation-drawer__item" id="navStatistics">
-                        <span class="material-icons md-navigation-drawer__item-icon">analytics</span>
-                        <span class="md-navigation-drawer__item-text">Statistics</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="md-navigation-drawer__item" id="navSync">
-                        <span class="material-icons md-navigation-drawer__item-icon">sync</span>
-                        <span class="md-navigation-drawer__item-text">Sync</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="md-navigation-drawer__item" id="navSettings">
-                        <span class="material-icons md-navigation-drawer__item-icon">settings</span>
-                        <span class="md-navigation-drawer__item-text">Settings</span>
-                    </button>
-                </li>
-            </ul>
-        </nav>
-        
-        <header class="md-top-app-bar">
-            <div class="md-top-app-bar__content">
-                <button class="md-icon-button--menu" id="menuButton">
-                    <span class="material-icons">menu</span>
-                </button>
-                <a href="index.html" class="md-top-app-bar__title-link">
-                    <span class="material-icons md-top-app-bar__leading-icon">calendar_month</span>
-                    <span class="md-top-app-bar__title">Training Plan</span>
-                </a>
-            </div>
-        </header>
+        <navigation-menu></navigation-menu>
+        <page-header title="Training Plan" icon="calendar_month" home-link="index.html"></page-header>
         
         <main>
             <!-- Training Plan Overview -->
@@ -199,6 +133,8 @@
         </div>
     </div>
     
+    <script type="module" src="js/components/navigation-menu.js"></script>
+    <script type="module" src="js/components/page-header.js"></script>
     <script type="module" src="js/training-plan-page.js"></script>
 </body>
 </html>

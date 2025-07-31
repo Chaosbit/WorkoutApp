@@ -9,7 +9,9 @@
       "Bash(git init:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(npm test)"
+      "Bash(npm test)",
+      "Bash(mv:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

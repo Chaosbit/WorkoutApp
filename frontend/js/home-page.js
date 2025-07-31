@@ -1,6 +1,6 @@
 import { WorkoutLibrary } from './workout-library.js';
 import { TrainingPlanManager } from './training-plan-manager.js';
-import { NavigationManager } from './navigation-manager.js';
+import { ComponentManager } from './components/component-manager.js';
 import { StatisticsManager } from './statistics-manager.js';
 import { UIUtils } from './ui-utils.js';
 
@@ -12,7 +12,7 @@ class HomePage {
         this.workoutLibrary = new WorkoutLibrary();
         this.trainingPlanManager = new TrainingPlanManager(this.workoutLibrary);
         this.statisticsManager = new StatisticsManager();
-        this.navigationManager = new NavigationManager();
+        this.componentManager = new ComponentManager();
         
         this.initializeNavigation();
         this.loadTodaysWorkouts();

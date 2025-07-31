@@ -13,9 +13,9 @@ export class WorkoutManager extends HTMLElement {
         this.handleTagInput = this.handleTagInput.bind(this);
         this.handleFilterChange = this.handleFilterChange.bind(this);
         this.handleSortChange = this.handleSortChange.bind(this);
-        this.handleWorkoutSelection = this.handleWorkoutSelection.bind(this);
-        this.handleEditWorkout = this.handleEditWorkout.bind(this);
-        this.handleDeleteWorkout = this.handleDeleteWorkout.bind(this);
+        //this.handleWorkoutSelection = this.handleWorkoutSelection.bind(this);
+        //this.handleEditWorkout = this.handleEditWorkout.bind(this);
+        //this.handleDeleteWorkout = this.handleDeleteWorkout.bind(this);
         this.toggleSortOrder = this.toggleSortOrder.bind(this);
         this.clearAllFilters = this.clearAllFilters.bind(this);
     }
@@ -37,58 +37,12 @@ export class WorkoutManager extends HTMLElement {
                 <div class="md-card__content">
                     <h3 class="md-typescale-title-large">Saved Workouts</h3>
                     
-                    <!-- Filtering and Sorting Controls -->
-                    <div class="library-controls" id="libraryControls" style="display: none;">
-                        <div class="filter-section">
-                            <div class="filter-group">
-                                <label class="md-typescale-body-medium">Filter by Tags:</label>
-                                <div class="tag-filter-container">
-                                    <div class="selected-tags" id="selectedTags"></div>
-                                    <div class="tag-input-wrapper">
-                                        <input type="text" id="tagFilterInput" class="md-text-field__input" placeholder="Type to filter tags...">
-                                        <div class="tag-suggestions" id="tagSuggestions"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="filter-group">
-                                <label class="md-typescale-body-medium">Filter by Duration:</label>
-                                <div class="duration-filter">
-                                    <select id="durationFilter" class="md-select__field">
-                                        <option value="">Any Duration</option>
-                                        <option value="0-900">Short (≤15 min)</option>
-                                        <option value="900-1800">Medium (15-30 min)</option>
-                                        <option value="1800-3600">Long (30-60 min)</option>
-                                        <option value="3600+">Very Long (60+ min)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="sort-section">
-                            <label class="md-typescale-body-medium">Sort by:</label>
-                            <div class="sort-controls">
-                                <select id="sortBySelect" class="md-select__field">
-                                    <option value="name">Name</option>
-                                    <option value="dateAdded">Date Added</option>
-                                    <option value="lastUsed">Last Used</option>
-                                    <option value="timesCompleted">Times Completed</option>
-                                    <option value="duration">Duration</option>
-                                </select>
-                                <button id="sortOrderBtn" class="md-icon-button" title="Toggle sort order">
-                                    <span class="material-icons" id="sortOrderIcon">arrow_upward</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="filter-actions">
-                            <button id="clearFiltersBtn" class="md-button md-button--outlined">
-                                <span class="material-icons md-button__icon">clear</span>
-                                <span class="md-button__label">Clear Filters</span>
-                            </button>
-                        </div>
-                    </div>
-                    
+                <div class="md-top-app-bar__actions">
+                    <button id="newWorkoutHeaderBtn" class="md-button md-button--filled">
+                        <span class="material-icons md-button__icon">add</span>
+                        <span class="md-button__label">Add new workout</span>
+                    </button>
+                </div>
                     <!-- Workout Table -->
                     <div class="workout-table-container">
                         <table class="workout-table" id="workoutTable">
@@ -472,7 +426,6 @@ export class WorkoutManager extends HTMLElement {
     refresh() {
         this.loadWorkouts();
     }
-}
 }
 
 // Register the custom element
