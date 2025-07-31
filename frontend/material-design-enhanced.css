@@ -2420,4 +2420,69 @@ body {
         align-items: stretch;
     }
 }
+
+/* Material Web Components Integration */
+
+/* Navigation Menu Integration */
+.md-navigation-drawer .navigation-menu {
+    --md-menu-container-color: transparent;
+    --md-menu-container-elevation: 0;
+    --md-menu-container-shadow-color: transparent;
+    flex: 1;
+    width: 100%;
+    position: static !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+}
+
+.md-navigation-drawer md-menu {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.md-navigation-drawer md-menu-item {
+    --md-menu-item-container-color: transparent;
+    --md-menu-item-hover-state-layer-color: var(--md-sys-color-on-surface);
+    --md-menu-item-hover-state-layer-opacity: 0.08;
+    --md-menu-item-focus-state-layer-color: var(--md-sys-color-on-surface);
+    --md-menu-item-focus-state-layer-opacity: 0.12;
+    --md-menu-item-selected-container-color: var(--md-sys-color-secondary-container);
+    --md-menu-item-label-text-color: var(--md-sys-color-on-surface);
+    --md-menu-item-selected-label-text-color: var(--md-sys-color-on-secondary-container);
+    border-radius: 0 24px 24px 0;
+    margin: 0 12px 0 0;
+    min-height: 56px;
+    padding-left: 16px;
+    padding-right: 24px;
+}
+
+.md-navigation-drawer md-menu-item[selected] {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+.md-navigation-drawer md-menu-item md-icon {
+    --md-icon-color: var(--md-sys-color-on-surface-variant);
+    margin-right: 12px;
+}
+
+.md-navigation-drawer md-menu-item[selected] md-icon {
+    --md-icon-color: var(--md-sys-color-on-secondary-container);
+}
+
+.md-navigation-drawer md-divider {
+    --md-divider-color: var(--md-sys-color-outline-variant);
+    margin: 8px 0;
+}
+
+.md-navigation-drawer__title md-icon {
+    margin-right: 12px;
+    vertical-align: middle;
 }

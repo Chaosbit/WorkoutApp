@@ -11,7 +11,9 @@
       "Bash(git commit:*)",
       "Bash(npm test)",
       "Bash(mv:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }
