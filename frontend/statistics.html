@@ -19,48 +19,13 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" href="icon-192.png">
     
-    <!-- Material Design 3 Enhanced System with Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Material Design 3 Enhanced System -->
     <link rel="stylesheet" href="material-design-enhanced.css">
 </head>
 <body>
     <div class="container">
-        <!-- Navigation Scrim -->
-        <div class="md-scrim" id="navigationScrim"></div>
-        
-        <!-- Navigation Drawer -->
-        <nav class="md-navigation-drawer" id="navigationDrawer">
-            <div class="md-navigation-drawer__header">
-                <h2 class="md-navigation-drawer__title">
-                    <span class="material-icons">fitness_center</span>
-                    Workout Timer
-                </h2>
-            </div>
-            <ul class="md-navigation-drawer__list">
-                <li>
-                    <button class="md-navigation-drawer__item" id="navHome">
-                        <span class="material-icons md-navigation-drawer__item-icon">home</span>
-                        <span class="md-navigation-drawer__item-text">Home</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="md-navigation-drawer__item active" id="navStatistics">
-                        <span class="material-icons md-navigation-drawer__item-icon">analytics</span>
-                        <span class="md-navigation-drawer__item-text">Statistics</span>
-                    </button>
-                </li>
-            </ul>
-        </nav>
-        
-        <header class="md-top-app-bar">
-            <div class="md-top-app-bar__content">
-                <button class="md-icon-button--menu" id="menuButton">
-                    <span class="material-icons">menu</span>
-                </button>
-                <span class="material-icons md-top-app-bar__leading-icon">analytics</span>
-                <span class="md-top-app-bar__title">Statistics</span>
-            </div>
-        </header>
+        <navigation-menu></navigation-menu>
+        <page-header title="Statistics" icon="analytics" home-link="index.html"></page-header>
         
         <main>
             <section class="statistics-overview md-card">
@@ -71,7 +36,7 @@
                         <div class="stat-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="stat-icon">
-                                    <span class="material-icons">fitness_center</span>
+                                    <md-icon>fitness_center</md-icon>
                                 </div>
                                 <div class="stat-info">
                                     <div class="stat-value" id="totalWorkouts">0</div>
@@ -83,7 +48,7 @@
                         <div class="stat-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="stat-icon">
-                                    <span class="material-icons">check_circle</span>
+                                    <md-icon>check_circle</md-icon>
                                 </div>
                                 <div class="stat-info">
                                     <div class="stat-value" id="completedWorkouts">0</div>
@@ -95,7 +60,7 @@
                         <div class="stat-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="stat-icon">
-                                    <span class="material-icons">schedule</span>
+                                    <md-icon>schedule</md-icon>
                                 </div>
                                 <div class="stat-info">
                                     <div class="stat-value" id="totalTime">0m</div>
@@ -107,7 +72,7 @@
                         <div class="stat-card md-card md-card--outlined">
                             <div class="md-card__content">
                                 <div class="stat-icon">
-                                    <span class="material-icons">local_fire_department</span>
+                                    <md-icon>local_fire_department</md-icon>
                                 </div>
                                 <div class="stat-info">
                                     <div class="stat-value" id="streakDays">0</div>
@@ -134,6 +99,9 @@
         </main>
     </div>
     
+    <script type="module" src="js/material-web-imports.js"></script>
+    <script type="module" src="js/components/navigation-menu.js"></script>
+    <script type="module" src="js/components/page-header.js"></script>
     <script type="module" src="js/statistics-page.js"></script>
 </body>
 </html>

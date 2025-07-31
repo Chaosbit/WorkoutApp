@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1C1B1F" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Material Design 3 Enhanced System with Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="material-design-enhanced.css">
+</head>
+<body>
+    <div class="container">
+        <navigation-menu></navigation-menu>
+        <page-header title="Workout Timer" icon="fitness_center" home-link="index.html"></page-header>
+        
+        <main>
+            <!-- Welcome Section -->
+            <section class="welcome-section md-card">
+                <div class="md-card__content">
+                    <h1 class="md-typescale-display-small">🏋️ Welcome to Workout Timer</h1>
+                    <p class="md-typescale-headline-small">Your privacy-first, offline workout companion</p>
+                    
+                    <div class="app-description">
+                        <p class="md-typescale-body-large">
+                            Workout Timer helps you organize, schedule, and execute your fitness routines with precision. 
+                            All your data stays on your device - no accounts, no tracking, just pure focus on your fitness goals.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Today's Workout Notifications -->
+            <section class="today-workouts md-card" id="todayWorkouts">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-medium">📅 Today's Schedule</h2>
+                    <div id="todayWorkoutsList" class="today-workouts-list">
+                        <p class="md-typescale-body-large no-workouts-message">No workouts scheduled for today</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feature Overview -->
+            <section class="features-overview md-card">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-medium">✨ What you can do</h2>
+                    
+                    <div class="features-grid">
+                        <div class="feature-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="feature-icon">
+                                    <md-icon>edit</md-icon>
+                                </div>
+                                <h3 class="md-typescale-title-medium">Manage Workouts</h3>
+                                <p class="md-typescale-body-medium">Create, edit, and organize your workout library with markdown-based exercises</p>
+                                <md-filled-button onclick="window.location.href='workout-management.html'">
+                                    Manage Workouts
+                                </md-filled-button>
+                            </div>
+                        </div>
+
+                        <div class="feature-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="feature-icon">
+                                    <md-icon>calendar_month</md-icon>
+                                </div>
+                                <h3 class="md-typescale-title-medium">Plan Training</h3>
+                                <p class="md-typescale-body-medium">Schedule workouts on a calendar and build consistent training routines</p>
+                                <md-filled-button onclick="window.location.href='training-plan.html'">
+                                    Training Plan
+                                </md-filled-button>
+                            </div>
+                        </div>
+
+                        <div class="feature-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="feature-icon">
+                                    <md-icon>fitness_center</md-icon>
+                                </div>
+                                <h3 class="md-typescale-title-medium">Train Focused</h3>
+                                <p class="md-typescale-body-medium">Experience distraction-free workout sessions with precise timers</p>
+                                <md-filled-button id="startTrainingBtn">
+                                    Start Training
+                                </md-filled-button>
+                            </div>
+                        </div>
+
+                        <div class="feature-card md-card md-card--outlined">
+                            <div class="md-card__content">
+                                <div class="feature-icon">
+                                    <md-icon>analytics</md-icon>
+                                </div>
+                                <h3 class="md-typescale-title-medium">Track Progress</h3>
+                                <p class="md-typescale-body-medium">Monitor your fitness journey with detailed statistics and insights</p>
+                                <md-filled-button onclick="window.location.href='statistics.html'">
+                                    View Statistics
+                                </md-filled-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section class="quick-start md-card">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-medium">🚀 Quick Start</h2>
+                    <div class="quick-start-options">
+                        <md-filled-button id="quickCreateWorkoutBtn" class="large-button">
+                            <md-icon slot="icon">add</md-icon>
+                            Create Your First Workout
+                        </md-filled-button>
+                        <md-outlined-button id="quickLoadWorkoutBtn" class="large-button">
+                            <md-icon slot="icon">folder_open</md-icon>
+                            Load Sample Workout
+                        </md-outlined-button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="recent-activity md-card" id="recentActivity" style="display: none;">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-medium">🕐 Recent Activity</h2>
+                    <div id="recentActivityList" class="recent-activity-list">
+                        <!-- Recent activities will be populated here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Workout Assignment Modal -->
+        <div id="workoutAssignmentModal" class="modal">
+            <div class="modal-content md-card">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Assign Workout</h3>
+                    <p id="selectedDateText" class="md-typescale-body-large"></p>
+                    
+                    <div class="workout-selection">
+                        <md-outlined-select id="workoutAssignmentSelect" label="Choose a workout">
+                            <md-select-option value="">
+                                <div slot="headline">Choose a workout...</div>
+                            </md-select-option>
+                        </md-outlined-select>
+                    </div>
+
+                    <div class="assigned-workouts" id="assignedWorkouts">
+                        <h4 class="md-typescale-title-medium">Assigned Workouts:</h4>
+                        <div id="assignedWorkoutsList"></div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <md-filled-button id="assignWorkoutBtn" disabled>
+                            <md-icon slot="icon">add</md-icon>
+                            Assign
+                        </md-filled-button>
+                        <md-outlined-button id="closeModalBtn">
+                            Close
+                        </md-outlined-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync & Auth Dialogs -->
+    <div id="syncDialog" class="modal" style="display: none;">
+        <div class="modal-content md-card">
+            <div class="md-card__content">
+                <h3 class="md-typescale-title-large">Sync Settings</h3>
+                
+                <div class="sync-status" id="syncStatus">
+                    <div class="status-indicator">
+                        <md-icon id="syncStatusIcon">sync_disabled</md-icon>
+                        <span id="syncStatusText">Sync disabled</span>
+                    </div>
+                </div>
+
+                <div class="sync-settings">
+                    <div class="setting-item">
+                        <md-switch id="syncEnabledToggle"></md-switch>
+                        <div class="setting-text">
+                            <span class="md-typescale-body-large">Enable Sync</span>
+                            <span class="md-typescale-body-medium">Sync your workouts and statistics with the server</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item" id="authSection" style="display: none;">
+                        <div class="auth-status" id="authStatus">
+                            <md-icon>account_circle</md-icon>
+                            <span id="authStatusText">Not logged in</span>
+                        </div>
+                        <div class="auth-actions">
+                            <md-filled-button id="loginBtn">
+                                Login
+                            </md-filled-button>
+                            <md-outlined-button id="registerBtn">
+                                Register
+                            </md-outlined-button>
+                            <md-outlined-button id="logoutBtn" style="display: none;">
+                                Logout
+                            </md-outlined-button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item" id="syncActions" style="display: none;">
+                        <md-filled-button id="syncNowBtn">
+                            <md-icon slot="icon">sync</md-icon>
+                            Sync Now
+                        </md-filled-button>
+                        <div class="sync-info">
+                            <span class="md-typescale-body-small" id="lastSyncTime">Never synced</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <md-outlined-button id="closeSyncBtn">
+                        Close
+                    </md-outlined-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Dialog -->
+    <div id="authDialog" class="modal" style="display: none;">
+        <div class="modal-content md-card">
+            <div class="md-card__content">
+                <h3 class="md-typescale-title-large" id="authDialogTitle">Login</h3>
+                
+                <form id="authForm">
+                    <div class="auth-tabs">
+                        <md-text-button type="button" id="loginTab" class="auth-tab active">Login</md-text-button>
+                        <md-text-button type="button" id="registerTab" class="auth-tab">Register</md-text-button>
+                    </div>
+
+                    <div class="auth-fields">
+                        <md-outlined-text-field 
+                            id="username" 
+                            label="Username" 
+                            type="text"
+                            required
+                            style="display: none;">
+                        </md-outlined-text-field>
+                        
+                        <md-outlined-text-field 
+                            id="usernameOrEmail" 
+                            label="Username or Email" 
+                            type="email"
+                            required>
+                        </md-outlined-text-field>
+                        
+                        <md-outlined-text-field 
+                            id="email" 
+                            label="Email" 
+                            type="email"
+                            required
+                            style="display: none;">
+                        </md-outlined-text-field>
+                        
+                        <md-outlined-text-field 
+                            id="password" 
+                            label="Password" 
+                            type="password"
+                            required>
+                        </md-outlined-text-field>
+                        
+                        <md-outlined-text-field 
+                            id="referredBy" 
+                            label="Referred By (optional)" 
+                            type="text"
+                            style="display: none;">
+                        </md-outlined-text-field>
+                    </div>
+
+                    <div class="auth-message" id="authMessage" style="display: none;"></div>
+
+                    <div class="modal-actions">
+                        <md-filled-button type="submit" id="authSubmitBtn">
+                            Login
+                        </md-filled-button>
+                        <md-outlined-button type="button" id="cancelAuthBtn">
+                            Cancel
+                        </md-outlined-button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="js/material-web-imports.js"></script>
+    <script type="module" src="js/components/navigation-menu.js"></script>
+    <script type="module" src="js/components/page-header.js"></script>
+    <script type="module" src="js/home-page.js"></script>
+</body>
+</html>
+</html>

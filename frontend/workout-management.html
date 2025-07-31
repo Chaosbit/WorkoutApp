@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Management - Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1C1B1F" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Material Design 3 Enhanced System -->
+    <link rel="stylesheet" href="material-design-enhanced.css">
+</head>
+<body>
+    <div class="container">
+        <navigation-menu></navigation-menu>
+        <page-header title="Workout Management" icon="edit" home-link="index.html"></page-header>
+        
+        <main>
+            <!-- Workout Library Section -->
+            <section class="workout-library-section md-card">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-large">💪 Manage Your Workouts</h2>
+                    <p class="md-typescale-body-large">Create, edit, and organize your workout library</p>
+                    
+                    <workout-manager id="workoutManager"></workout-manager>
+                </div>
+            </section>
+
+            <!-- Workout Editor Section -->
+            <section class="workout-editor md-card md-card--outlined" id="workoutEditor" style="display: none;">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Edit Workout</h3>
+                    <div class="editor-controls">
+                        <md-outlined-text-field 
+                            id="workoutNameInput" 
+                            label="Workout name"
+                            type="text">
+                        </md-outlined-text-field>
+                        <div class="tag-editor">
+                            <label class="md-typescale-body-medium">Tags:</label>
+                            <div class="tag-input-container">
+                                <div class="workout-tags-display" id="workoutTagsEditor"></div>
+                                <md-outlined-text-field 
+                                    id="newTagInput" 
+                                    label="Add tags" 
+                                    supporting-text="Press Enter or comma to add"
+                                    type="text">
+                                </md-outlined-text-field>
+                            </div>
+                            <div class="tag-suggestions" id="tagSuggestionsEditor"></div>
+                        </div>
+                    </div>
+                    <md-outlined-text-field 
+                        id="workoutMarkdownEditor" 
+                        type="textarea"
+                        rows="15"
+                        label="Workout markdown"
+                        supporting-text="Enter workout markdown here...">
+
+# Push Day Workout
+
+## Warm-up - 5:00
+Light cardio and dynamic stretching to prepare your body for the workout.
+Start with arm circles, shoulder rolls, and light jumping jacks.
+
+## Push-ups - 0:45
+Classic bodyweight exercise targeting chest, shoulders, and triceps.
+Keep your body in a straight line from head to heels.
+Lower your chest to just above the ground, then push back up.
+
+Rest - 0:15
+
+## Bench Press - 1:00
+Compound movement for chest, shoulders, and triceps development.
+Lie flat on the bench with feet firmly planted on the ground.
+
+Rest - 0:30
+
+## Cool Down - 3:00
+Static stretching to help muscles recover and prevent soreness."
+                        >
+                    </md-outlined-text-field>
+                    
+                    <!-- Import/Export Actions -->
+                    <div class="import-export-actions">
+                        <md-outlined-button id="importWorkoutBtn">
+                            <md-icon slot="icon">upload</md-icon>
+                            Import from File
+                        </md-outlined-button>
+                        <input type="file" id="workoutFile" accept=".md" style="display: none;" />
+                    </div>
+                    
+                    <div class="editor-actions">
+                        <md-filled-button id="saveWorkoutBtn">
+                            <md-icon slot="icon">save</md-icon>
+                            Save Changes
+                        </md-filled-button>
+                        <md-outlined-button id="cancelEditBtn">
+                            Cancel
+                        </md-outlined-button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    
+    <script type="module" src="js/material-web-imports.js"></script>
+    <script type="module" src="js/components/navigation-menu.js"></script>
+    <script type="module" src="js/components/page-header.js"></script>
+    <script type="module" src="js/workout-management-page.js"></script>
+</body>
+</html>

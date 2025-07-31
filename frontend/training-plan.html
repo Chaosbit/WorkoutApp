@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Plan - Workout Timer App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#6750A4" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1C1B1F" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Workout Timer">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    
+    <!-- Material Design 3 Enhanced System -->
+    <link rel="stylesheet" href="material-design-enhanced.css">
+</head>
+<body>
+    <div class="container">
+        <navigation-menu></navigation-menu>
+        <page-header title="Training Plan" icon="calendar_month" home-link="index.html"></page-header>
+        
+        <main>
+            <!-- Training Plan Overview -->
+            <section class="training-plan-overview md-card">
+                <div class="md-card__content">
+                    <h2 class="md-typescale-headline-large">📅 Your Training Plan</h2>
+                    <p class="md-typescale-body-large">Schedule and organize your workouts</p>
+                </div>
+            </section>
+
+            <!-- Training Plan Calendar -->
+            <section class="training-plan-section md-card">
+                <div class="md-card__content">
+                    <div class="training-plan-header">
+                        <h3 class="md-typescale-title-large">Monthly Calendar</h3>
+                        <div class="calendar-controls">
+                            <md-text-button id="prevMonthBtn">
+                                <md-icon slot="icon">chevron_left</md-icon>
+                            </md-text-button>
+                            <h3 id="currentMonthYear" class="md-typescale-title-large">January 2024</h3>
+                            <md-text-button id="nextMonthBtn">
+                                <md-icon slot="icon">chevron_right</md-icon>
+                            </md-text-button>
+                            <md-outlined-button id="todayBtn">
+                                Today
+                            </md-outlined-button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-container">
+                        <div class="calendar-grid">
+                            <div class="calendar-header">
+                                <div class="calendar-day-header">Sun</div>
+                                <div class="calendar-day-header">Mon</div>
+                                <div class="calendar-day-header">Tue</div>
+                                <div class="calendar-day-header">Wed</div>
+                                <div class="calendar-day-header">Thu</div>
+                                <div class="calendar-day-header">Fri</div>
+                                <div class="calendar-day-header">Sat</div>
+                            </div>
+                            <div id="calendarDays" class="calendar-days">
+                                <!-- Calendar days will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions-section md-card">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Quick Actions</h3>
+                    <div class="quick-actions-grid">
+                        <md-filled-button id="addTodayWorkoutBtn">
+                            <md-icon slot="icon">today</md-icon>
+                            Add Workout Today
+                        </md-filled-button>
+                        <md-outlined-button id="viewWeekBtn">
+                            <md-icon slot="icon">view_week</md-icon>
+                            This Week
+                        </md-outlined-button>
+                        <md-outlined-button id="manageTemplatesBtn">
+                            <md-icon slot="icon">schedule</md-icon>
+                            Workout Templates
+                        </md-outlined-button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Workout Assignment Modal -->
+        <div id="workoutAssignmentModal" class="modal">
+            <div class="modal-content md-card">
+                <div class="md-card__content">
+                    <h3 class="md-typescale-title-large">Assign Workout</h3>
+                    <p id="selectedDateText" class="md-typescale-body-large"></p>
+                    
+                    <div class="workout-selection">
+                        <md-outlined-select id="workoutAssignmentSelect" label="Choose a workout">
+                            <md-select-option value="">
+                                <div slot="headline">Choose a workout...</div>
+                            </md-select-option>
+                        </md-outlined-select>
+                    </div>
+
+                    <div class="assigned-workouts" id="assignedWorkouts">
+                        <h4 class="md-typescale-title-medium">Assigned Workouts:</h4>
+                        <div id="assignedWorkoutsList"></div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <md-filled-button id="assignWorkoutBtn" disabled>
+                            <md-icon slot="icon">add</md-icon>
+                            Assign
+                        </md-filled-button>
+                        <md-outlined-button id="closeModalBtn">
+                            Close
+                        </md-outlined-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="js/material-web-imports.js"></script>
+    <script type="module" src="js/components/navigation-menu.js"></script>
+    <script type="module" src="js/components/page-header.js"></script>
+    <script type="module" src="js/training-plan-page.js"></script>
+</body>
+</html>

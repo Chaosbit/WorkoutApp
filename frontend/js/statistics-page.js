@@ -1,4 +1,5 @@
 import { StatisticsManager } from './statistics-manager.js';
+import { ComponentManager } from './components/component-manager.js';
 
 /**
  * Statistics Page Controller
@@ -7,11 +8,11 @@ import { StatisticsManager } from './statistics-manager.js';
 class StatisticsPage {
     constructor() {
         this.statisticsManager = new StatisticsManager();
+        this.componentManager = new ComponentManager();
         
         // Initialize DOM elements
         this.initializeElements();
         this.bindEvents();
-        this.initializeNavigation();
         this.updateStatisticsDisplay();
     }
 
@@ -25,84 +26,16 @@ class StatisticsPage {
         this.totalTimeEl = document.getElementById('totalTime');
         this.streakDaysEl = document.getElementById('streakDays');
         this.journalList = document.getElementById('journalList');
-        
-        // Navigation elements
-        this.menuButton = document.getElementById('menuButton');
-        this.navigationDrawer = document.getElementById('navigationDrawer');
-        this.navigationScrim = document.getElementById('navigationScrim');
-        this.navHome = document.getElementById('navHome');
-        this.navStatistics = document.getElementById('navStatistics');
     }
 
     /**
      * Bind event listeners
      */
     bindEvents() {
-        // Navigation events
-        this.menuButton.addEventListener('click', () => this.toggleNavigation());
-        this.navigationScrim.addEventListener('click', () => this.closeNavigation());
-        this.navHome.addEventListener('click', () => this.navigateToHome());
-        this.navStatistics.addEventListener('click', () => this.closeNavigation());
-        
-        // Close navigation on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.isNavigationOpen()) {
-                this.closeNavigation();
-            }
-        });
+        // Component manager handles navigation events
+        // Add any statistics-specific event listeners here if needed
     }
 
-    /**
-     * Initialize navigation state
-     */
-    initializeNavigation() {
-        // Set current page as active
-        this.navStatistics.classList.add('active');
-        this.navHome.classList.remove('active');
-    }
-
-    /**
-     * Toggle navigation drawer
-     */
-    toggleNavigation() {
-        if (this.isNavigationOpen()) {
-            this.closeNavigation();
-        } else {
-            this.openNavigation();
-        }
-    }
-
-    /**
-     * Open navigation drawer
-     */
-    openNavigation() {
-        this.navigationDrawer.classList.add('open');
-        this.navigationScrim.classList.add('visible');
-        document.body.style.overflow = 'hidden';
-    }
-
-    /**
-     * Close navigation drawer
-     */
-    closeNavigation() {
-        this.navigationDrawer.classList.remove('open');
-        this.navigationScrim.classList.remove('visible');
-        document.body.style.overflow = '';
-    }
-
-    /**
-     * Check if navigation is open
-     */
-    isNavigationOpen() {
-        return this.navigationDrawer.classList.contains('open');
-    }
-
-    /**
-     * Navigate to home page
-     */
-    navigateToHome() {
-        window.location.href = 'index.html';
-    }
 
     /**
      * Update the statistics display

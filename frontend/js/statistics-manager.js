@@ -248,8 +248,27 @@ export class StatisticsManager {
      * @param {number} limit - Number of sessions to return (default: 10)
      * @returns {Array} Recent workout sessions
      */
+    /**
+     * Get recent sessions with a limit
+     * @param {number} limit - Maximum number of sessions to return
+     * @returns {Array} Array of recent workout sessions
+     */
     getRecentSessions(limit = 10) {
         return this.sessions.slice(0, limit);
+    }
+
+    /**
+     * Get recent workouts formatted for display
+     * @param {number} limit - Maximum number of workouts to return
+     * @returns {Array} Array of recent workout data
+     */
+    getRecentWorkouts(limit = 5) {
+        return this.sessions.slice(0, limit).map(session => ({
+            workoutName: session.workoutName || 'Unknown Workout',
+            date: session.startTime,
+            completed: session.status === 'completed',
+            duration: this.getSessionDuration(session)
+        }));
     }
 
     /**
