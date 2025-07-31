@@ -11,9 +11,9 @@ dist/
 coverage/
 
 # Cypress
-cypress/videos/
-cypress/screenshots/
-cypress/reports/
+frontend/cypress/videos/
+frontend/cypress/screenshots/
+frontend/cypress/reports/
 
 # Test Coverage Reports
 coverage/

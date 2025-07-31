@@ -12,7 +12,7 @@ A Progressive Web App (PWA) for running markdown-based workouts with timers, des
 
 ## Directory Structure
 ```
-├── frontend/              # Frontend PWA application
+├── frontend/              # Frontend PWA application (self-contained)
 │   ├── index.html        # Main application interface
 │   ├── js/               # JavaScript modules and components
 │   │   ├── components/   # Web components (navigation, header, etc.)
@@ -20,11 +20,17 @@ A Progressive Web App (PWA) for running markdown-based workouts with timers, des
 │   ├── material-design-enhanced.css
 │   ├── sw.js            # Service worker
 │   ├── manifest.json    # PWA manifest
-│   └── *.html           # Application pages
+│   ├── *.html           # Application pages
+│   ├── package.json     # Frontend dependencies and scripts
+│   ├── node_modules/    # Frontend dependencies (including @material/web)
+│   ├── cypress/         # E2E tests
+│   ├── tests/           # Unit tests
+│   ├── jest.config.js   # Jest configuration
+│   ├── babel.config.json # Babel configuration
+│   └── cypress.*.js     # Cypress configurations
 ├── backend/              # .NET Core API
-├── cypress/              # E2E tests
-├── tests/                # Unit tests
-└── docs/                 # Documentation
+├── docs/                 # Documentation
+└── deploy-github-pages.sh # Deployment script
 ```
 
 ## Key Files
@@ -50,20 +56,21 @@ Time format: `MM:SS` (minutes:seconds)
 
 ## Development Commands
 ```bash
-# Local development server
-npm start             # Serves frontend from frontend/ directory on port 8000
-# or
-cd frontend && python -m http.server 8000
+# Local development (from frontend directory)
+cd frontend
+npm start             # Serves frontend on port 8000
+npm run dev           # Same as start
 
-# Run tests
+# Run tests (from frontend directory)
+cd frontend
 npm test              # Run unit tests
 npm run test:e2e      # Run Cypress E2E tests
 npm run test:e2e:open # Open Cypress test runner
 
-# Deploy to GitHub Pages
+# Deploy to GitHub Pages (from project root)
 ./deploy-github-pages.sh
 
-# Backend development (optional)
+# Backend development (from frontend directory)
 npm run backend:api   # Start .NET API server
 ```
 
