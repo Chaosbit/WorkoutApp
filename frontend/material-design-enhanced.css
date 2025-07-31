@@ -1,37 +1,11 @@
-/* Material Design 3 Enhanced System - Material Web Components Style */
+/* Material Design 3 Enhanced System - Minimal Clean Version */
 
-/* Import Roboto font with comprehensive fallback system */
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 300;
-    src: local('Roboto Light'), local('Roboto-Light'), 
-         url('https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmSU5fChc4AMP6lQ.woff2') format('woff2'),
-         url('assets/fonts/Roboto-Light.woff2') format('woff2');
-    font-display: swap;
-}
+/* ========== FONT IMPORTS ========== */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Roboto'), local('Roboto-Regular'),
-         url('https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2') format('woff2'),
-         url('assets/fonts/Roboto-Regular.woff2') format('woff2');
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 500;
-    src: local('Roboto Medium'), local('Roboto-Medium'),
-         url('https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmEU9fChc4AMP6lQ.woff2') format('woff2'),
-         url('assets/fonts/Roboto-Medium.woff2') format('woff2');
-    font-display: swap;
-}
-
-/* Material Icons fallback */
+/* Material Icons fallback for legacy support */
 .material-icons {
     font-family: 'Material Icons', 'Material Icons Fallback', sans-serif;
     font-weight: normal;
@@ -48,12 +22,7 @@
     -webkit-font-smoothing: antialiased;
 }
 
-/* Fallback when Material Icons don't load */
-.material-icons:not(.material-icons-loaded):before {
-    content: attr(data-fallback);
-}
-
-/* CSS Reset */
+/* ========== CSS RESET ========== */
 *,
 *::before,
 *::after {
@@ -62,7 +31,7 @@
     box-sizing: border-box;
 }
 
-/* Material Design 3 Design Tokens - Enhanced */
+/* ========== MATERIAL DESIGN 3 DESIGN TOKENS ========== */
 :root {
     /* Primary Palette */
     --md-sys-color-primary: #6750A4;
@@ -111,9 +80,23 @@
     --md-sys-color-inverse-surface: #313033;
     --md-sys-color-inverse-on-surface: #F4EFF4;
     --md-sys-color-inverse-primary: #D0BCFF;
+    
+    /* Shape Tokens */
+    --md-sys-shape-corner-none: 0px;
+    --md-sys-shape-corner-extra-small: 4px;
+    --md-sys-shape-corner-small: 8px;
+    --md-sys-shape-corner-medium: 12px;
+    --md-sys-shape-corner-large: 16px;
+    --md-sys-shape-corner-extra-large: 28px;
+    
+    /* Elevation Tokens */
+    --md-sys-elevation-level0: none;
+    --md-sys-elevation-level1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    --md-sys-elevation-level2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    --md-sys-elevation-level3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30);
 }
 
-/* Dark Theme - Respects system preference */
+/* Dark Theme */
 @media (prefers-color-scheme: dark) {
     :root {
         /* Primary Palette - Dark */
@@ -166,2328 +149,20 @@
     }
 }
 
-:root {
-    /* Elevation Tokens - Material Web Style */
-    --md-sys-elevation-level0: none;
-    --md-sys-elevation-level1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
-    --md-sys-elevation-level2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
-    --md-sys-elevation-level3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.30);
-    --md-sys-elevation-level4: 0px 6px 10px 4px rgba(0, 0, 0, 0.15), 0px 2px 3px 0px rgba(0, 0, 0, 0.30);
-    --md-sys-elevation-level5: 0px 8px 12px 6px rgba(0, 0, 0, 0.15), 0px 4px 4px 0px rgba(0, 0, 0, 0.30);
-    
-    /* Shape Tokens */
-    --md-sys-shape-corner-none: 0px;
-    --md-sys-shape-corner-extra-small: 4px;
-    --md-sys-shape-corner-small: 8px;
-    --md-sys-shape-corner-medium: 12px;
-    --md-sys-shape-corner-large: 16px;
-    --md-sys-shape-corner-extra-large: 28px;
-    
-    /* Typography Scale - Material Web Aligned */
-    --md-sys-typescale-display-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    --md-sys-typescale-display-large-weight: 400;
-    --md-sys-typescale-display-large-size: 57px;
-    --md-sys-typescale-display-large-line-height: 64px;
-    
-    --md-sys-typescale-headline-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    --md-sys-typescale-headline-large-weight: 400;
-    --md-sys-typescale-headline-large-size: 32px;
-    --md-sys-typescale-headline-large-line-height: 40px;
-    
-    --md-sys-typescale-title-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    --md-sys-typescale-title-large-weight: 400;
-    --md-sys-typescale-title-large-size: 22px;
-    --md-sys-typescale-title-large-line-height: 28px;
-    
-    --md-sys-typescale-body-large-font: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-    --md-sys-typescale-body-large-weight: 400;
-    --md-sys-typescale-body-large-size: 16px;
-    --md-sys-typescale-body-large-line-height: 24px;
-    
-    /* Material Web Component Tokens */
-    --md-filled-button-container-color: var(--md-sys-color-primary);
-    --md-filled-button-label-text-color: var(--md-sys-color-on-primary);
-    --md-filled-button-container-shape: var(--md-sys-shape-corner-large);
-    --md-filled-button-container-height: 40px;
-    
-    --md-outlined-button-outline-color: var(--md-sys-color-outline);
-    --md-outlined-button-label-text-color: var(--md-sys-color-primary);
-    --md-outlined-button-container-shape: var(--md-sys-shape-corner-large);
-    --md-outlined-button-container-height: 40px;
-    
-    /* Progress Indicator Tokens */
-    --md-linear-progress-active-indicator-color: var(--md-sys-color-primary);
-    --md-linear-progress-track-color: var(--md-sys-color-surface-variant);
-    --md-linear-progress-active-indicator-height: 4px;
-    --md-linear-progress-track-height: 4px;
-    --md-linear-progress-track-shape: var(--md-sys-shape-corner-small);
+/* ========== BASE STYLES ========== */
+html {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Base body styling */
 body {
-    font-family: var(--md-sys-typescale-body-large-font);
-    font-size: var(--md-sys-typescale-body-large-size);
-    line-height: var(--md-sys-typescale-body-large-line-height);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 16px;
+    background-color: var(--md-sys-color-background);
     color: var(--md-sys-color-on-background);
+    line-height: 1.5;
 }
 
-/* Container */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Material Top App Bar - Web Components Style */
-.md-top-app-bar {
-    display: flex;
-    align-items: center;
-    padding: 16px 0 24px;
-    color: white;
-}
-
-.md-top-app-bar__content {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-}
-
-.md-top-app-bar__actions {
-    margin-left: auto;
-}
-
-.md-top-app-bar__leading-icon {
-    font-size: 32px;
-    color: white;
-}
-
-.md-top-app-bar__title {
-    font-family: var(--md-sys-typescale-headline-large-font);
-    font-size: var(--md-sys-typescale-headline-large-size);
-    font-weight: var(--md-sys-typescale-headline-large-weight);
-    line-height: var(--md-sys-typescale-headline-large-line-height);
-    color: white;
-}
-
-.md-top-app-bar__title-link {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    text-decoration: none;
-    color: inherit;
-    transition: opacity 0.2s ease;
-}
-
-.md-top-app-bar__title-link:hover {
-    opacity: 0.8;
-}
-
-/* Typography Classes - Material Web Aligned */
-.md-typescale-headline-large {
-    font-family: var(--md-sys-typescale-headline-large-font);
-    font-size: var(--md-sys-typescale-headline-large-size);
-    font-weight: var(--md-sys-typescale-headline-large-weight);
-    line-height: var(--md-sys-typescale-headline-large-line-height);
-    color: var(--md-sys-color-on-surface);
-    margin-bottom: 16px;
-}
-
-.md-typescale-title-large {
-    font-family: var(--md-sys-typescale-title-large-font);
-    font-size: var(--md-sys-typescale-title-large-size);
-    font-weight: var(--md-sys-typescale-title-large-weight);
-    line-height: var(--md-sys-typescale-title-large-line-height);
-    color: var(--md-sys-color-on-surface);
-    margin-bottom: 16px;
-}
-
-.md-typescale-body-large {
-    font-family: var(--md-sys-typescale-body-large-font);
-    font-size: var(--md-sys-typescale-body-large-size);
-    font-weight: var(--md-sys-typescale-body-large-weight);
-    line-height: var(--md-sys-typescale-body-large-line-height);
-    color: var(--md-sys-color-on-surface-variant);
-    margin-bottom: 8px;
-}
-
-/* Material Cards - Web Components Style */
-.md-card {
-    background-color: var(--md-sys-color-surface-container-low);
-    border-radius: var(--md-sys-shape-corner-large);
-    box-shadow: var(--md-sys-elevation-level1);
-    margin-bottom: 24px;
-    transition: box-shadow 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-.md-card:hover {
-    box-shadow: var(--md-sys-elevation-level2);
-}
-
-.md-card--outlined {
-    background-color: var(--md-sys-color-surface);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    box-shadow: none;
-}
-
-.md-card--elevated {
-    background-color: var(--md-sys-color-surface-container-high);
-    box-shadow: var(--md-sys-elevation-level3);
-}
-
-.md-card--elevated:hover {
-    box-shadow: var(--md-sys-elevation-level4);
-}
-
-.md-card__content {
-    padding: 24px;
-}
-
-/* Material Buttons - Web Components Style */
-.md-button {
-    --md-button-container-height: var(--md-filled-button-container-height);
-    
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: var(--md-button-container-height);
-    padding: 0 24px;
-    border-radius: var(--md-filled-button-container-shape);
-    font-family: var(--md-sys-typescale-body-large-font);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-.md-button:disabled {
-    opacity: 0.38;
-    cursor: not-allowed;
-}
-
-.md-button__icon {
-    font-size: 18px;
-}
-
-.md-button__label {
-    text-transform: none;
-}
-
-/* Filled Button */
-.md-button--filled {
-    background-color: var(--md-filled-button-container-color);
-    color: var(--md-filled-button-label-text-color);
-}
-
-.md-button--filled:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--md-filled-button-container-color) 92%, var(--md-sys-color-on-primary) 8%);
-    box-shadow: var(--md-sys-elevation-level1);
-}
-
-.md-button--filled:active:not(:disabled) {
-    background-color: color-mix(in srgb, var(--md-filled-button-container-color) 88%, var(--md-sys-color-on-primary) 12%);
-}
-
-/* Outlined Button */
-.md-button--outlined {
-    background-color: transparent;
-    color: var(--md-outlined-button-label-text-color);
-    border: 1px solid var(--md-outlined-button-outline-color);
-}
-
-.md-button--outlined:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent);
-    border-color: var(--md-sys-color-primary);
-}
-
-.md-button--outlined:active:not(:disabled) {
-    background-color: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
-}
-
-/* Large Button Variant */
-.md-button--large {
-    --md-button-container-height: 56px;
-    font-size: 16px;
-    padding: 0 32px;
-    width: 100%;
-    margin-bottom: 8px;
-}
-
-/* Text Fields - Material Web Style */
-.md-text-field {
-    position: relative;
-    display: inline-flex;
-    width: 100%;
-    margin-bottom: 16px;
-}
-
-.md-text-field--outlined {
-    background: transparent;
-}
-
-.md-text-field__input {
-    width: 100%;
-    height: 56px;
-    padding: 16px;
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: var(--md-sys-shape-corner-extra-small);
-    background: transparent;
-    font-family: var(--md-sys-typescale-body-large-font);
-    font-size: var(--md-sys-typescale-body-large-size);
-    color: var(--md-sys-color-on-surface);
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-.md-text-field__input:focus {
-    outline: none;
-    border-color: var(--md-sys-color-primary);
-    border-width: 2px;
-}
-
-.md-text-field--textarea .md-text-field__input {
-    min-height: 120px;
-    resize: vertical;
-    padding-top: 16px;
-}
-
-/* Select - Material Web Style */
-.md-select {
-    position: relative;
-    display: inline-flex;
-    width: 100%;
-    margin-bottom: 16px;
-}
-
-.md-select__field {
-    width: 100%;
-    height: 56px;
-    padding: 16px;
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: var(--md-sys-shape-corner-extra-small);
-    background: var(--md-sys-color-surface);
-    font-family: var(--md-sys-typescale-body-large-font);
-    font-size: var(--md-sys-typescale-body-large-size);
-    color: var(--md-sys-color-on-surface);
-    cursor: pointer;
-    appearance: none;
-}
-
-.md-select__field:focus {
-    outline: none;
-    border-color: var(--md-sys-color-primary);
-    border-width: 2px;
-}
-
-.md-select__dropdown-icon {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--md-sys-color-on-surface-variant);
-    pointer-events: none;
-}
-
-/* Linear Progress - Material Web Style */
-.md-linear-progress {
-    position: relative;
-    width: 100%;
-    height: var(--md-linear-progress-track-height);
-    background-color: var(--md-linear-progress-track-color);
-    border-radius: var(--md-linear-progress-track-shape);
-    overflow: hidden;
-    margin: 16px 0;
-}
-
-.md-linear-progress__bar {
-    height: 100%;
-    background-color: var(--md-linear-progress-active-indicator-color);
-    border-radius: var(--md-linear-progress-track-shape);
-    transition: width 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    transform-origin: left center;
-}
-
-/* File Input Styling */
-.md-file-input {
-    position: relative;
-    margin-bottom: 24px;
-}
-
-.md-file-input__field {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.md-file-input__surface {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 48px;
-    border: 2px dashed var(--md-sys-color-outline);
-    border-radius: var(--md-sys-shape-corner-large);
-    background-color: var(--md-sys-color-surface-container);
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-.md-file-input__surface:hover {
-    border-color: var(--md-sys-color-primary);
-    background-color: var(--md-sys-color-surface-container-high);
-}
-
-.md-file-input__icon {
-    font-size: 48px;
-    color: var(--md-sys-color-primary);
-    margin-bottom: 8px;
-}
-
-.md-file-input__text {
-    color: var(--md-sys-color-on-surface-variant);
-    text-align: center;
-}
-
-/* Layout Components */
-.new-workout-section {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.workout-selector {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 16px;
-}
-
-.workout-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.editor-controls {
-    margin-bottom: 16px;
-}
-
-.import-export-actions {
-    display: flex;
-    gap: 8px;
-    margin: 16px 0;
-    padding: 12px 0;
-    border-top: 1px solid var(--md-sys-color-outline-variant);
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.editor-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-/* Sample Format */
-.sample-format {
-    margin-top: 24px;
-}
-
-.sample-code {
-    background-color: var(--md-sys-color-surface-container-highest);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: var(--md-sys-shape-corner-small);
-    padding: 16px;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    color: var(--md-sys-color-on-surface);
-    overflow-x: auto;
-    white-space: pre;
-}
-
-/* Timer Interface */
-.workout-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.timer-container {
-    margin-bottom: 24px;
-}
-
-.current-exercise {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.timer-display {
-    font-size: 4rem;
-    font-weight: 300;
-    color: var(--md-sys-color-primary);
-    margin: 24px 0;
-    font-family: 'Roboto Mono', 'Courier New', monospace;
-}
-
-.reps-display {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin: 16px 0;
-    font-size: 1.25rem;
-    color: var(--md-sys-color-on-surface);
-}
-
-/* Exercise Description */
-.exercise-description {
-    margin: 16px 0;
-    text-align: left;
-}
-
-.description-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: var(--md-sys-shape-corner-small);
-    transition: background-color 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-.description-toggle:hover {
-    background-color: var(--md-sys-color-surface-container);
-}
-
-.description-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    padding: 0 16px;
-}
-
-.exercise-description.expanded .description-content {
-    max-height: 200px;
-    padding: 16px;
-}
-
-.exercise-description.expanded .expand-icon {
-    transform: rotate(180deg);
-}
-
-.expand-icon {
-    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-/* Controls */
-.workout-controls {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
-}
-
-.rep-completion {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.workout-progress {
-    text-align: center;
-    margin-bottom: 24px;
-}
-
-.progress-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-/* Enhanced current exercise for focused view */
-.current-exercise {
-    text-align: center;
-    margin-bottom: 24px;
-    background-color: var(--md-sys-color-surface-container-highest);
-}
-
-/* Workout List */
-.workout-list {
-    margin-top: 24px;
-}
-
-.exercise-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    transition: background-color 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-
-.exercise-item:last-child {
-    border-bottom: none;
-}
-
-.exercise-item:hover {
-    background-color: var(--md-sys-color-surface-container);
-}
-
-.exercise-item.current {
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-}
-
-.exercise-name {
-    font-weight: 500;
-    color: var(--md-sys-color-on-surface);
-}
-
-.exercise-duration {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 14px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    body {
-        padding: 8px;
-    }
-    
-    .md-top-app-bar__title {
-        font-size: 24px;
-        line-height: 32px;
-    }
-    
-    .md-typescale-headline-large {
-        font-size: 24px;
-        line-height: 32px;
-    }
-    
-    .timer-display {
-        font-size: 3rem;
-    }
-    
-    .workout-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .workout-controls .md-button {
-        width: 100%;
-        margin-bottom: 8px;
-    }
-    
-    .workout-actions {
-        flex-direction: column;
-    }
-    
-    .editor-actions {
-        flex-direction: column;
-    }
-    
-    .sample-code {
-        font-size: 12px;
-        padding: 8px;
-    }
-}
-
-/* Accessibility */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-@media (prefers-contrast: high) {
-    :root {
-        --md-sys-color-outline: #000000;
-        --md-sys-color-outline-variant: #333333;
-    }
-}
-
-/* Focus styles for accessibility */
-:focus-visible {
-    outline: 2px solid var(--md-sys-color-primary);
-    outline-offset: 2px;
-}
-
-/* Material Icons Enhancement */
-.material-icons {
-    user-select: none;
-}
-
-/* Fallback icons when Material Icons don't load */
-.md-top-app-bar__leading-icon:before {
-    content: "🏋️";
-}
-
-.md-button__icon[data-icon="save"]:before {
-    content: "💾";
-}
-
-.md-button__icon[data-icon="add"]:before {
-    content: "+";
-}
-
-.md-button__icon[data-icon="edit"]:before {
-    content: "✏️";
-}
-
-.md-button__icon[data-icon="delete"]:before {
-    content: "🗑️";
-}
-
-.md-button__icon[data-icon="share"]:before {
-    content: "📤";
-}
-
-.md-button__icon[data-icon="play_arrow"]:before {
-    content: "▶️";
-}
-
-.md-button__icon[data-icon="pause"]:before {
-    content: "⏸️";
-}
-
-.md-button__icon[data-icon="skip_next"]:before {
-    content: "⏭️";
-}
-
-.md-button__icon[data-icon="refresh"]:before {
-    content: "🔄";
-}
-
-.md-button__icon[data-icon="check"]:before {
-    content: "✅";
-}
-
-.md-file-input__icon:before {
-    content: "📁";
-}
-
-/* Print styles */
-@media print {
-    body {
-        background: white;
-        color: black;
-    }
-    
-    .md-card {
-        box-shadow: none;
-        border: 1px solid #000;
-    }
-}
-
-/* Navigation Tabs */
-.view-tabs {
-    display: flex;
-    gap: 8px;
-    margin: 16px 0;
-    padding: 0 16px;
-    border-bottom: 1px solid rgba(var(--md-sys-color-outline), 0.2);
-}
-
-.view-tab {
-    border-radius: 8px 8px 0 0;
-    padding: 12px 24px !important;
-    min-height: auto !important;
-    transition: all 0.2s ease;
-}
-
-.view-tab.active {
-    background: rgba(var(--md-sys-color-primary), 0.1);
-    color: rgb(var(--md-sys-color-primary));
-    border-bottom: 2px solid rgb(var(--md-sys-color-primary));
-}
-
-.view-content {
-    display: none;
-}
-
-.view-content.active {
-    display: block;
-}
-
-/* Training Plan Calendar */
-.training-plan-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.calendar-controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.calendar-container {
-    max-width: 100%;
-    overflow-x: auto;
-}
-
-.calendar-grid {
-    min-width: 280px;
-    width: 100%;
-}
-
-.calendar-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    margin-bottom: 8px;
-}
-
-.calendar-day-header {
-    padding: 12px 8px;
-    text-align: center;
-    font-weight: 500;
-    color: rgb(var(--md-sys-color-on-surface-variant));
-    font-size: 14px;
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    background: rgba(var(--md-sys-color-outline), 0.2);
-}
-
-.calendar-day {
-    min-height: 80px;
-    background: rgb(var(--md-sys-color-surface));
-    padding: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    position: relative;
-}
-
-.calendar-day:hover {
-    background: rgba(var(--md-sys-color-primary), 0.04);
-}
-
-.calendar-day.today {
-    background: rgba(var(--md-sys-color-primary), 0.1);
-    border: 2px solid rgb(var(--md-sys-color-primary));
-}
-
-.calendar-day.empty {
-    background: rgba(var(--md-sys-color-surface-variant), 0.3);
-    cursor: default;
-}
-
-.calendar-day.empty:hover {
-    background: rgba(var(--md-sys-color-surface-variant), 0.3);
-}
-
-.calendar-day-number {
-    font-weight: 500;
-    font-size: 14px;
-    color: rgb(var(--md-sys-color-on-surface));
-    margin-bottom: 4px;
-}
-
-.calendar-day.today .calendar-day-number {
-    color: rgb(var(--md-sys-color-primary));
-    font-weight: 600;
-}
-
-.calendar-workout {
-    background: rgba(var(--md-sys-color-secondary), 0.1);
-    color: rgb(var(--md-sys-color-on-secondary-container));
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    border: 1px solid rgba(var(--md-sys-color-secondary), 0.3);
-}
-
-.calendar-workout:hover {
-    background: rgba(var(--md-sys-color-secondary), 0.2);
-}
-
-.calendar-day-more {
-    font-size: 10px;
-    color: rgb(var(--md-sys-color-on-surface-variant));
-    text-align: center;
-    margin-top: auto;
-}
-
-/* Workout Table Styles */
-.workout-table-container {
-    margin-top: 1rem;
-    overflow-x: auto;
-}
-
-.workout-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.workout-table th,
-.workout-table td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid rgba(var(--md-sys-color-outline), 0.2);
-}
-
-.workout-table thead {
-    background: rgba(var(--md-sys-color-secondary-container), 0.3);
-}
-
-.workout-table th {
-    font-weight: 600;
-    color: rgb(var(--md-sys-color-on-surface));
-    font-size: 14px;
-}
-
-.workout-table tbody tr:hover {
-    background: rgba(var(--md-sys-color-secondary-container), 0.1);
-}
-
-.workout-name-text {
-    font-weight: 500;
-    color: rgb(var(--md-sys-color-on-surface));
-    margin-bottom: 2px;
-}
-
-.workout-name-meta {
-    font-size: 12px;
-    color: rgb(var(--md-sys-color-on-surface-variant));
-}
-
-.workout-actions {
-    display: flex;
-    gap: 4px;
-    min-width: 180px;
-}
-
-.workout-actions .md-icon-button {
-    width: 32px;
-    height: 32px;
-    padding: 4px;
-    border-radius: 4px;
-    border: none;
-    background: transparent;
-    color: rgb(var(--md-sys-color-on-surface));
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s ease;
-}
-
-.workout-actions .md-icon-button:hover {
-    background: rgba(var(--md-sys-color-secondary), 0.1);
-}
-
-.workout-actions .md-icon-button .material-icons {
-    font-size: 18px;
-}
-
-.workout-actions .share-workout-btn:hover {
-    background: rgba(var(--md-sys-color-primary), 0.1);
-    color: rgb(var(--md-sys-color-primary));
-}
-
-.workout-actions .edit-workout-btn:hover {
-    background: rgba(var(--md-sys-color-tertiary), 0.1);
-    color: rgb(var(--md-sys-color-tertiary));
-}
-
-.workout-actions .start-workout-btn:hover {
-    background: rgba(var(--md-sys-color-secondary), 0.1);
-    color: rgb(var(--md-sys-color-secondary));
-}
-
-.workout-actions .delete-workout-btn:hover {
-    background: rgba(var(--md-sys-color-error), 0.1);
-    color: rgb(var(--md-sys-color-error));
-}
-
-.no-workouts {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: rgb(var(--md-sys-color-on-surface-variant));
-}
-
-/* Mobile responsive table */
-@media (max-width: 768px) {
-    .workout-table-container {
-        margin: 1rem -1rem;
-    }
-    
-    .workout-table {
-        font-size: 14px;
-    }
-    
-    .workout-table th,
-    .workout-table td {
-        padding: 8px 12px;
-    }
-    
-    .workout-actions {
-        min-width: 140px;
-        gap: 2px;
-    }
-    
-    .workout-actions .md-icon-button {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .workout-actions .md-icon-button .material-icons {
-        font-size: 16px;
-    }
-}
-
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
-.modal.show {
-    display: flex;
-}
-
-.modal-content {
-    max-width: 500px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.workout-selection {
-    margin: 16px 0;
-}
-
-.assigned-workouts {
-    margin: 16px 0;
-}
-
-.assigned-workout-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    margin: 4px 0;
-    background: rgba(var(--md-sys-color-secondary-container), 0.1);
-    border-radius: 8px;
-    border: 1px solid rgba(var(--md-sys-color-outline), 0.2);
-}
-
-.assigned-workout-name {
-    font-weight: 500;
-    color: rgb(var(--md-sys-color-on-surface));
-}
-
-.remove-workout-btn {
-    min-width: auto !important;
-    width: 32px !important;
-    height: 32px !important;
-    padding: 4px !important;
-}
-
-.modal-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-    margin-top: 24px;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .training-plan-header {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .calendar-controls {
-        justify-content: center;
-    }
-    
-    .calendar-day {
-        min-height: 60px;
-        padding: 4px;
-    }
-    
-    .calendar-day-header {
-        padding: 8px 4px;
-        font-size: 12px;
-    }
-    
-    .calendar-workout {
-        font-size: 10px;
-        padding: 1px 4px;
-    }
-    
-    .view-tabs {
-        padding: 0 8px;
-    }
-    
-    .view-tab {
-        padding: 8px 16px !important;
-        font-size: 14px;
-    }
-}
-
-/* Material Design Navigation Drawer */
-.md-navigation-drawer {
-    position: fixed;
-    top: 0;
-    left: -280px;
-    width: 280px;
-    height: 100vh;
-    background-color: var(--md-sys-color-surface);
-    border-right: 1px solid var(--md-sys-color-outline);
-    box-shadow: var(--md-sys-elevation-2);
-    transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    z-index: 1200;
-    overflow-y: auto;
-}
-
-.md-navigation-drawer.open {
-    transform: translateX(280px);
-}
-
-.md-navigation-drawer__header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    background-color: var(--md-sys-color-surface-variant);
-}
-
-.md-navigation-drawer__title {
-    color: var(--md-sys-color-on-surface);
-    font-family: var(--md-sys-typescale-title-medium-font);
-    font-size: var(--md-sys-typescale-title-medium-size);
-    font-weight: var(--md-sys-typescale-title-medium-weight);
-    line-height: var(--md-sys-typescale-title-medium-line-height);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.md-navigation-drawer__list {
-    padding: 8px 0;
-    list-style: none;
-    margin: 0;
-}
-
-.md-navigation-drawer__item {
-    display: flex;
-    align-items: center;
-    padding: 12px 24px;
-    color: var(--md-sys-color-on-surface-variant);
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    gap: 12px;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-    font-family: var(--md-sys-typescale-label-large-font);
-    font-size: var(--md-sys-typescale-label-large-size);
-    font-weight: var(--md-sys-typescale-label-large-weight);
-    line-height: var(--md-sys-typescale-label-large-line-height);
-}
-
-.md-navigation-drawer__item:hover {
-    background-color: var(--md-sys-color-surface-variant);
-}
-
-.md-navigation-drawer__item.active {
-    background-color: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
-}
-
-.md-navigation-drawer__item-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-}
-
-.md-navigation-drawer__item-text {
-    flex: 1;
-}
-
-.md-scrim {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.32);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s cubic-bezier(0.4, 0.0, 0.2, 1),
-                visibility 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    z-index: 1100;
-}
-
-.md-scrim.visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Hamburger menu button for navigation drawer */
-.md-icon-button--menu {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: var(--md-sys-color-on-surface);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-right: 8px;
-}
-
-.md-icon-button--menu:hover {
-    background-color: var(--md-sys-color-surface-variant);
-}
-
-.md-icon-button--menu:active {
-    background-color: var(--md-sys-color-secondary-container);
-}
-
-.md-icon-button--menu .material-icons {
-    font-size: 24px;
-}
-
-/* Statistics Page Styles */
-.statistics-overview {
-    margin-bottom: 24px;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-    margin-top: 24px;
-}
-
-.stat-card {
-    min-height: 120px;
-}
-
-.stat-card .md-card__content {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    height: 100%;
-}
-
-.stat-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-}
-
-.stat-icon .material-icons {
-    font-size: 24px;
-}
-
-.stat-info {
-    flex: 1;
-}
-
-.stat-value {
-    font-family: var(--md-sys-typescale-display-medium-font);
-    font-size: var(--md-sys-typescale-display-medium-size);
-    font-weight: var(--md-sys-typescale-display-medium-weight);
-    line-height: var(--md-sys-typescale-display-medium-line-height);
-    color: var(--md-sys-color-on-surface);
-    margin-bottom: 4px;
-}
-
-.stat-label {
-    font-family: var(--md-sys-typescale-body-medium-font);
-    font-size: var(--md-sys-typescale-body-medium-size);
-    font-weight: var(--md-sys-typescale-body-medium-weight);
-    line-height: var(--md-sys-typescale-body-medium-line-height);
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.workout-journal-section {
-    margin-top: 24px;
-}
-
-.journal-container {
-    margin-top: 16px;
-}
-
-.journal-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.journal-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid var(--md-sys-color-outline-variant);
-    background-color: var(--md-sys-color-surface-variant);
-    transition: all 0.2s ease;
-}
-
-.journal-item:hover {
-    border-color: var(--md-sys-color-primary);
-    box-shadow: var(--md-sys-elevation-1);
-}
-
-.journal-main {
-    flex: 1;
-}
-
-.journal-workout-name {
-    font-family: var(--md-sys-typescale-title-medium-font);
-    font-size: var(--md-sys-typescale-title-medium-size);
-    font-weight: var(--md-sys-typescale-title-medium-weight);
-    line-height: var(--md-sys-typescale-title-medium-line-height);
-    color: var(--md-sys-color-on-surface);
-    margin-bottom: 8px;
-}
-
-.journal-details {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    font-family: var(--md-sys-typescale-body-small-font);
-    font-size: var(--md-sys-typescale-body-small-size);
-    font-weight: var(--md-sys-typescale-body-small-weight);
-    line-height: var(--md-sys-typescale-body-small-line-height);
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.journal-status {
-    display: flex;
-    align-items: center;
-    padding: 8px 16px;
-    border-radius: 16px;
-    font-family: var(--md-sys-typescale-label-medium-font);
-    font-size: var(--md-sys-typescale-label-medium-size);
-    font-weight: var(--md-sys-typescale-label-medium-weight);
-    line-height: var(--md-sys-typescale-label-medium-line-height);
-}
-
-.journal-status.completed {
-    background-color: var(--md-sys-color-tertiary-container);
-    color: var(--md-sys-color-on-tertiary-container);
-}
-
-.journal-status.abandoned {
-    background-color: var(--md-sys-color-error-container);
-    color: var(--md-sys-color-on-error-container);
-}
-
-.no-data {
-    text-align: center;
-    color: var(--md-sys-color-on-surface-variant);
-    font-style: italic;
-    padding: 48px 24px;
-    font-family: var(--md-sys-typescale-body-large-font);
-    font-size: var(--md-sys-typescale-body-large-size);
-    font-weight: var(--md-sys-typescale-body-large-weight);
-    line-height: var(--md-sys-typescale-body-large-line-height);
-}
-
-/* Mobile Responsive Adjustments */
-@media (max-width: 768px) {
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 12px;
-    }
-    
-    .journal-details {
-        gap: 12px;
-    }
-    
-    .journal-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    
-    .journal-status {
-        align-self: flex-end;
->>>>>>> b21fdc6336ed0a0bd60de937ccc15d61e03c95dd
-    }
-
-    /* Library controls mobile adjustments */
-    .library-controls {
-        flex-direction: column;
-    }
-    
-    .filter-section {
-        flex-direction: column;
-    }
-    
-    .sort-controls {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-}
-
-/* Workout Library Management Styles */
-.library-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 16px;
-    padding: 16px;
-    background-color: var(--md-sys-color-surface-variant);
-    border-radius: 8px;
-}
-
-.filter-section {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.filter-group {
-    flex: 1;
-    min-width: 200px;
-}
-
-.filter-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.tag-filter-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.selected-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    min-height: 24px;
-}
-
-.tag-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background-color: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
-    padding: 4px 8px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.tag-chip .remove-tag {
-    background: none;
-    border: none;
-    color: var(--md-sys-color-on-secondary-container);
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-    font-size: 16px;
-    line-height: 1;
-    opacity: 0.7;
-}
-
-.tag-chip .remove-tag:hover {
-    opacity: 1;
-}
-
-.tag-input-wrapper {
-    position: relative;
-}
-
-.tag-suggestions {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--md-sys-color-surface-container);
-    border: 1px solid var(--md-sys-color-outline);
-    border-radius: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1000;
-    display: none;
-}
-
-.tag-suggestion {
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.tag-suggestion:hover {
-    background-color: var(--md-sys-color-surface-container-high);
-}
-
-.tag-suggestion:last-child {
-    border-bottom: none;
-}
-
-.duration-filter select {
-    width: 100%;
-}
-
-.sort-section {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.sort-section label {
-    color: var(--md-sys-color-on-surface-variant);
-    font-weight: 500;
-}
-
-.sort-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.sort-controls select {
-    min-width: 150px;
-}
-
-#sortOrderBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: transparent;
-    border: 1px solid var(--md-sys-color-outline);
-    color: var(--md-sys-color-on-surface);
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-#sortOrderBtn:hover {
-    background-color: var(--md-sys-color-surface-container-high);
-}
-
-.workout-info {
-    margin: 12px 0;
-    padding: 12px;
-    background-color: var(--md-sys-color-surface-container-low);
-    border-radius: 8px;
-}
-
-.workout-meta {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 8px;
-    flex-wrap: wrap;
-}
-
-.workout-meta span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 14px;
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.workout-meta span::before {
-    content: '';
-    width: 4px;
-    height: 4px;
-    background-color: var(--md-sys-color-primary);
-    border-radius: 50%;
-}
-
-.workout-tag {
-    background-color: var(--md-sys-color-tertiary-container);
-    color: var(--md-sys-color-on-tertiary-container);
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 500;
-}
-
-.tag-editor {
-    margin: 16px 0;
-}
-
-.tag-editor label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--md-sys-color-on-surface-variant);
-    font-weight: 500;
-}
-
-.tag-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.workout-tags-display {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    min-height: 24px;
-}
-
-.editable-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background-color: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-    padding: 4px 8px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.editable-tag .remove-tag {
-    background: none;
-    border: none;
-    color: var(--md-sys-color-on-primary-container);
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-    font-size: 16px;
-    line-height: 1;
-    opacity: 0.7;
-}
-
-.editable-tag .remove-tag:hover {
-    opacity: 1;
-}
-
-.filter-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding-top: 8px;
-}
-
-/* Show library controls when workouts exist */
-.has-workouts .library-controls {
-    display: flex;
-}
-
-/* Sync and Auth Dialog Styles */
-.sync-status {
-    margin-bottom: 16px;
-    padding: 12px;
-    border-radius: 8px;
-    background-color: var(--md-sys-color-surface-variant);
-}
-
-.status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-}
-
-.sync-settings {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.setting-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.setting-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.auth-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.auth-actions {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.sync-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.sync-info {
-    padding: 8px;
-    font-size: 12px;
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.auth-tabs {
-    display: flex;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.auth-tab {
-    flex: 1;
-    padding: 12px 16px !important;
-    border-radius: 0 !important;
-    border-bottom: 2px solid transparent !important;
-    background: transparent !important;
-    color: var(--md-sys-color-on-surface-variant) !important;
-}
-
-.auth-tab.active {
-    color: var(--md-sys-color-primary) !important;
-    border-bottom-color: var(--md-sys-color-primary) !important;
-}
-
-.auth-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 16px;
-}
-
-.auth-message {
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    font-size: 14px;
-}
-
-.auth-message.success {
-    background-color: var(--md-sys-color-tertiary-container);
-    color: var(--md-sys-color-on-tertiary-container);
-}
-
-.auth-message.error {
-    background-color: var(--md-sys-color-error-container);
-    color: var(--md-sys-color-on-error-container);
-}
-
-.auth-message.warning {
-    background-color: rgba(255, 193, 7, 0.1);
-    color: #856404;
-    border: 1px solid rgba(255, 193, 7, 0.3);
-}
-
-/* Material Switch Component */
-.md-switch {
-    position: relative;
-    display: inline-block;
-    width: 52px;
-    height: 32px;
-}
-
-.md-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.md-switch__track {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--md-sys-color-surface-variant);
-    border: 2px solid var(--md-sys-color-outline);
-    border-radius: 16px;
-    transition: 0.3s;
-}
-
-.md-switch__handle {
-    position: absolute;
-    content: "";
-    height: 24px;
-    width: 24px;
-    left: 2px;
-    bottom: 2px;
-    background-color: var(--md-sys-color-outline);
-    border-radius: 50%;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.md-switch__shadow {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: var(--md-sys-color-outline);
-}
-
-.md-switch__ripple {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--md-sys-color-on-surface);
-    opacity: 0;
-    transform: translate(-50%, -50%);
-    top: 50%;
-    left: 50%;
-    transition: opacity 0.2s;
-}
-
-.md-switch input:checked + .md-switch__track {
-    background-color: var(--md-sys-color-primary);
-    border-color: var(--md-sys-color-primary);
-}
-
-.md-switch input:checked + .md-switch__track .md-switch__handle {
-    transform: translateX(20px);
-    background-color: var(--md-sys-color-on-primary);
-}
-
-.md-switch input:checked + .md-switch__track .md-switch__shadow {
-    background-color: var(--md-sys-color-on-primary);
-}
-
-.md-switch:hover .md-switch__ripple {
-    opacity: 0.04;
-}
-
-.md-switch input:focus + .md-switch__track .md-switch__ripple {
-    opacity: 0.12;
-}
-
-/* Text field label styles for auth forms */
-.md-text-field__label {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    pointer-events: none;
-    background: var(--md-sys-color-surface);
-    padding: 0 4px;
-}
-
-.md-text-field__input:focus + .md-text-field__label,
-.md-text-field__input:not(:placeholder-shown) + .md-text-field__label {
-    top: 0;
-    font-size: 12px;
-    color: var(--md-sys-color-primary);
-}
-
-/* Mobile responsive adjustments for sync dialogs */
-@media (max-width: 768px) {
-    .modal-content {
-        margin: 8px;
-        max-height: 90vh;
-    }
-    
-    .auth-actions {
-        flex-direction: column;
-    }
-    
-    .auth-actions .md-button {
-        width: 100%;
-    }
-    
-    .setting-item {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-    }
-    
-    .sync-actions .md-button {
-        width: 100%;
-    }
-}
-
-/* ========== HOME PAGE STYLES ========== */
-
-.welcome-section {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.app-description {
-    margin-top: 1rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-.feature-card {
-    text-align: center;
-    padding: 1.5rem;
-}
-
-.feature-icon {
-    margin-bottom: 1rem;
-}
-
-.feature-icon .material-icons {
-    font-size: 48px;
-    color: var(--md-sys-color-primary);
-}
-
-.today-workouts-list {
-    margin-top: 1rem;
-}
-
-.today-workout-item {
-    margin-bottom: 1rem;
-}
-
-.today-workout-item .md-card__content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.workout-info h4 {
-    margin: 0 0 0.5rem 0;
-}
-
-.workout-meta {
-    display: flex;
-    gap: 1rem;
-    opacity: 0.7;
-}
-
-.no-workouts-message {
-    text-align: center;
-    opacity: 0.7;
-    font-style: italic;
-}
-
-.quick-start-options {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-    margin-top: 1rem;
-}
-
-.recent-activity-list {
-    margin-top: 1rem;
-}
-
-.recent-activity-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.recent-activity-item:last-child {
-    border-bottom: none;
-}
-
-.activity-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.activity-icon {
-    color: var(--md-sys-color-primary);
-}
-
-/* ========== TRAINING PAGE STYLES ========== */
-
-.training-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 1rem;
-}
-
-.workout-status {
-    margin-bottom: 2rem;
-}
-
-.workout-active-section {
-    margin: 2rem 0;
-}
-
-.timer-display {
-    text-align: center;
-    margin: 2rem 0;
-}
-
-.workout-controls {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-}
-
-.workout-progress {
-    text-align: center;
-    margin: 1rem 0;
-}
-
-.quick-actions-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-/* ========== TRAINING PLAN PAGE STYLES ========== */
-
-.calendar-container {
-    margin-top: 1.5rem;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    background: var(--md-sys-color-outline-variant);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.calendar-header {
-    display: contents;
-}
-
-.calendar-day-header {
-    background: var(--md-sys-color-surface-variant);
-    padding: 1rem;
-    text-align: center;
-    font-weight: 500;
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.calendar-day {
-    background: var(--md-sys-color-surface);
-    padding: 1rem;
-    min-height: 80px;
-    position: relative;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.calendar-day:hover {
-    background: var(--md-sys-color-surface-variant);
-}
-
-.calendar-day.today {
-    background: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-}
-
-.calendar-day.has-workouts {
-    border-left: 4px solid var(--md-sys-color-primary);
-}
-
-.calendar-day.empty {
-    opacity: 0.3;
-    cursor: default;
-}
-
-.day-number {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-
-.workout-indicator {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    background: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.calendar-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.assigned-workouts {
-    margin-top: 1.5rem;
-}
-
-.assigned-workout-item {
-    margin-bottom: 0.5rem;
-}
-
-.assigned-workout-item .md-card__content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-}
-
-.quick-actions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-/* ========== WORKOUT MANAGEMENT PAGE STYLES ========== */
-
-.workout-library-section {
-    margin-bottom: 2rem;
-}
-
-.create-workout-section {
-    margin-bottom: 2rem;
-}
-
-.new-workout-options {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    align-items: center;
-    margin-top: 1rem;
-}
-
-.editor-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.tag-editor {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.tag-input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.workout-tags-display {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.editor-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-}
-
-/* ========== RESPONSIVE DESIGN ========== */
-
-@media (max-width: 768px) {
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .today-workout-item .md-card__content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
-    
-    .workout-actions {
-        align-self: stretch;
-    }
-    
-    .workout-actions .md-button {
-        width: 100%;
-    }
-    
-    .quick-start-options {
-        align-items: stretch;
-    }
-    
-    .quick-start-options .md-button {
-        width: 100%;
-    }
-    
-    .calendar-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .calendar-day {
-        min-height: 60px;
-        padding: 0.5rem;
-    }
-    
-    .quick-actions-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .quick-actions-buttons {
-        flex-direction: column;
-    }
-    
-    .editor-actions {
-        justify-content: stretch;
-        flex-direction: column;
-    }
-    
-    .new-workout-options {
-        align-items: stretch;
-    }
-}
-
-/* Material Web Components Integration */
-
-/* Navigation Menu Integration */
-.md-navigation-drawer .navigation-menu {
-    --md-menu-container-color: transparent;
-    --md-menu-container-elevation: 0;
-    --md-menu-container-shadow-color: transparent;
-    flex: 1;
-    width: 100%;
-    position: static !important;
-    transform: none !important;
-    box-shadow: none !important;
-    border: none !important;
-    background: transparent !important;
-}
-
-.md-navigation-drawer md-menu {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-}
-
-.md-navigation-drawer md-menu-item {
-    --md-menu-item-container-color: transparent;
-    --md-menu-item-hover-state-layer-color: var(--md-sys-color-on-surface);
-    --md-menu-item-hover-state-layer-opacity: 0.08;
-    --md-menu-item-focus-state-layer-color: var(--md-sys-color-on-surface);
-    --md-menu-item-focus-state-layer-opacity: 0.12;
-    --md-menu-item-selected-container-color: var(--md-sys-color-secondary-container);
-    --md-menu-item-label-text-color: var(--md-sys-color-on-surface);
-    --md-menu-item-selected-label-text-color: var(--md-sys-color-on-secondary-container);
-    border-radius: 0 24px 24px 0;
-    margin: 0 12px 0 0;
-    min-height: 56px;
-    padding-left: 16px;
-    padding-right: 24px;
-}
-
-.md-navigation-drawer md-menu-item[selected] {
-    background-color: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
-}
-
-.md-navigation-drawer md-menu-item md-icon {
-    --md-icon-color: var(--md-sys-color-on-surface-variant);
-    margin-right: 12px;
-}
-
-.md-navigation-drawer md-menu-item[selected] md-icon {
-    --md-icon-color: var(--md-sys-color-on-secondary-container);
-}
-
-.md-navigation-drawer md-divider {
-    --md-divider-color: var(--md-sys-color-outline-variant);
-    margin: 8px 0;
-}
-
-.md-navigation-drawer__title md-icon {
-    margin-right: 12px;
-    vertical-align: middle;
-}
-
-/* ========== MATERIAL WEB COMPONENT INTEGRATION ========== */
+/* ========== MATERIAL WEB COMPONENT THEMING ========== */
 
 /* Material Web Button Theming */
 md-filled-button {
@@ -2531,34 +206,387 @@ md-switch {
     --md-switch-unselected-handle-color: var(--md-sys-color-outline);
 }
 
-/* Material Web Icon Theming */
-md-icon {
-    --md-icon-color: var(--md-sys-color-on-surface-variant);
+/* ========== TYPOGRAPHY SCALE ========== */
+.md-typescale-display-small {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 2.25rem;
+    font-weight: 400;
+    line-height: 2.75rem;
+    color: var(--md-sys-color-on-surface);
 }
 
-/* Feature card icons */
+.md-typescale-headline-large {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 2.5rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-typescale-headline-medium {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 400;
+    line-height: 2.25rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-typescale-headline-small {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 2rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-typescale-title-large {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 1.375rem;
+    font-weight: 400;
+    line-height: 1.75rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-typescale-title-medium {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-typescale-body-large {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-typescale-body-medium {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.25rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+.md-typescale-body-small {
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1rem;
+    color: var(--md-sys-color-on-surface);
+}
+
+/* ========== CARD SYSTEM ========== */
+.md-card {
+    background-color: var(--md-sys-color-surface-container-low);
+    border-radius: var(--md-sys-shape-corner-medium);
+    box-shadow: var(--md-sys-elevation-level1);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.md-card:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md-card--outlined {
+    background-color: var(--md-sys-color-surface);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: none;
+}
+
+.md-card--elevated {
+    background-color: var(--md-sys-color-surface-container-low);
+    box-shadow: var(--md-sys-elevation-level1);
+}
+
+.md-card--elevated:hover {
+    box-shadow: var(--md-sys-elevation-level2);
+}
+
+.md-card__content {
+    padding: 1.5rem;
+}
+
+/* ========== PAGE HEADER COMPONENT ========== */
+.md-top-app-bar {
+    background-color: var(--md-sys-color-surface);
+    color: var(--md-sys-color-on-surface);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.md-top-app-bar__content {
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    height: 64px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.md-top-app-bar__title-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    margin-left: 1rem;
+}
+
+.md-top-app-bar__title-link:hover {
+    text-decoration: none;
+}
+
+.md-top-app-bar__leading-icon {
+    margin-right: 0.5rem;
+    --md-icon-size: 24px;
+    font-size: 1.5rem;
+}
+
+.md-top-app-bar__title {
+    font-size: 1.375rem;
+    font-weight: 500;
+}
+
+.md-icon-button--menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.md-icon-button--menu:hover {
+    background-color: var(--md-sys-color-surface-variant);
+}
+
+.md-icon-button--menu md-icon {
+    --md-icon-size: 24px;
+    font-size: 24px;
+}
+
+/* ========== NAVIGATION COMPONENT ========== */
+.md-scrim {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.md-scrim.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.md-navigation-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    background-color: var(--md-sys-color-surface-container-low);
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+}
+
+.md-navigation-drawer.open {
+    transform: translateX(0);
+}
+
+.md-navigation-drawer__header {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.md-navigation-drawer__title {
+    display: flex;
+    align-items: center;
+    font-size: 1.375rem;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface);
+    margin: 0;
+}
+
+.md-navigation-drawer__title md-icon {
+    margin-right: 12px;
+    --md-icon-color: var(--md-sys-color-primary);
+    --md-icon-size: 24px;
+}
+
+/* Material Web Menu Integration in Navigation Drawer */
+.md-navigation-drawer md-menu {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.md-navigation-drawer md-menu-item {
+    --md-menu-item-container-color: transparent;
+    --md-menu-item-hover-state-layer-color: var(--md-sys-color-on-surface);
+    --md-menu-item-hover-state-layer-opacity: 0.08;
+    --md-menu-item-focus-state-layer-color: var(--md-sys-color-on-surface);
+    --md-menu-item-focus-state-layer-opacity: 0.12;
+    --md-menu-item-selected-container-color: var(--md-sys-color-secondary-container);
+    --md-menu-item-label-text-color: var(--md-sys-color-on-surface);
+    --md-menu-item-selected-label-text-color: var(--md-sys-color-on-secondary-container);
+    border-radius: 0 24px 24px 0;
+    margin: 0 12px 0 0;
+    min-height: 56px;
+    padding-left: 16px;
+    padding-right: 24px;
+}
+
+.md-navigation-drawer md-menu-item[selected] {
+    background-color: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+.md-navigation-drawer md-menu-item md-icon {
+    --md-icon-color: var(--md-sys-color-on-surface-variant);
+    --md-icon-size: 24px;
+    margin-right: 12px;
+}
+
+.md-navigation-drawer md-menu-item[selected] md-icon {
+    --md-icon-color: var(--md-sys-color-on-secondary-container);
+}
+
+.md-navigation-drawer md-divider {
+    --md-divider-color: var(--md-sys-color-outline-variant);
+    margin: 8px 0;
+}
+
+/* ========== LAYOUT UTILITIES ========== */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Feature grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.feature-card {
+    text-align: center;
+}
+
 .feature-icon md-icon {
     --md-icon-color: var(--md-sys-color-primary);
+    --md-icon-size: 48px;
     font-size: 48px;
     width: 48px;
     height: 48px;
+    margin-bottom: 1rem;
 }
 
-/* Statistics icons */
+/* Statistics grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-card .md-card__content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 .stat-icon md-icon {
     --md-icon-color: var(--md-sys-color-primary);
+    --md-icon-size: 32px;
     font-size: 32px;
     width: 32px;
     height: 32px;
 }
 
-/* Sync status icon */
-#syncStatusIcon {
-    --md-icon-color: var(--md-sys-color-on-surface-variant);
-    margin-right: 8px;
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--md-sys-color-primary);
 }
 
-/* Setting items with switch */
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Quick actions */
+.quick-start-options,
+.quick-actions-grid,
+.quick-actions-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.large-button {
+    min-width: 280px;
+    height: 56px;
+}
+
+/* Modal system */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+/* Setting items */
 .setting-item {
     display: flex;
     align-items: center;
@@ -2570,39 +598,88 @@ md-icon {
     flex: 1;
 }
 
-/* Large buttons for quick actions */
-.large-button {
-    min-width: 280px;
-    height: 56px;
-}
-
-/* Modal actions styling */
-.modal-actions {
+/* Calendar layout */
+.calendar-controls {
     display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-    flex-wrap: wrap;
-}
-
-/* Editor actions styling */
-.editor-actions {
-    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 1rem;
-    justify-content: flex-end;
-    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.calendar-grid {
+    width: 100%;
     margin-top: 1rem;
 }
 
-/* Import/export actions */
-.import-export-actions {
-    margin: 1rem 0;
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    margin-bottom: 1px;
 }
 
-/* Quick actions buttons */
-.quick-actions-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
+.calendar-day-header {
+    padding: 0.5rem;
+    text-align: center;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant);
+    background-color: var(--md-sys-color-surface-variant);
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 768px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .quick-start-options,
+    .quick-actions-grid,
+    .quick-actions-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .quick-start-options md-filled-button,
+    .quick-start-options md-outlined-button,
+    .quick-start-options md-text-button {
+        width: 100%;
+    }
+    
+    .calendar-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .md-top-app-bar__title {
+        font-size: 1.125rem;
+    }
+    
+    .container {
+        padding: 0 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .md-card__content {
+        padding: 1rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+    }
 }

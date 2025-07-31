@@ -10,6 +10,9 @@ import { NavigationManager } from './navigation-manager.js';
 import { SyncManager } from './sync-manager.js';
 import { UIUtils } from './ui-utils.js';
 import { APP_CONFIG, APP_UTILS } from './constants.js';
+import '@material/web/button/filled-button.js';
+import '@material/web/button/outlined-button.js';
+import '@material/web/checkbox/checkbox.js';
 
 // Import web components
 import './workout-context-component.js';

@@ -26,10 +26,10 @@ class PageHeader extends HTMLElement {
 
         const leftButton = showBack 
             ? `<button class="md-icon-button--back" id="backButton">
-                <span class="material-icons">arrow_back</span>
+                <md-icon>arrow_back</md-icon>
                </button>`
             : `<button class="md-icon-button--menu" id="menuButton">
-                <span class="material-icons">menu</span>
+                <md-icon>menu</md-icon>
                </button>`;
 
         this.innerHTML = `
@@ -37,7 +37,7 @@ class PageHeader extends HTMLElement {
                 <div class="md-top-app-bar__content">
                     ${leftButton}
                     <a href="${homeLink}" class="md-top-app-bar__title-link">
-                        <span class="material-icons md-top-app-bar__leading-icon">${icon}</span>
+                        <md-icon class="md-top-app-bar__leading-icon">${icon}</md-icon>
                         <span class="md-top-app-bar__title">${title}</span>
                     </a>
                 </div>
