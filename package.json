@@ -38,8 +38,8 @@
   "author": "Claude Code",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.28.0",
-    "@babel/preset-env": "^7.28.0",
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
     "@types/jest": "^30.0.0",
     "babel-jest": "^30.0.5",
     "cypress": "^14.5.3",
